@@ -4,6 +4,11 @@ use std::{fs::File, io::Read};
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct TestData {
+    pub tests: Vec<Unit>
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Unit {
     pub cmd: String,
     pub arg: Vec<String>,
     pub block_range: Option<BlockRange>,
