@@ -4,14 +4,27 @@ mod tests {
     use serde::*;
     use rpc_call::*;
     use rpc_call_derive::*;
-    use rpc_test_attribute::*;
+    use rpc_test_attribute::*;    
 
     #[derive(Deserialize, Debug, PartialEq, RpcCall)]
-    struct BlockData {
-        block_hash: String,
-        block_number: u32,
+    struct GasPriceHolder {
+        price_in_wei: String,
     }
 
-    #[rpc_test(BlockData, "./unit/test.json")]
-    fn block_data_test() {}
+    #[derive(Deserialize, Debug, PartialEq, RpcCall)]
+    struct BlockWithTxHashes {
+        block_hash: Option<String>,
+        block_number: Option<u32>,
+        new_root: Option<String>,
+        l1_gas_price: GasPriceHolder,
+        parent_hash: String,
+        sequencer_address: String,
+        starknet_version: String,
+        status: String,
+        timestamp: u32,
+        transactions: Vec<String>
+    }
+
+    #[rpc_test(BlockWithTxHashes, "./unit/test_starknet_getBlockWithTxHashes.json")]
+    fn test_get_block_with_tx_hashes() {}
 }

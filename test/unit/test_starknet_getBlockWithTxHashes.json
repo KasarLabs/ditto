@@ -1,0 +1,20 @@
+{
+    "tests": [
+        {
+            "cmd": "starknet_getBlockWithTxHashes",
+            "arg": [ "latest" ],
+            "block_range": {
+                "start_inclusive": 0,
+                "stop_inclusive": 1
+            }
+        },
+        {
+            "cmd": "starknet_getBlockWithTxHashes",
+            "arg": [ "pending" ],
+            "block_range": {
+                "start_inclusive": 0,
+                "stop_inclusive": 1
+            }
+        }
+    ]
+}
