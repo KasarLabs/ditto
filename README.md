@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 <div align="center">
-<img src="https://github.com/KasarLabs/brand/blob/main/projects/ditto/logo.png?raw=true" height="256">
+<img src="https://github.com/KasarLabs/brand/blob/main/projects/ditto/logo.png?raw=true" height="200">
 </div>
 <div align="center">
 <br />
@@ -16,4 +16,4 @@
 
 </div>
 
-# ⚙️ Ditto: Library to test and benchmark Kasar infrastructure
+# ⚙️ Ditto: Library to test and benchmark Kasar infra
