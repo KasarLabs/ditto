@@ -57,19 +57,30 @@ Tests consist of two parts:
 *test config file format:*
 ```json
 {
-    "cmd": "starknet_blockHashAndNumber",
-    "arg": [],
-    "block_range": {
-        "start_inclusive": 0,
-        "stop_inclusive": 1
-    }
+    "tests": [
+        {
+            "cmd": "rp_method1",
+            "arg": [ "..." ],
+        },
+        {
+            "cmd": "rpc_method2",
+            "arg": [ ],
+            "block_range": {
+                "start_inclusive": 0,
+                "stop_inclusive": 1000
+            }
+        }
+    ]
 }
 ```
 
 config file fields:
+- `tests`: all the rpc calls to test against.
 - `cmd`: the rpc command to query the node with.
 - `arg`: the arguments used during the rpc call.
 - *`block_range`* **(optional)**: the range of starknet blocks to run the unit test against.
+
+Each test specified in `tests` will result in an RPC call to the specified Alchemy and Deoxys nodes, comparing each result. Tests marked with `block_range` will be run against each block in the specified range. Please note that this significantly lengthens test time and should only be used for non-trivial calls whose functioning might have been different in earlier versions of the blockchain.
 
 ### In `lib.rs`
 
@@ -95,3 +106,13 @@ mod tests {
     fn block_data_test() {}
 }
 ```
+
+## Structure Format
+
+> ⚠️ Structure members must have the **exact same name** as the json fields expected as an RPC call result.
+
+- For fields which are themselves a JSON object, use another struct to represent this sub-object.
+- For fields that might be optional, use `Option`.
+
+Try and test as many edge cases as possible. Ths mostly includes optional parameters. You can find a list
+of Starknet RPC call and their arguments / return data [here](https://playground.open-rpc.org/?uiSchema%5BappBar%5D%5Bui:splitView%5D=false&schemaUrl=https://raw.githubusercontent.com/starkware-libs/starknet-specs/master/api/starknet_api_openrpc.json&uiSchema%5BappBar%5D%5Bui:input%5D=false&uiSchema%5BappBar%5D%5Bui:darkMode%5D=true&uiSchema%5BappBar%5D%5Bui:examplesDropdown%5D=false)
