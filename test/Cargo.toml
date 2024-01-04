@@ -1,0 +1,20 @@
+[package]
+name = "test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.79"
+serde = "1.0.194"
+serde_json = "1.0.110"
+tokio = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+jsonrpsee = { version = "0.21.0", features = ["client"] }
+tokio = { version = "1", features = ["full", "test-util"] }
+rpc_call = { path = "../rpc_call/" }
+rpc_call_derive = { path = "../rpc_call_derive/" }
+rpc_test = { path = "../rpc_test/" }
+rpc_test_attribute ={ path = "../rpc_test_attribute/" }
