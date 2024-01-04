@@ -53,27 +53,25 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
                     None => 0..=1,
                 };
                 let display_test = serde_json::to_string_pretty(&test).unwrap();
+                let info_alchemy = rpc_test::ClientInfo::new(
+                    &alchemy,
+                    "Alchemy",
+                    &display_test,
+                    &display_response,
+                    &path
+                );
+                let info_deoxys = rpc_test::ClientInfo::new(
+                    &deoxys,
+                    "Deoxys",
+                    &display_test,
+                    &display_response,
+                    &path
+                );
 
                 for _ in range {
-                    let response_alchemy: #arg_struct = #arg_struct::call(&alchemy, &test.cmd, test.arg.clone()).await
-                        .with_context(|| format!(
-                        "
-                            Error waiting for rpc call response from Alchemy in test {path}\n\
-                            RPC call: {display_test}\n\
-                            Response format: {display_response}
-                        "
-                        ))
-                        .unwrap();
+                    let response_alchemy: #arg_struct = rpc_test::client_response(&info_alchemy, &test.cmd, &test.arg).await.unwrap();
 
-                    let response_deoxys: #arg_struct = #arg_struct::call(&deoxys, &test.cmd, test.arg.clone()).await
-                        .with_context(|| format!(
-                        "\
-                            Error waiting for rpc call response from Deoxys in test {path}\n\
-                            RPC call: {display_test}\n\
-                            Response format: {display_response}
-                        "
-                        ))
-                        .unwrap();
+                    let response_deoxys: #arg_struct = rpc_test::client_response(&info_deoxys, &test.cmd, &test.arg).await.unwrap();
 
                     assert_eq!(response_deoxys, response_alchemy);
                 }
