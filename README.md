@@ -18,7 +18,7 @@
 
 # ⚙️ Ditto: Library to test and benchmark Kasar infra
 
-_A simple Rust RPC test utility for the [Deoxis](https://github.com/KasarLabs/deoxys) Starknet node._
+_A simple Rust RPC test utility for the [Deoxys](https://github.com/KasarLabs/deoxys) Starknet node._
 
 ## Getting started
 
