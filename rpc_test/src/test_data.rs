@@ -1,20 +1,20 @@
 use anyhow::Context;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct TestData {
     pub tests: Vec<Unit>
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct Unit {
     pub cmd: String,
     pub arg: Vec<String>,
     pub block_range: Option<BlockRange>,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Copy)]
 pub struct BlockRange {
     pub start_inclusive: u32,
     pub stop_inclusive: u32,
