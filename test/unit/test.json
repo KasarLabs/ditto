@@ -1,0 +1,8 @@
+{
+    "cmd": "starknet_blockHashAndNumber",
+    "arg": [],
+    "block_range": {
+        "start_inclusive": 0,
+        "stop_inclusive": 1
+    }
+}
