@@ -4,14 +4,16 @@ mod tests {
     use serde::*;
     use rpc_call::*;
     use rpc_call_derive::*;
-    use rpc_test_attribute::*;    
+    use rpc_test_attribute::*;
 
-    #[derive(Deserialize, Debug, PartialEq, RpcCall)]
+    #[derive(Deserialize, Serialize, Debug, PartialEq, RpcCall, Default)]
     struct GasPriceHolder {
         price_in_wei: String,
     }
 
-    #[derive(Deserialize, Debug, PartialEq, RpcCall)]
+    // TODO: currently only checks against `latest` and `pending` blocks.
+    // still need to add tests for specific block hash
+    #[derive(Deserialize, Serialize, Debug, PartialEq, RpcCall, Default)]
     struct BlockWithTxHashes {
         block_hash: Option<String>,
         block_number: Option<u32>,

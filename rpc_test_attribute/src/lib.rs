@@ -45,20 +45,34 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
             let test_data = rpc_test::test_data::TestData::new(path)
                 .with_context(|| format!("Could not retrieve test data from {path}"))
                 .unwrap();
-
+            let display_response = serde_json::to_string_pretty(&#arg_struct::default()).unwrap();
+            
             for test in test_data.tests {
                 let range = match test.block_range {
                     Some(range) => range.start_inclusive..=range.stop_inclusive,
                     None => 0..=1,
                 };
+                let display_test = serde_json::to_string_pretty(&test).unwrap();
 
                 for _ in range {
                     let response_alchemy: #arg_struct = #arg_struct::call(&alchemy, &test.cmd, test.arg.clone()).await
-                        .with_context(|| format!("Error waiting for rpc call response from Alchemy in test {path}"))
+                        .with_context(|| format!(
+                        "
+                            Error waiting for rpc call response from Alchemy in test {path}\n\
+                            RPC call: {display_test}\n\
+                            Response format: {display_response}
+                        "
+                        ))
                         .unwrap();
 
                     let response_deoxys: #arg_struct = #arg_struct::call(&deoxys, &test.cmd, test.arg.clone()).await
-                        .with_context(|| format!("Error waiting for rpc call response from Deoxys in test {path}"))
+                        .with_context(|| format!(
+                        "\
+                            Error waiting for rpc call response from Deoxys in test {path}\n\
+                            RPC call: {display_test}\n\
+                            Response format: {display_response}
+                        "
+                        ))
                         .unwrap();
 
                     assert_eq!(response_deoxys, response_alchemy);
