@@ -59,11 +59,11 @@ Tests consist of two parts:
 {
     "tests": [
         {
-            "cmd": "rp_method1",
+            "cmd": "rp_method",
             "arg": [ "..." ],
         },
         {
-            "cmd": "rpc_method2",
+            "cmd": "rpc_method",
             "arg": [ ],
             "block_range": {
                 "start_inclusive": 0,
@@ -92,11 +92,9 @@ You must provide a structure specifying the format of the rpc call return value 
 mod tests {
     use anyhow::*;
     use serde::*;
-    use rpc_call::*;
-    use rpc_call_derive::*;
     use rpc_test_attribute::*;
 
-    #[derive(Deserialize, Debug, PartialEq, RpcCall)]
+    #[derive(Deserialize, Serialize, Debug, PartialEq, Default)]
     struct BlockData {
         block_hash: String,
         block_number: u32,
