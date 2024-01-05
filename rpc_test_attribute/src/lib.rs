@@ -33,6 +33,7 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
     let expression = quote! {
         #[tokio::test]
         async fn #name() {
+            // loads config and initializes RPC clients
             let config = rpc_test::test_config::TestConfig::new("./secret.json").unwrap();
             let alchemy = jsonrpsee::http_client::HttpClientBuilder::default().build(config.alchemy)
                 .with_context(|| "Could not set up Alchemy client")
@@ -41,6 +42,8 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
                 .with_context(|| "Could not set up Deoxys client")
                 .unwrap();
 
+            // retrieves test parameters from json specification 
+            // and generates a debug representation
             let path = #arg_test;
             let test_data = rpc_test::test_data::TestData::new(path)
                 .with_context(|| format!("Could not retrieve test data from {path}"))
@@ -48,6 +51,8 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
             let display_response = serde_json::to_string_pretty(&#arg_struct::default()).unwrap();
             
             for test in test_data.tests {
+                // test will be run over a variety of blocks 
+                // TODO: actually implement passing block_number as RPC call parameter 
                 let range = match test.block_range {
                     Some(range) => range.start_inclusive..=range.stop_inclusive,
                     None => 0..=1,
@@ -69,8 +74,8 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
                 );
 
                 for _ in range {
+                    // RPC calls happen *here*
                     let response_alchemy: #arg_struct = rpc_test::client_response(&info_alchemy, &test.cmd, &test.arg).await.unwrap();
-
                     let response_deoxys: #arg_struct = rpc_test::client_response(&info_deoxys, &test.cmd, &test.arg).await.unwrap();
 
                     assert_eq!(response_deoxys, response_alchemy);
