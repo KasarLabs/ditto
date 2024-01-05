@@ -1,5 +1,4 @@
 /target
-.vscode
 *.code-workspace
 secret.json
 test.log

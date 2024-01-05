@@ -14,7 +14,5 @@ tokio = { version = "1", features = ["full"] }
 [dev-dependencies]
 jsonrpsee = { version = "0.21.0", features = ["client"] }
 tokio = { version = "1", features = ["full", "test-util"] }
-rpc_call = { path = "../rpc_call/" }
-rpc_call_derive = { path = "../rpc_call_derive/" }
 rpc_test = { path = "../rpc_test/" }
 rpc_test_attribute ={ path = "../rpc_test_attribute/" }
