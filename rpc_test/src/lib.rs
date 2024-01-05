@@ -13,18 +13,18 @@ use colored::Colorize;
 pub struct ClientInfo<'a> {
     client: &'a HttpClient,
     name: &'a str,
-    display_response: &'a str,
     display_test: &'a str,
+    display_response: &'a str,
     display_path: &'a str,
 }
 
 impl <'a> ClientInfo<'a> {
-    pub fn new(client: &'a HttpClient, name: &'a str, response: &'a str, test: &'a str, path: &'a str) -> Self{
+    pub fn new(client: &'a HttpClient, name: &'a str, test: &'a str, response: &'a str, path: &'a str) -> Self{
         ClientInfo { 
             client: client,
             name: name, 
-            display_response: response, 
             display_test: test, 
+            display_response: response, 
             display_path: path 
         }
     }
