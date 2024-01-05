@@ -25,6 +25,6 @@ mod tests {
         transactions: Vec<String>
     }
 
-    #[rpc_test(BlockWithTxHashes, "./unit/test_starknet_getBlockWithTxHashes.json")]
+    #[rpc_test(BlockWithTxHashes, "./unit/getBlockWithTxHashes.json")]
     fn test_get_block_with_tx_hashes() {}
 }
