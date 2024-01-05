@@ -1,0 +1,12 @@
+{
+    "conventionalCommits.scopes": [
+        "debug",
+        "rpc_call",
+        "rpc_test"
+    ],
+    "cSpell.words": [
+        "Deoxys",
+        "serde",
+        "starknet"
+    ]
+}
