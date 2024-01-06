@@ -1,0 +1,8 @@
+{
+	"tests": [
+		{
+			"cmd": "starknet_blockHashAndNumber",
+			"arg": []
+		}
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"tests": [
+		{
+			"cmd": "starknet_estimateFee",
+			"arg": [ ["TransactionsHashArray"], 
+            " BlockId " ]
+		}
+	]
+}
