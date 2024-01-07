@@ -32,6 +32,28 @@ async fn fail_non_existing_block() {
 }
 
 #[tokio::test]
+async fn fail_non_existing_contract() {
+    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
+    let deoxys = JsonRpcClient::new(HttpTransport::new(
+        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
+    ));
+
+    let response_deoxys = deoxys.get_storage_at(
+        FieldElement::ZERO,
+        FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
+        BlockId::Tag(BlockTag::Latest)
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::ContractNotFound)
+        }))
+    );
+}
+
+#[tokio::test]
 async fn work_get_storage() {
     let config = TestConfig::new("./secret.json").expect("Error loading tests config");
     let deoxys = JsonRpcClient::new(HttpTransport::new(
