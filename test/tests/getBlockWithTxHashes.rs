@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use anyhow::*;
     use serde::*;
     use rpc_test_attribute::*;
 

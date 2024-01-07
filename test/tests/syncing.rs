@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod test_syncing {
-    use anyhow::*;
     use serde::*;
     use rpc_test_attribute::*;
 
