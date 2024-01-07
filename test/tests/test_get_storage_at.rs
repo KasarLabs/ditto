@@ -54,6 +54,22 @@ async fn fail_non_existing_contract() {
 }
 
 #[tokio::test]
+async fn fail_invalid_storage_key() {
+    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
+    let deoxys = JsonRpcClient::new(HttpTransport::new(
+        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
+    ));
+
+    let response_deoxys = deoxys.get_storage_at(
+        FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
+        FieldElement::from_hex_be("0x0").unwrap(),
+        BlockId::Tag(BlockTag::Latest)
+    ).await.expect("Error waiting for response from Deoxys client");
+
+    assert_eq!(response_deoxys, FieldElement::ZERO);
+}
+
+#[tokio::test]
 async fn work_get_storage() {
     let config = TestConfig::new("./secret.json").expect("Error loading tests config");
     let deoxys = JsonRpcClient::new(HttpTransport::new(
