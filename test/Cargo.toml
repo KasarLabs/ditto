@@ -18,3 +18,5 @@ tokio = { version = "1", features = ["full", "test-util"] }
 rpc_test = { path = "../rpc_test/" }
 rpc_test_attribute ={ path = "../rpc_test_attribute/" }
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
+starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
+starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
