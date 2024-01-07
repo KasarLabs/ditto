@@ -36,18 +36,15 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
             // loads config and initializes RPC clients
             let config = rpc_test::test_config::TestConfig::new("./secret.json").unwrap();
             let alchemy = jsonrpsee::http_client::HttpClientBuilder::default().build(config.alchemy)
-                .with_context(|| "Could not set up Alchemy client")
-                .unwrap();
+                .expect("Could not set up Alchemy client");
             let deoxys = jsonrpsee::http_client::HttpClientBuilder::default().build(config.deoxys)
-                .with_context(|| "Could not set up Deoxys client")
-                .unwrap();
+                .expect("Could not set up Deoxys client");
 
             // retrieves test parameters from json specification 
             // and generates a debug representation
             let path = #arg_test;
             let test_data = rpc_test::test_data::TestData::new(path)
-                .with_context(|| format!("Could not retrieve test data from {path}"))
-                .unwrap();
+                .expect(&format!("Could not retrieve test data from {}", path));
             let display_response = serde_json::to_string_pretty(&#arg_struct::default()).unwrap();
             
             for test in test_data.tests {
