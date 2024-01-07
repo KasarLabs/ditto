@@ -1,8 +1,0 @@
-{
-    "tests": [
-        {
-            "cmd": "starknet_syncing",
-            "arg": []
-        }
-    ]
-}
