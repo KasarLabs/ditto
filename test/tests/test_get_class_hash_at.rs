@@ -50,3 +50,22 @@ async fn fail_non_existing_contract() {
         }))
     )
 }
+
+#[tokio::test]
+async fn work_existing_block_and_contract() {
+    let config = TestConfig::new("./secret.json").expect("Error loading test config");
+    let deoxys = JsonRpcClient::new(HttpTransport::new(
+        Url::parse(&config.deoxys).expect("Error parsing Deoxys api rul")
+    ));
+
+    let class_hash_deoxys = deoxys.get_class_hash_at(
+        BlockId::Tag(BlockTag::Latest),
+        FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap()
+    ).await.expect("Error waiting for response from Deoxys node");
+    let class_hash_alchemy = deoxys.get_class_hash_at(
+        BlockId::Tag(BlockTag::Latest),
+        FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap()
+    ).await.expect("Error waiting for response from Alchemy node");
+
+    assert_eq!(class_hash_deoxys, class_hash_alchemy);
+}
