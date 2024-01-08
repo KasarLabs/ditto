@@ -35,8 +35,8 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
         async fn #name() {
             // loads config and initializes RPC clients
             let config = rpc_test::test_config::TestConfig::new("./secret.json").unwrap();
-            let alchemy = jsonrpsee::http_client::HttpClientBuilder::default().build(config.alchemy)
-                .expect("Could not set up Alchemy client");
+            let pathfinder = jsonrpsee::http_client::HttpClientBuilder::default().build(config.pathfinder)
+                .expect("Could not set up Pathfinder client");
             let deoxys = jsonrpsee::http_client::HttpClientBuilder::default().build(config.deoxys)
                 .expect("Could not set up Deoxys client");
 
@@ -55,9 +55,9 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
                     None => 0..=1,
                 };
                 let display_test = serde_json::to_string_pretty(&test).unwrap();
-                let info_alchemy = rpc_test::ClientInfo::new(
-                    &alchemy,
-                    "Alchemy",
+                let info_pathfinder = rpc_test::ClientInfo::new(
+                    &pathfinder,
+                    "Pathfinder",
                     &display_test,
                     &display_response,
                     &path
@@ -72,10 +72,10 @@ pub fn rpc_test(args: TokenStream, input: TokenStream) -> TokenStream {
 
                 for _ in range {
                     // RPC calls happen *here*
-                    let response_alchemy: #arg_struct = rpc_test::client_response(&info_alchemy, &test.cmd, &test.arg).await.unwrap();
+                    let response_pathfinder: #arg_struct = rpc_test::client_response(&info_pathfinder, &test.cmd, &test.arg).await.unwrap();
                     let response_deoxys: #arg_struct = rpc_test::client_response(&info_deoxys, &test.cmd, &test.arg).await.unwrap();
 
-                    assert_eq!(response_deoxys, response_alchemy);
+                    assert_eq!(response_deoxys, response_pathfinder);
                 }
             }
         }       

@@ -2,8 +2,8 @@
 members = [
     "rpc_test",
     "rpc_test_attribute",
-    "test",
+    "unit_tests",
 ]
-default-members = ["test"]
+default-members = ["unit_tests"]
 resolver = "2"
 
