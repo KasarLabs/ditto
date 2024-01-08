@@ -153,6 +153,37 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
  * Unit test for `starknet_call`
  * 
  * purpose: function request `name` to StarkGate ETH bridge contract
+ * fail case: too many arguments in call data
+ */
+#[rstest]
+#[tokio::test]
+async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.call(
+        FunctionCall { 
+            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("name").unwrap(), 
+            calldata: vec![
+                FieldElement::ZERO
+            ]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::ContractError)
+        }))
+    );
+}
+
+/**
+ * Unit test for `starknet_call`
+ * 
+ * purpose: function request `name` to StarkGate ETH bridge contract
  * success case: should return 'Ether'
  */
 #[rstest]
