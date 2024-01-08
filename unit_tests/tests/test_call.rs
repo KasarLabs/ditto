@@ -9,6 +9,29 @@ use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, Provid
 
 #[rstest]
 #[tokio::test]
+async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("name").unwrap(),
+            calldata: vec![]
+        },
+        BlockId::Hash(FieldElement::ZERO)
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::BlockNotFound)
+        }))
+    );
+}
+
+#[rstest]
+#[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
