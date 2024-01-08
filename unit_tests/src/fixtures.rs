@@ -5,22 +5,8 @@ use rstest::fixture;
 use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport};
 use url::Url;
 
-use crate::constants::DEOXYS;
-
-// TODO: refactor this into a separate crate
-#[macro_export]
-macro_rules! map {
-    // Match a comma-separated list of key-value pairs.
-    { $( $key:expr => $value:expr ),* $(,)? } => {
-        {
-            let mut m = ::std::collections::HashMap::new();
-            $(
-                m.insert($key, $value);
-            )*
-            m
-        }
-    };
-}
+use crate::constants::*;
+use crate::map;
 
 #[fixture]
 pub fn clients() -> HashMap<String, JsonRpcClient<HttpTransport>> {
