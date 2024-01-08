@@ -1,20 +1,17 @@
 #![feature(assert_matches)]
 
-const CONTRACT_ADDR: &str = "0x03a20d4f7b4229e7c4863dab158b4d076d7f454b893d90a62011882dc4caca2a";
-const CONTRACT_KEY: &str = "0x00f920571b9f85bdd92a867cfdc73319d0f8836f0e69e06e4c5566b6203f75cc";
+mod common;
+use common::*;
 
 use std::assert_matches::assert_matches;
+use std::collections::HashMap;
 
-use rpc_test::test_config::TestConfig;
 use starknet::{providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode}, core::types::{FieldElement, BlockId, BlockTag, StarknetError}};
-use url::Url;
 
+#[rstest]
 #[tokio::test]
-async fn fail_non_existing_block() {
-    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
-    let deoxys = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
-    ));
+async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
@@ -31,12 +28,10 @@ async fn fail_non_existing_block() {
     )
 }
 
+#[rstest]
 #[tokio::test]
-async fn fail_non_existing_contract() {
-    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
-    let deoxys = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
-    ));
+async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::ZERO,
@@ -53,12 +48,10 @@ async fn fail_non_existing_contract() {
     );
 }
 
+#[rstest]
 #[tokio::test]
-async fn fail_invalid_storage_key() {
-    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
-    let deoxys = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
-    ));
+async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
@@ -69,15 +62,11 @@ async fn fail_invalid_storage_key() {
     assert_eq!(response_deoxys, FieldElement::ZERO);
 }
 
+#[rstest]
 #[tokio::test]
-async fn work_get_storage() {
-    let config = TestConfig::new("./secret.json").expect("Error loading tests config");
-    let deoxys = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.deoxys).expect("Error parsing Deoxys api url")
-    ));
-    let alchemy = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.deoxys).expect("Error parsing Alchemy api url")
-    ));
+async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let alchemy = &clients[ALCHEMY];
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
