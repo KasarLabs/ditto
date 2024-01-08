@@ -101,6 +101,38 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
 
 #[rstest]
 #[tokio::test]
+async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+            calldata: vec![
+                FieldElement::ZERO
+            ]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    let response_pathfinder = pathfinder.call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+            calldata: vec![
+                FieldElement::ZERO
+            ]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.expect("Error waiting for response from Pathfinder node");
+
+    assert_eq!(response_deoxys, vec![FieldElement::ZERO, FieldElement::ZERO]);
+    assert_eq!(response_deoxys, response_pathfinder);
+}
+
+#[rstest]
+#[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
