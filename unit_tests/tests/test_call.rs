@@ -32,6 +32,29 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
+async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.call(
+        FunctionCall {
+            contract_address: FieldElement::ZERO,
+            entry_point_selector: get_selector_from_name("name").unwrap(),
+            calldata: vec![]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::ContractNotFound)
+        }))
+    );
+}
+
+#[rstest]
+#[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
