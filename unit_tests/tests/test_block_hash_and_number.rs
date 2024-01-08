@@ -3,8 +3,8 @@ use common::*;
 
 use std::collections::HashMap;
 
-use starknet::{providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider}, core::types::BlockId};
-use starknet::core::types::MaybePendingBlockWithTxHashes;
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider};
+use starknet_core::types::{MaybePendingBlockWithTxHashes, BlockId};
 
 #[rstest]
 #[tokio::test]

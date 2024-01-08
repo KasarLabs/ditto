@@ -5,7 +5,7 @@ use common::*;
 
 use std::{assert_matches::assert_matches, collections::HashMap};
 
-use starknet::{providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode}, core::types::{BlockId, FieldElement, StarknetError, BlockTag}};
+use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode}, core::types::{BlockId, FieldElement, StarknetError, BlockTag}};
 
 #[rstest]
 #[tokio::test]

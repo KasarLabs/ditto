@@ -3,7 +3,7 @@ use common::*;
 
 use std::collections::HashMap;
 
-use starknet::providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider};
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider};
 
 #[rstest]
 #[tokio::test]
