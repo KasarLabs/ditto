@@ -5,7 +5,7 @@ use std::{fs::File, io::Read};
 
 #[derive(PartialEq, Debug, Deserialize)]
 pub struct TestConfig {
-    pub alchemy: String,
+    pub pathfinder: String,
     pub deoxys: String,
 }
 
