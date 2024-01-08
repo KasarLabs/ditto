@@ -255,3 +255,45 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
     assert!(balance_deoxys > 0);
     assert_eq!(response_deoxys, response_pathfinder);
 }
+
+/**
+ * Unit test for `starknet_call`
+ * 
+ * purpose: function request `sort_tokens` to JediSwap exchange, with multiple arguments.
+ * success case: must return array of 2 non-zero values.
+ */
+#[rstest]
+#[tokio::test]
+async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(JEDI_SWAP_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("sort_tokens").unwrap(),
+            calldata: vec![
+                FieldElement::from_hex_be(STARKGATE_ETHER).unwrap(),
+                FieldElement::from_hex_be(STARKGATE_USDC).unwrap()
+            ]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    let response_pathfinder = pathfinder.call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(JEDI_SWAP_ADDR).unwrap(),
+            entry_point_selector: get_selector_from_name("sort_tokens").unwrap(),
+            calldata: vec![
+                FieldElement::from_hex_be(STARKGATE_ETHER).unwrap(),
+                FieldElement::from_hex_be(STARKGATE_USDC).unwrap()
+            ]
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    assert!(response_deoxys.len() == 2);
+    assert_ne!(response_deoxys[0], FieldElement::ZERO);
+    assert_ne!(response_deoxys[1], FieldElement::ZERO);
+    assert_eq!(response_deoxys, response_pathfinder);
+}
