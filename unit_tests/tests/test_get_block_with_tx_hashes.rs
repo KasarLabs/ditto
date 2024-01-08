@@ -6,7 +6,8 @@ use starknet_core::types::MaybePendingBlockWithTxHashes;
 
 use std::{assert_matches::assert_matches, collections::HashMap};
 
-use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode}, core::types::{BlockId, FieldElement, StarknetError, BlockTag}};
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcClient}, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode};
+use starknet_core::types::{BlockId, FieldElement, StarknetError, BlockTag};
 use unit_tests::constants::DEOXYS;
 
 #[rstest]
