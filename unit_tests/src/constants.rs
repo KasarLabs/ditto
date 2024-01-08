@@ -1,7 +1,7 @@
 /* Constants used throughout unit tests */
 
 pub const DEOXYS: &str = "deoxys";
-pub const ALCHEMY: &str = "alchemy";
+pub const PATHFINDER: &str = "pathfinder";
 pub const STARKGATE_ETH_CONTRACT_ADDR: &str = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 pub const INVALID_CONTRACT_ADDR: &str = "0x4269DEADBEEF";
 pub const CONTRACT_ADDR: &str = "0x03a20d4f7b4229e7c4863dab158b4d076d7f454b893d90a62011882dc4caca2a";

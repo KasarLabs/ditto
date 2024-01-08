@@ -30,21 +30,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
-    let alchemy = &clients[ALCHEMY];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys.get_block_with_tx_hashes(BlockId::Tag(BlockTag::Latest)).await
         .expect("Error waiting for response from Deoxys node");
-    let response_alchemy = alchemy.get_block_with_tx_hashes(BlockId::Tag(BlockTag::Latest)).await
+    let response_pathfinder = pathfinder.get_block_with_tx_hashes(BlockId::Tag(BlockTag::Latest)).await
         .expect("Error waiting for response from Deoxys node");
 
     let block_deoxys = match response_deoxys {
         MaybePendingBlockWithTxHashes::Block(block) => block,
         MaybePendingBlockWithTxHashes::PendingBlock(_) => panic!("Expected block, got pending block"),
     };
-    let block_alchemy = match response_alchemy {
+    let block_pathfinder = match response_pathfinder {
         MaybePendingBlockWithTxHashes::Block(block) => block,
         MaybePendingBlockWithTxHashes::PendingBlock(_) => panic!("Expected block, got pending block"),
     };
 
-    assert_eq!(block_deoxys, block_alchemy);
+    assert_eq!(block_deoxys, block_pathfinder);
 }

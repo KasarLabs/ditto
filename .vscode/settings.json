@@ -2,7 +2,9 @@
     "conventionalCommits.scopes": [
         "debug",
         "rpc_call",
-        "rpc_test"
+        "rpc_test",
+        "import",
+        "pathfinder"
     ],
     "cSpell.words": [
         "Deoxys",

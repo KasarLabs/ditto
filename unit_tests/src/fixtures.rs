@@ -14,12 +14,12 @@ pub fn clients() -> HashMap<String, JsonRpcClient<HttpTransport>> {
     let deoxys = JsonRpcClient::new(HttpTransport::new(
         Url::parse(&config.deoxys).expect("Error parsing Deoxys node url")
     ));
-    let alchemy = JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.alchemy).expect("Error parsing Deoxys node url")
+    let pathfinder = JsonRpcClient::new(HttpTransport::new(
+        Url::parse(&config.pathfinder).expect("Error parsing Deoxys node url")
     ));
 
     map!{
         String::from(DEOXYS) => deoxys,
-        String::from("alchemy") => alchemy,
+        String::from(PATHFINDER) => pathfinder,
     }
 }

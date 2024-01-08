@@ -50,16 +50,16 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 #[tokio::test]
 async fn work_existing_block_and_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
-    let alchemy = &clients[ALCHEMY];
+    let pathfinder = &clients[PATHFINDER];
 
     let class_hash_deoxys = deoxys.get_class_hash_at(
         BlockId::Tag(BlockTag::Latest),
         FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap()
     ).await.expect("Error waiting for response from Deoxys node");
-    let class_hash_alchemy = alchemy.get_class_hash_at(
+    let class_hash_pathfinder = pathfinder.get_class_hash_at(
         BlockId::Tag(BlockTag::Latest),
         FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap()
-    ).await.expect("Error waiting for response from Alchemy node");
+    ).await.expect("Error waiting for response from Pathfinder node");
 
-    assert_eq!(class_hash_deoxys, class_hash_alchemy);
+    assert_eq!(class_hash_deoxys, class_hash_pathfinder);
 }

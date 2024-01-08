@@ -67,18 +67,18 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 #[tokio::test]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
-    let alchemy = &clients[ALCHEMY];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
         FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
         BlockId::Tag(BlockTag::Latest)
     ).await.expect("Error waiting for response from Deoxys client");
-    let response_alchemy = alchemy.get_storage_at(
+    let response_pathfinder = pathfinder.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
         FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
         BlockId::Tag(BlockTag::Latest)
-    ).await.expect("Error waiting for response from Alchemy client");
+    ).await.expect("Error waiting for response from Pathfinder client");
 
-    assert_eq!(response_deoxys, response_alchemy);
+    assert_eq!(response_deoxys, response_pathfinder);
 }
