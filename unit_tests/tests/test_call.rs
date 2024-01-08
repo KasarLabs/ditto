@@ -220,7 +220,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
  * Unit test for `starknet_call`
  * 
  * purpose: function request `balanceOf` to StarkGate ETH bridge contract
- * success case: must return non-negative balance
+ * success case: must return non-zero balance
  */
 #[rstest]
 #[tokio::test]
