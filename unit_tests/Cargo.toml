@@ -21,3 +21,4 @@ starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", 
 jsonrpsee = { version = "0.21.0", features = ["client"] }
 tokio = { version = "1", features = ["full", "test-util"] }
 rpc_test_attribute ={ path = "../rpc_test_attribute/" }
+flate2 = "1.0.28"
