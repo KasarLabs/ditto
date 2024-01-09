@@ -71,6 +71,20 @@ pub const CONTRACT_ACCOUNT_PROXY: &str = "0x05d7f4d55795b56ceb4dd93febe17954c7cf
 pub const CONTRACT_LEGACY: &str = "0x07076931c19d0ef52b847f9412c90a2ef999ff028f1005d2d069343061762fb7";
 pub const BLOCK_LEGACY: u64 = 2891;
 
+///
+/// Random Starknet transaction accepted on L1
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5)
+/// 
+pub const TRANSACTION_ACCEPTED: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5";
+
+///
+/// Random reverted Starknet transaction
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x016ed559467c50c12f225f348ca8895d54b91a499ad6f856cb6086e317c120ca)
+/// 
+pub const TRANSACTION_REVERTED: &str = "0x016ed559467c50c12f225f348ca8895d54b91a499ad6f856cb6086e317c120ca";
+
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
 pub const CAIRO_1_ACCOUNT_CONTRACT_CLASS_HASH: &str = "";
