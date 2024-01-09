@@ -2588,6 +2588,7 @@ name = "unit_tests"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "flate2",
  "jsonrpsee",
  "rpc_test",
  "rpc_test_attribute",
