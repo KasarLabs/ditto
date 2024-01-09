@@ -61,3 +61,15 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
     );
 }
 
+#[rstest]
+#[tokio::test]
+async fn test_non_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.get_nonce(
+        BlockId::Tag(BlockTag::Latest), 
+        FieldElement::from_hex_be(CONTRACT_ERC721).unwrap()
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    assert_eq!(response_deoxys, FieldElement::ZERO);
+}
