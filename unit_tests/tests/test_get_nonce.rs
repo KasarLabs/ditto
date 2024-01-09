@@ -105,3 +105,22 @@ async fn test_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
 
     assert_eq!(response_deoxys, response_pathfinder);
 }
+
+#[rstest]
+#[tokio::test]
+async fn test_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.get_nonce(
+        BlockId::Tag(BlockTag::Latest), 
+        FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY).unwrap()
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    let response_pathfinder = pathfinder.get_nonce(
+        BlockId::Tag(BlockTag::Latest), 
+        FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY).unwrap()
+    ).await.expect("Error waiting for response from Pathfinder node");
+
+    assert_eq!(response_deoxys, response_pathfinder);
+}
