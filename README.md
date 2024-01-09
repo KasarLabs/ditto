@@ -16,7 +16,7 @@
 
 </div>
 
-# ⚙️ Ditto: Library to test and benchmark Kasar infra
+# ⚙️ Ditto: Library to test and benchmark Starknet full nodes
 
 _A simple Rust RPC test utility for the [Deoxys](https://github.com/KasarLabs/deoxys) Starknet node._
 
