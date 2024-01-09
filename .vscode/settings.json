@@ -4,7 +4,8 @@
         "rpc_call",
         "rpc_test",
         "import",
-        "pathfinder"
+        "pathfinder",
+        "get_nonce"
     ],
     "cSpell.words": [
         "Deoxys",
