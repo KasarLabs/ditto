@@ -5,10 +5,15 @@ use std::{collections::HashMap, assert_matches::assert_matches, io::Read};
 
 use common::*;
 use flate2::read::GzDecoder;
-use starknet::contract;
-use starknet_core::{types::{FieldElement, BlockId, StarknetError, BlockTag, ContractClass, contract::legacy::LegacyProgram}, utils::parse_cairo_short_string};
+use starknet_core::types::{FieldElement, BlockId, StarknetError, BlockTag, ContractClass, contract::legacy::LegacyProgram};
 use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, StarknetErrorWithMessage, ProviderError, MaybeUnknownErrorCode};
 
+///
+/// unit test for `starknet_get_class_at`
+/// 
+/// purpose: gets contract class for inexistent block.
+/// fail case: invalid block address.
+/// 
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -28,6 +33,12 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     )));
 }
 
+///
+/// unit test for `starknet_get_class_at`
+/// 
+/// purpose: gets contract class for inexistent contract.
+/// fail case: invalid contract address.
+/// 
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
