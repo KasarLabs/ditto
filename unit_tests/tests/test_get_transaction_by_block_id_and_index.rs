@@ -1,11 +1,37 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::collections::HashMap;
+use std::{collections::HashMap, assert_matches::assert_matches};
 
 use common::*;
-use starknet_core::types::{FieldElement, BlockId};
-use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider};
+use starknet_core::types::{FieldElement, BlockId, StarknetError};
+use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, StarknetErrorWithMessage, ProviderError, MaybeUnknownErrorCode};
+
+///
+/// Unit test for `starknet_getTransactionByBlockIdAndIndex`
+/// 
+/// purpose: call on non-existent block.
+/// fail case: invalid block
+/// 
+#[rstest]
+#[tokio::test]
+async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.get_transaction_by_block_id_and_index(
+        BlockId::Hash(FieldElement::ZERO),
+        0
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::BlockNotFound)
+        }))
+    );
+}
+
 
 ///
 /// Unit test for `starknet_getTransactionByBlockIdAndIndex`
