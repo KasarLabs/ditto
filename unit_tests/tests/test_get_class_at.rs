@@ -47,10 +47,12 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
     )));
 }
 
+///
 /// unit test for `starknet_get_class_at`
 /// 
 /// purpose: gets legacy contract and extracts it's data.
 /// success case: should retrieve contract and decompress it to a valid json string. 
+/// 
 #[rstest]
 #[tokio::test]
 async fn work_contract_v0(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
@@ -92,4 +94,29 @@ async fn work_contract_v0(clients: HashMap<String, JsonRpcClient<HttpTransport>>
     assert_eq!(response_deoxys, response_pathfinder);
 
     anyhow::Ok(())
+}
+
+///
+/// unit test for `starknet_get_class_at`
+/// 
+/// purpose: gets Cairo v1 contract and extracts it's data.
+/// success case: should retrieve contract correctly.
+/// 
+#[rstest]
+#[tokio::test]
+async fn work_contract_v1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.get_class_at(
+        BlockId::Tag(BlockTag::Latest), 
+        FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap()
+    ).await.expect("Error waiting for response from Deoxys client");
+
+    let response_pathfinder = pathfinder.get_class_at(
+        BlockId::Tag(BlockTag::Latest), 
+        FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap()
+    ).await.expect("Error waiting for response from Pathfinder client");
+
+    assert_eq!(response_deoxys, response_pathfinder);
 }
