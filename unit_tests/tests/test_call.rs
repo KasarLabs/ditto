@@ -8,12 +8,12 @@ use starknet::macros::short_string;
 use starknet_core::{types::{FunctionCall, BlockTag, BlockId, FieldElement, StarknetError}, utils::get_selector_from_name};
 use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode};
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `name` to StarkGate ETH bridge contract
- * fail case: invalid block
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `name` to StarkGate ETH bridge contract
+/// fail case: invalid block
+///
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -37,12 +37,12 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `name` to StarkGate ETH bridge contract
- * fail case: invalid contract address
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `name` to StarkGate ETH bridge contract
+/// fail case: invalid contract address
+///
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -66,12 +66,12 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
     );
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `name` to StarkGate ETH bridge contract
- * fail case: invalid field element
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `name` to StarkGate ETH bridge contract
+/// fail case: invalid field element
+///
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_entry_point_selector(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -95,12 +95,12 @@ async fn fail_invalid_contract_entry_point_selector(clients: HashMap<String, Jso
     );
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `balanceOf` to StarkGate ETH bridge contract
- * fail case: missing call data. This is different from solely *invalid* call data, as we will see shortly
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `balanceOf` to StarkGate ETH bridge contract
+/// fail case: missing call data. This is different from solely *invalid* call data, as we will see shortly
+///
 #[rstest]
 #[tokio::test]
 async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -124,12 +124,12 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
     );
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `balanceOf` to StarkGate ETH bridge contract
- * fail case: invalid call data. This does not cause an error upon calling the contract but returns felt 0x0
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `balanceOf` to StarkGate ETH bridge contract
+/// fail case: invalid call data. This does not cause an error upon calling the contract but returns felt 0x0
+///
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -149,12 +149,12 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
     assert_eq!(response_deoxys, vec![FieldElement::ZERO, FieldElement::ZERO]);
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `name` to StarkGate ETH bridge contract
- * fail case: too many arguments in call data
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `name` to StarkGate ETH bridge contract
+/// fail case: too many arguments in call data
+///
 #[rstest]
 #[tokio::test]
 async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -180,12 +180,12 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `name` to StarkGate ETH bridge contract
- * success case: should return 'Ether'
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `name` to StarkGate ETH bridge contract
+/// success case: should return 'Ether'
+///
 #[rstest]
 #[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -216,12 +216,12 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `balanceOf` to StarkGate ETH bridge contract
- * success case: must return non-zero balance
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `balanceOf` to StarkGate ETH bridge contract
+/// success case: must return non-zero balance
+///
 #[rstest]
 #[tokio::test]
 async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -256,12 +256,12 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-/**
- * Unit test for `starknet_call`
- * 
- * purpose: function request `sort_tokens` to JediSwap exchange, with multiple arguments.
- * success case: must return array of 2 non-zero values.
- */
+///
+/// Unit test for `starknet_call`
+/// 
+/// purpose: function request `sort_tokens` to JediSwap exchange, with multiple arguments.
+/// success case: must return array of 2 non-zero values.
+///
 #[rstest]
 #[tokio::test]
 async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
