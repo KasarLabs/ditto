@@ -71,5 +71,13 @@ pub const CONTRACT_ACCOUNT: &str = "0x05e1eee30e79b4f592f444132526b2e2c7f505698e
  */
 pub const CONTRACT_ACCOUNT_PROXY: &str = "0x05d7f4d55795b56ceb4dd93febe17954c7cfd5e15d7a79cb0cec067a713ac159";
 
+///
+/// Random legacy account using Cairo v0
+/// 
+/// Details concerning this contract can be found on [StarkScan](https://starkscan.co/contract/0x07076931c19d0ef52b847f9412c90a2ef999ff028f1005d2d069343061762fb7)
+/// 
+pub const CONTRACT_LEGACY: &str = "0x07076931c19d0ef52b847f9412c90a2ef999ff028f1005d2d069343061762fb7";
+pub const BLOCK_LEGACY: u64 = 2891;
+
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
