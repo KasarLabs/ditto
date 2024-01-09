@@ -48,12 +48,28 @@ pub const STARKGATE_ETHER: &str = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7
 pub const CONTRACT_ERC721: &str = "0x07fa9a8eacb89fb6cd0c7fe557e71c42a4b181ba328a9a04958136e6469c4e00";
 
 /**
+ * Random ERC20 Starknet contract address.
+ * 
+ * Details concerning this contract can be found on StarkScan:
+ * https://starkscan.co/contract/0x04a5fdce70877b77f03aea8a29259176f88d5bea9d0ad8c0118f5316425e6ba0
+ */
+pub const CONTRACT_ERC20: &str = "0x04a5fdce70877b77f03aea8a29259176f88d5bea9d0ad8c0118f5316425e6ba0";
+
+/**
  * Random ACCOUNT Starknet contract address.
  * 
  * Details concerning this contract can be found on StarkScan:
  * https://starkscan.co/contract/0x05e1eee30e79b4f592f444132526b2e2c7f505698e888c659e5f5def5a458c1a
  */
 pub const CONTRACT_ACCOUNT: &str = "0x05e1eee30e79b4f592f444132526b2e2c7f505698e888c659e5f5def5a458c1a";
+
+/**
+ * Random PROXY ACCOUNT Starknet contract address.
+ * 
+ * Details concerning this contract can be found on StarkScan:
+ * https://starkscan.co/contract/0x05d7f4d55795b56ceb4dd93febe17954c7cfd5e15d7a79cb0cec067a713ac159
+ */
+pub const CONTRACT_ACCOUNT_PROXY: &str = "0x05d7f4d55795b56ceb4dd93febe17954c7cfd5e15d7a79cb0cec067a713ac159";
 
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
