@@ -76,7 +76,7 @@ pub const BLOCK_LEGACY: u64 = 2891;
 /// 
 /// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5)
 /// 
-pub const TRANSACTION_ACCEPTED: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5";
+pub const TRANSACTION_INVOKE: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5";
 
 ///
 /// Random reverted Starknet transaction
