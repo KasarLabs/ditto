@@ -72,32 +72,40 @@ pub const CONTRACT_LEGACY: &str = "0x07076931c19d0ef52b847f9412c90a2ef999ff028f1
 pub const BLOCK_LEGACY: u64 = 2891;
 
 ///
-/// Random Starknet INVOKE transaction accepted on L1
+/// INVOKE transaction accepted on L1, also transaction 1 at block 5000
 /// 
-/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5)
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0214840bad3099f95c40106097b8ef5fd16f06cb23efcdaec297398f77174597)
 /// 
-pub const TRANSACTION_INVOKE: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5";
+pub const TRANSACTION_INVOKE: &str = "0x0214840bad3099f95c40106097b8ef5fd16f06cb23efcdaec297398f77174597";
+pub const TRANSACTION_INVOKE_INDEX: u64 = 1;
+pub const TRANSACTION_INVOKE_BLOCK_NB: u64 = 50000;
 
 ///
-/// Random Starknet L1_HANDLER transaction accepted on L1
+/// L1_HANDLER transaction accepted on L1, also transaction 57 at block 50000
 /// 
-/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0618051a7342133153f23df4b6d3baa6f3a933e00956b3ee621c9af76ed2cef0)
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05ca6470c37e943b0ae172a11359f7a457054319e8ae8771af32a1f397c7c208)
 /// 
-pub const TRANSACTION_L1_HANDLER: &str = "0x0618051a7342133153f23df4b6d3baa6f3a933e00956b3ee621c9af76ed2cef0";
+pub const TRANSACTION_L1_HANDLER: &str = "0x05ca6470c37e943b0ae172a11359f7a457054319e8ae8771af32a1f397c7c208";
+pub const TRANSACTION_L1_HANDLER_INDEX: u64 = 57;
+pub const TRANSACTION_L1_HANDLER_BLOCK_NB: u64 = 50000;
 
 ///
-/// Random Starknet DECLARE transaction accepted on L1
+/// DECLARE transaction accepted on L1, also transaction 44 at block 49990
 /// 
 /// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229)
 /// 
 pub const TRANSACTION_DECLARE: &str = "0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229";
+pub const TRANSACTION_DECLARE_INDEX: u64 = 44;
+pub const TRANSACTION_DECLARE_BLOCK_NB: u64 = 49990;
 
 ///
-/// Random Starknet DEPLOY transaction accepted on L1
+/// DEPLOY_ACCOUNT transaction accepted on L1, also transaction 0 at block 5000
 /// 
-/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x056617d1e694083e27ecc1fcf46eb098cdeff26f223ae17612ebc746a796d9ad)
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0604e143591a6bff980f3141abdfc87f1ef3243785d251367cdaa7da5c337ba4)
 /// 
-pub const TRANSACTION_DEPLOY_ACCOUNT: &str = "0x056617d1e694083e27ecc1fcf46eb098cdeff26f223ae17612ebc746a796d9ad";
+pub const TRANSACTION_DEPLOY_ACCOUNT: &str = "0x0604e143591a6bff980f3141abdfc87f1ef3243785d251367cdaa7da5c337ba4";
+pub const TRANSACTION_DEPLOY_ACCOUNT_INDEX: u64 = 0;
+pub const TRANSACTION_DEPLOY_ACCOUNT_BLOCK_NB: u64 = 50000;
 
 ///
 /// Random reverted Starknet transaction

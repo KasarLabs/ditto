@@ -79,6 +79,30 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+///
+/// Unit test for `starknet_getTransactionByHash`
+/// 
+/// purpose: call getTransactionHash on DECLARE transaction.
+/// success case: retrieve correct DECLARE transaction.
+/// 
+#[rstest]
+#[tokio::test]
+async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.get_transaction_by_hash(
+        FieldElement::from_hex_be(TRANSACTION_DECLARE).unwrap()
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    let response_pathfinder = pathfinder.get_transaction_by_hash(
+        FieldElement::from_hex_be(TRANSACTION_DECLARE).unwrap()
+    ).await.expect("Error waiting for response from Pathfinder node");
+
+    assert_matches!(response_deoxys, Transaction::Declare(_));
+    assert_eq!(response_deoxys, response_pathfinder);
+}
+
 // TODO: add tests for DEPLOY transaction
 
 ///
