@@ -86,6 +86,20 @@ pub const TRANSACTION_INVOKE: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d
 pub const TRANSACTION_L1_HANDLER: &str = "0x0618051a7342133153f23df4b6d3baa6f3a933e00956b3ee621c9af76ed2cef0";
 
 ///
+/// Random Starknet DECLARE transaction accepted on L1
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229)
+/// 
+pub const TRANSACTION_DECLARE: &str = "0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229";
+
+///
+/// Random Starknet DEPLOY transaction accepted on L1
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x056617d1e694083e27ecc1fcf46eb098cdeff26f223ae17612ebc746a796d9ad)
+/// 
+pub const TRANSACTION_DEPLOY_ACCOUNT: &str = "0x056617d1e694083e27ecc1fcf46eb098cdeff26f223ae17612ebc746a796d9ad";
+
+///
 /// Random reverted Starknet transaction
 /// 
 /// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x016ed559467c50c12f225f348ca8895d54b91a499ad6f856cb6086e317c120ca)

@@ -60,3 +60,21 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
     assert_matches!(response_deoxys, Transaction::L1Handler(_));
     assert_eq!(response_deoxys, response_pathfinder);
 }
+
+#[rstest]
+#[tokio::test]
+async fn work_transaction_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.get_transaction_by_hash(
+        FieldElement::from_hex_be(TRANSACTION_DEPLOY_ACCOUNT).unwrap()
+    ).await.expect("Error waiting for response from Deoxys node");
+
+    let response_pathfinder = pathfinder.get_transaction_by_hash(
+        FieldElement::from_hex_be(TRANSACTION_DEPLOY_ACCOUNT).unwrap()
+    ).await.expect("Error waiting for response from Pathfinder node");
+
+    assert_matches!(response_deoxys, Transaction::DeployAccount(_));
+    assert_eq!(response_deoxys, response_pathfinder);
+}
