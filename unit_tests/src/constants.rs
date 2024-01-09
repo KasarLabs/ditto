@@ -73,3 +73,5 @@ pub const BLOCK_LEGACY: u64 = 2891;
 
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
+pub const CAIRO_1_ACCOUNT_CONTRACT_CLASS_HASH: &str = "";
+pub const TEST_CONTRACT_CLASS_HASH: &str = "";
