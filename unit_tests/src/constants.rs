@@ -71,6 +71,49 @@ pub const CONTRACT_ACCOUNT_PROXY: &str = "0x05d7f4d55795b56ceb4dd93febe17954c7cf
 pub const CONTRACT_LEGACY: &str = "0x07076931c19d0ef52b847f9412c90a2ef999ff028f1005d2d069343061762fb7";
 pub const BLOCK_LEGACY: u64 = 2891;
 
+///
+/// INVOKE transaction accepted on L1, also transaction 1 at block 5000
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0214840bad3099f95c40106097b8ef5fd16f06cb23efcdaec297398f77174597)
+/// 
+pub const TRANSACTION_INVOKE: &str = "0x0214840bad3099f95c40106097b8ef5fd16f06cb23efcdaec297398f77174597";
+pub const TRANSACTION_INVOKE_INDEX: u64 = 1;
+pub const TRANSACTION_INVOKE_BLOCK_NB: u64 = 50000;
+
+///
+/// L1_HANDLER transaction accepted on L1, also transaction 57 at block 50000
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05ca6470c37e943b0ae172a11359f7a457054319e8ae8771af32a1f397c7c208)
+/// 
+pub const TRANSACTION_L1_HANDLER: &str = "0x05ca6470c37e943b0ae172a11359f7a457054319e8ae8771af32a1f397c7c208";
+pub const TRANSACTION_L1_HANDLER_INDEX: u64 = 57;
+pub const TRANSACTION_L1_HANDLER_BLOCK_NB: u64 = 50000;
+
+///
+/// DECLARE transaction accepted on L1, also transaction 44 at block 49990
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229)
+/// 
+pub const TRANSACTION_DECLARE: &str = "0x056c0723ef6cde62f589bbf7c5c40897b6e3d9c13e960c5e7f28276d8e9c3229";
+pub const TRANSACTION_DECLARE_INDEX: u64 = 44;
+pub const TRANSACTION_DECLARE_BLOCK_NB: u64 = 49990;
+
+///
+/// DEPLOY_ACCOUNT transaction accepted on L1, also transaction 0 at block 5000
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0604e143591a6bff980f3141abdfc87f1ef3243785d251367cdaa7da5c337ba4)
+/// 
+pub const TRANSACTION_DEPLOY_ACCOUNT: &str = "0x0604e143591a6bff980f3141abdfc87f1ef3243785d251367cdaa7da5c337ba4";
+pub const TRANSACTION_DEPLOY_ACCOUNT_INDEX: u64 = 0;
+pub const TRANSACTION_DEPLOY_ACCOUNT_BLOCK_NB: u64 = 50000;
+
+///
+/// Random reverted Starknet transaction
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x016ed559467c50c12f225f348ca8895d54b91a499ad6f856cb6086e317c120ca)
+/// 
+pub const TRANSACTION_REVERTED: &str = "0x016ed559467c50c12f225f348ca8895d54b91a499ad6f856cb6086e317c120ca";
+
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
 pub const CAIRO_1_ACCOUNT_CONTRACT_CLASS_HASH: &str = "";
