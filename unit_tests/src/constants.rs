@@ -72,11 +72,18 @@ pub const CONTRACT_LEGACY: &str = "0x07076931c19d0ef52b847f9412c90a2ef999ff028f1
 pub const BLOCK_LEGACY: u64 = 2891;
 
 ///
-/// Random Starknet transaction accepted on L1
+/// Random Starknet INVOKE transaction accepted on L1
 /// 
 /// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5)
 /// 
 pub const TRANSACTION_INVOKE: &str = "0x05d087d23ffb5b63f7a19ee6dfe0227d04fbcb0d0ccbfec5ec52c482429ab3f5";
+
+///
+/// Random Starknet L1_HANDLER transaction accepted on L1
+/// 
+/// Details concerning this transaction can be found on [StarkScan](https://starkscan.co/tx/0x0618051a7342133153f23df4b6d3baa6f3a933e00956b3ee621c9af76ed2cef0)
+/// 
+pub const TRANSACTION_L1_HANDLER: &str = "0x0618051a7342133153f23df4b6d3baa6f3a933e00956b3ee621c9af76ed2cef0";
 
 ///
 /// Random reverted Starknet transaction
