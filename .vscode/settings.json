@@ -11,6 +11,8 @@
         "Deoxys",
         "rstest",
         "serde",
-        "starknet"
+        "STARKGATE",
+        "starknet",
+        "Trantorian"
     ]
 }

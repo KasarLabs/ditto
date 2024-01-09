@@ -23,6 +23,12 @@ use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, Provid
  * @Trantorian1 09-01-2024
  */
 
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on invalid block.
+ * fail case: invalid block.
+ */
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -42,6 +48,12 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on invalid contract.
+ * fail case: invalid contract.
+ */
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -61,6 +73,15 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
     );
 }
 
+// INFO: I guess non-account contracts don't need a nonce since they are only sent once?
+// I'm not sure about this one.
+
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on ERC721 contract.
+ * success case: must return a nonce of 0.
+ */
 #[rstest]
 #[tokio::test]
 async fn test_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -74,6 +95,12 @@ async fn test_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
     assert_eq!(response_deoxys, FieldElement::ZERO);
 }
 
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on ERC20 contract.
+ * success case: must return a nonce of 0.
+ */
 #[rstest]
 #[tokio::test]
 async fn test_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -87,6 +114,12 @@ async fn test_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTranspor
     assert_eq!(response_deoxys, FieldElement::ZERO);
 }
 
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on account contract.
+ * success case: must return a non-zero nonce.
+ */
 #[rstest]
 #[tokio::test]
 async fn test_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -103,9 +136,16 @@ async fn test_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
         FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap()
     ).await.expect("Error waiting for response from Pathfinder node");
 
+    assert_ne!(response_deoxys, FieldElement::ZERO);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+/**
+ * Unit test for `starknet_getNonce`
+ * 
+ * purpose: call getNonce on account proxy contract.
+ * success case: must return a non-zero nonce.
+ */
 #[rstest]
 #[tokio::test]
 async fn test_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -122,5 +162,6 @@ async fn test_account_proxy_contract(clients: HashMap<String, JsonRpcClient<Http
         FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY).unwrap()
     ).await.expect("Error waiting for response from Pathfinder node");
 
+    assert_ne!(response_deoxys, FieldElement::ZERO);
     assert_eq!(response_deoxys, response_pathfinder);
 }
