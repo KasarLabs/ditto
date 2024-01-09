@@ -32,6 +32,30 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+///
+/// Unit test for `starknet_getTransactionByBlockIdAndIndex`
+/// 
+/// purpose: call on valid block with out-of-range index.
+/// fail case: index out of block range (block 5000 only has 389 transactions)
+/// 
+#[rstest]
+#[tokio::test]
+async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+
+    let response_deoxys = deoxys.get_transaction_by_block_id_and_index(
+        BlockId::Number(5000),
+        389
+    ).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Known(StarknetError::InvalidTransactionIndex)
+        }))
+    );
+}
 
 ///
 /// Unit test for `starknet_getTransactionByBlockIdAndIndex`
