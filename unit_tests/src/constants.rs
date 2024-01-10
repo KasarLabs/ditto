@@ -127,3 +127,6 @@ pub const TEST_CONTRACT_CLASS_HASH: &str = "";
 pub const ETHEREUM_ADDRESS: &str = "";
 pub const INVALID_ETHEREUM_ADDRESS: &str = "";
 pub const SELECTOR_NAME: &str = "";
+
+pub const ERR_DEOXYS: &str = "Error waiting for response from Deoxys client";
+pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder client";
