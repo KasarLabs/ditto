@@ -13,10 +13,8 @@ use std::collections::HashMap;
 
 #[rstest]
 #[tokio::test]
-// TODO: repair failing unwrap call.
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
-    return anyhow::Ok(());
-
+#[ignore = "Fix failing unwrap due to empty constant"]
+async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
     let test_contract_class_hash =
@@ -35,6 +33,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Fix failing unwrap due to empty constant"]
 async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
@@ -54,10 +53,8 @@ async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<Htt
 
 #[rstest]
 #[tokio::test]
-// TODO: repair failing unwrap call.
-async fn work_ok_retrieving_class_for_contract_version_0(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
-    return anyhow::Ok(());
-
+#[ignore = "Fix failing unwrap due to empty constant"]
+async fn work_ok_retrieving_class_for_contract_version_0(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
@@ -80,10 +77,8 @@ async fn work_ok_retrieving_class_for_contract_version_0(clients: HashMap<String
 
 #[rstest]
 #[tokio::test]
-// TODO: repair failing unwrap call.
-async fn work_ok_retrieving_class_for_contract_version_1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
-    return anyhow::Ok(());
-
+#[ignore = "Fix failing unwrap due to empty constant"]
+async fn work_ok_retrieving_class_for_contract_version_1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 

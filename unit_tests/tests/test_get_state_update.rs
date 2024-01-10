@@ -25,9 +25,8 @@ use std::collections::HashMap;
 
 #[rstest]
 #[tokio::test]
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
-    return anyhow::Ok(());
-    
+#[ignore = "Need to fix unwrap on error due to empty constants"]
+async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
     assert_matches!(
@@ -40,9 +39,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
-async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> anyhow::Result<()> {
-    return anyhow::Ok(());
-
+#[ignore = "Need to fix unwrap on error due to empty constants"]
+async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 

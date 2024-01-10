@@ -84,7 +84,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 ///
 #[rstest]
 #[tokio::test]
-async fn test_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
     let response_deoxys = deoxys.get_nonce(
@@ -103,7 +103,7 @@ async fn test_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
 ///
 #[rstest]
 #[tokio::test]
-async fn test_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
     let response_deoxys = deoxys.get_nonce(
@@ -122,7 +122,7 @@ async fn test_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTranspor
 ///
 #[rstest]
 #[tokio::test]
-async fn test_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
@@ -148,7 +148,7 @@ async fn test_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
 ///
 #[rstest]
 #[tokio::test]
-async fn test_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
