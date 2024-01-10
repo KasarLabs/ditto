@@ -1,9 +1,6 @@
 [workspace]
 members = [
-    "rpc_test",
-    "rpc_test_attribute",
     "unit_tests",
 ]
 default-members = ["unit_tests"]
 resolver = "2"
-
