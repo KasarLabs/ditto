@@ -7,6 +7,12 @@ use starknet::providers::{
 };
 use std::collections::HashMap;
 
+///
+/// Unit test for `starknet_chainId`
+/// 
+/// purpose: get currently configured Starknet chain id
+/// success case: retrieve correct chain id
+/// 
 #[rstest]
 #[tokio::test]
 async fn chain_id(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

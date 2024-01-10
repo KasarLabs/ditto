@@ -9,6 +9,12 @@ use std::collections::HashMap;
 use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode};
 use starknet_core::types::{FieldElement, BlockId, BlockTag, StarknetError};
 
+///
+/// Unit test for `starknet_getStorageAt`
+/// 
+/// purpose: call getStorageAt on invalid block.
+/// fail case: invalid block.
+/// 
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -29,6 +35,12 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     )
 }
 
+///
+/// Unit test for `starknet_getStorageAt`
+/// 
+/// purpose: call getStorageAt on non-existing contract.
+/// fail case: non-existing contract.
+/// 
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -49,6 +61,12 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
     );
 }
 
+///
+/// Unit test for `starknet_getStorageAt`
+/// 
+/// purpose: call getStorageAt with invalid storage key.
+/// fail case: invalid storage key.
+/// 
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -56,19 +74,26 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
-        FieldElement::from_hex_be("0x0").unwrap(),
+        FieldElement::ZERO,
         BlockId::Tag(BlockTag::Latest)
     ).await.expect("Error waiting for response from Deoxys client");
 
     assert_eq!(response_deoxys, FieldElement::ZERO);
 }
 
+///
+/// Unit test for `starknet_getStorageAt`
+/// 
+/// purpose: call getStorageAt with valid arguments.
+/// success case: retrieve valid storage.
+/// 
 #[rstest]
 #[tokio::test]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    // TODO: get contract key from field name
     let response_deoxys = deoxys.get_storage_at(
         FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
         FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),

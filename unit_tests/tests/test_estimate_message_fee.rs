@@ -42,6 +42,7 @@ pub fn get_message_from_l1(
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
@@ -65,6 +66,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
@@ -89,6 +91,7 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
@@ -114,6 +117,7 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn estimate_message_fee_works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
