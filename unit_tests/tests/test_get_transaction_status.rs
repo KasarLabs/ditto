@@ -74,6 +74,7 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
         BlockId::Tag(BlockTag::Latest)
     ).await.expect(ERR_DEOXYS);
 
+    // last transaction of latest block
     let transaction = deoxys.get_transaction_by_block_id_and_index(
         BlockId::Tag(BlockTag::Latest), 
         transaction_count - 1,
@@ -91,6 +92,33 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
     assert_matches!(
         response_deoxys,
         TransactionStatus::AcceptedOnL2(_)
+    );
+    assert_eq!(response_deoxys, response_pathfinder);
+}
+
+///
+/// Unit test for `starknet_getTransactionStatus`
+/// 
+/// purpose: call getTransactionStatus on reverted transaction.
+/// success case: transaction is marked as reverted on L1.
+/// 
+#[rstest]
+#[tokio::test]
+async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+
+    let response_deoxys = deoxys.get_transaction_status(
+        FieldElement::from_hex_be(TRANSACTION_REVERTED).unwrap()
+    ).await.expect(ERR_DEOXYS);
+
+    let response_pathfinder = pathfinder.get_transaction_status(
+        FieldElement::from_hex_be(TRANSACTION_REVERTED).unwrap()
+    ).await.expect(ERR_PATHFINDER);
+
+    assert_matches!(
+        response_deoxys,
+        TransactionStatus::AcceptedOnL1(TransactionExecutionStatus::Reverted)
     );
     assert_eq!(response_deoxys, response_pathfinder);
 }
