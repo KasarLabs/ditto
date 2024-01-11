@@ -32,7 +32,6 @@ impl TestConfig {
         Ok(config)
     }
 }
-
 pub trait TransactionFactory {
     fn build(nonce: Option<FieldElement>) -> BroadcastedTransaction;
 }
