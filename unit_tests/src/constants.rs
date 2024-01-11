@@ -147,3 +147,6 @@ pub const SELECTOR_NAME: &str = "";
 ///
 pub const SIGNER_PRIVATE: &str = "";
 pub const ARGENT_CONTRACT_ADDRESS: &str = "";
+
+pub const ERR_DEOXYS: &str = "Error waiting for response from Deoxys client";
+pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder client";
