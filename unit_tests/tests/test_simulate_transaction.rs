@@ -3,9 +3,7 @@
 mod common;
 use common::*;
 
-use starknet::signers::{LocalWallet, SigningKey};
-use starknet_accounts::{Account, Call, ConnectedAccount, Execution, SingleOwnerAccount};
-use starknet_core::chain_id;
+use starknet_accounts::ConnectedAccount;
 use starknet_core::types::{
     BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement,
     SimulationFlag, StarknetError,
@@ -18,7 +16,8 @@ use starknet_providers::{
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 use unit_tests::{
-    BadTransactionFactory, MaxFeeTransactionFactory, OkTransactionFactory, TransactionFactory,
+    build_single_owner_account, generate_call, BadTransactionFactory, MaxFeeTransactionFactory,
+    OkTransactionFactory, PrepareInvoke, TransactionFactory,
 };
 
 /// Test for the `simulate transaction` Deoxys RPC Call
@@ -37,84 +36,6 @@ use unit_tests::{
 // # Errors
 // * `block_not_found` - If the block is not found or invalid
 // * `transaction_execution_error` - If one of the transactions failed to execute
-
-type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
-
-pub fn build_single_owner_account<'a>(
-    rpc: &'a JsonRpcClient<HttpTransport>,
-    private_key: &str,
-    account_address: &str,
-    is_legacy: bool,
-) -> RpcAccount<'a> {
-    let signer = LocalWallet::from(SigningKey::from_secret_scalar(
-        FieldElement::from_hex_be(private_key).unwrap(),
-    ));
-    let account_address =
-        FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
-    let execution_encoding = if is_legacy {
-        starknet_accounts::ExecutionEncoding::Legacy
-    } else {
-        starknet_accounts::ExecutionEncoding::New
-    };
-    SingleOwnerAccount::new(
-        rpc,
-        signer,
-        account_address,
-        chain_id::TESTNET,
-        execution_encoding,
-    )
-}
-trait PrepareInvoke {
-    async fn prepare_invoke(
-        &self,
-        calls: Vec<Call>,
-        nonce: FieldElement,
-        max_fee: FieldElement,
-        query_only: bool,
-    ) -> BroadcastedInvokeTransaction;
-}
-
-impl PrepareInvoke for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalWallet> {
-    async fn prepare_invoke(
-        &self,
-        calls: Vec<Call>,
-        nonce: FieldElement,
-        max_fee: FieldElement,
-        query_only: bool,
-    ) -> BroadcastedInvokeTransaction
-    where
-        Self: Account + ConnectedAccount,
-    {
-        let prepared_execution = Execution::new(calls, self)
-            .nonce(nonce)
-            .max_fee(max_fee)
-            .prepared()
-            .unwrap();
-        prepared_execution
-            .get_invoke_request(query_only)
-            .await
-            .unwrap()
-    }
-}
-
-pub fn generate_call(
-    contract_address: &str,
-    function_name: &str,
-    calldata_values: Vec<u8>,
-) -> Call {
-    let to = FieldElement::from_hex_be(contract_address).unwrap();
-    let selector = get_selector_from_name(function_name).unwrap();
-    let calldata = calldata_values
-        .into_iter()
-        .map(FieldElement::from)
-        .collect();
-
-    Call {
-        to,
-        selector,
-        calldata,
-    }
-}
 
 #[rstest]
 #[tokio::test]
