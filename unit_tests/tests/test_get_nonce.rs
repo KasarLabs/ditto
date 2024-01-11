@@ -5,9 +5,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 
 use common::*;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 
 ///
 /// Test for RPC call starknet_getNonce.
@@ -71,7 +69,9 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::ContractNotFound))
+        Some(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 

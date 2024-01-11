@@ -7,9 +7,7 @@ use anyhow::anyhow;
 use common::*;
 use starknet::macros::{felt_hex, selector};
 use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement, StarknetError};
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use tokio::task::JoinSet;
 
 ///
@@ -47,7 +45,9 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::UnexpectedError(_))) //previous error : Unknown(-32602)
+        Some(ProviderError::StarknetError(
+            StarknetError::UnexpectedError(_)
+        )) //previous error : Unknown(-32602)
     )
 }
 
@@ -97,7 +97,9 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
     // for some reason a block range of 0 results in an internal error
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::UnexpectedError(_))) //previous error : Unknown(-32603)
+        Some(ProviderError::StarknetError(
+            StarknetError::UnexpectedError(_)
+        )) //previous error : Unknown(-32603)
     )
 }
 

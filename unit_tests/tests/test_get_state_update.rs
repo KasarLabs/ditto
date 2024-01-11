@@ -4,9 +4,7 @@ mod common;
 use common::*;
 
 use starknet_core::types::{BlockId, BlockTag, StarknetError};
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 
@@ -29,9 +27,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[DEOXYS];
 
     assert_matches!(
-        deoxys
-        .get_state_update(BlockId::Number(0))
-        .await,
+        deoxys.get_state_update(BlockId::Number(0)).await,
         Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }

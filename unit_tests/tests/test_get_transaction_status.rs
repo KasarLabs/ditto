@@ -7,9 +7,7 @@ use common::*;
 use starknet_core::types::{
     BlockId, BlockTag, FieldElement, StarknetError, TransactionExecutionStatus, TransactionStatus,
 };
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 
 ///
 /// Unit test for `starknet_getTransactionStatus`
@@ -29,7 +27,9 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::TransactionHashNotFound))
+        Some(ProviderError::StarknetError(
+            StarknetError::TransactionHashNotFound
+        ))
     );
 }
 

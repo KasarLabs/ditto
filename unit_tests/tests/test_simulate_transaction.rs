@@ -9,9 +9,7 @@ use starknet_core::types::{
     SimulationFlag, StarknetError,
 };
 use starknet_core::utils::get_selector_from_name;
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 use unit_tests::{
@@ -44,7 +42,13 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
     assert_matches!(
-        deoxys.simulate_transactions(BlockId::Hash(FieldElement::ZERO),&[ok_invoke_transaction], []).await,
+        deoxys
+            .simulate_transactions(
+                BlockId::Hash(FieldElement::ZERO),
+                &[ok_invoke_transaction],
+                []
+            )
+            .await,
         Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
@@ -57,8 +61,12 @@ async fn fail_max_fee_too_big(clients: HashMap<String, JsonRpcClient<HttpTranspo
     let max_fee_transaction = MaxFeeTransactionFactory::build(Some(FieldElement::ZERO));
 
     assert_matches!(
-        deoxys.simulate_transactions(BlockId::Tag(BlockTag::Latest), &[max_fee_transaction], []).await,
-        Err(ProviderError::StarknetError(StarknetError::UnexpectedError(_))) //TODO : compare this code error to pathfinder to be sure
+        deoxys
+            .simulate_transactions(BlockId::Tag(BlockTag::Latest), &[max_fee_transaction], [])
+            .await,
+        Err(ProviderError::StarknetError(
+            StarknetError::UnexpectedError(_)
+        )) //TODO : compare this code error to pathfinder to be sure
     );
 }
 
@@ -73,11 +81,16 @@ async fn fail_if_one_txn_cannot_be_executed(
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ONE));
 
     assert_matches!(
-        deoxys.simulate_transactions(BlockId::Tag(BlockTag::Latest),&[
-            bad_invoke_transaction,
-            ok_invoke_transaction,
-        ],[] ).await,
-        Err(ProviderError::StarknetError(StarknetError::ContractError(_)))
+        deoxys
+            .simulate_transactions(
+                BlockId::Tag(BlockTag::Latest),
+                &[bad_invoke_transaction, ok_invoke_transaction,],
+                []
+            )
+            .await,
+        Err(ProviderError::StarknetError(StarknetError::ContractError(
+            _
+        )))
     );
 }
 

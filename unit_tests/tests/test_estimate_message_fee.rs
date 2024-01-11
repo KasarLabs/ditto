@@ -85,7 +85,10 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
     assert_matches!(
         deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetError::ContractNotFound)))
+        Err(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
+    )
 }
 
 #[rstest]
@@ -110,7 +113,10 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
         .await;
     assert_matches!(
         deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetError::ContractError(_))))
+        Err(ProviderError::StarknetError(StarknetError::ContractError(
+            _
+        )))
+    )
 }
 
 #[rstest]

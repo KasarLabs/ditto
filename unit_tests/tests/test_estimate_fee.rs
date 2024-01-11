@@ -21,8 +21,15 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
     assert_matches!(
-        deoxys.estimate_fee(&vec![ok_invoke_transaction], BlockId::Hash(FieldElement::ZERO)).await,
-        Err(ProviderError::StarknetError(StarknetError::ContractNotFound))
+        deoxys
+            .estimate_fee(
+                &vec![ok_invoke_transaction],
+                BlockId::Hash(FieldElement::ZERO)
+            )
+            .await,
+        Err(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 

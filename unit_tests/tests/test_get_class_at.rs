@@ -8,9 +8,7 @@ use flate2::read::GzDecoder;
 use starknet_core::types::{
     contract::legacy::LegacyProgram, BlockId, BlockTag, ContractClass, FieldElement, StarknetError,
 };
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 
 ///
 /// unit test for `starknet_get_class_at`
@@ -55,7 +53,9 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::ContractNotFound))
+        Some(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 

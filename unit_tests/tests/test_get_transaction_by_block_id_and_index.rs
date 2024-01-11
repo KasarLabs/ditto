@@ -5,9 +5,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 
 use common::*;
 use starknet_core::types::{BlockId, FieldElement, StarknetError};
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 
 ///
 /// Unit test for `starknet_getTransactionByBlockIdAndIndex`
@@ -49,7 +47,9 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::InvalidTransactionIndex))
+        Some(ProviderError::StarknetError(
+            StarknetError::InvalidTransactionIndex
+        ))
     );
 }
 
