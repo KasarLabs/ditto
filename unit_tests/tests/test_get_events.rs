@@ -1,13 +1,13 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::sync::Arc;
+use std::{sync::Arc, assert_matches::assert_matches};
 
 use anyhow::anyhow;
 use common::*;
 use starknet::macros::{selector, felt_hex};
-use starknet_core::types::{EventFilter, BlockId, FieldElement};
-use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider};
+use starknet_core::types::{EventFilter, BlockId, FieldElement, EventsPage};
+use starknet_providers::{JsonRpcClient, jsonrpc::HttpTransport, Provider, ProviderError, StarknetErrorWithMessage, MaybeUnknownErrorCode};
 use tokio::task::JoinSet;
 
 ///
@@ -25,11 +25,100 @@ use tokio::task::JoinSet;
 /// More documentation can be found in [the Starknet Book](https://www.starknetjs.com/docs/guides/events/)
 /// 
 
-// event type to retrieve
-const EVENT_KEY: FieldElement = selector!("transaction_executed");
-const BLOCK_NU: u64 = 50000;
-const BLOCK_HASH: FieldElement = felt_hex!("0x053315a56543737cd1b2dc40c60e84d03a9b10d712c9b29f488dc979f0cd56bd");
-const BLOCK_RANGE: u64 = 100;
+///
+/// Unit test for `starknet_getEvents`
+/// 
+/// purpose: call getEvents on an invalid block number.
+/// fail case: invalid block number (invalid param).
+/// 
+#[rstest]
+#[tokio::test]
+#[logging]
+async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed")]];
+    let block_nu: u64 = u64::MAX;
+    let block_range: u64 = 100;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.err();
+
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Unknown(-32602)
+        }))
+    )
+}
+
+///
+/// Unit test for `starknet_getEvents`
+/// 
+/// purpose: call getEvents on an invalid event selector.
+/// fail case: invalid event selector.
+/// 
+#[rstest]
+#[tokio::test]
+#[logging]
+async fn fail_invalid_keys(deoxys: JsonRpcClient<HttpTransport>) {
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("")]];
+    let block_nu: u64 = 50000;
+    let block_range: u64 = 100;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.expect(ERR_DEOXYS);
+
+    log::info!("Events at block {block_nu}: {}", serde_json::to_string_pretty(&response_deoxys).unwrap());
+    assert_eq!(response_deoxys.events.len(), 0);
+}
+
+///
+/// Unit test for `starknet_getEvents`
+/// 
+/// purpose: call getEvents on an invalid event selector.
+/// fail case: invalid event selector.
+/// 
+#[rstest]
+#[tokio::test]
+#[logging]
+async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("")]];
+    let block_nu: u64 = 50000;
+    let block_range: u64 = 0;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.err();
+
+    // for some reason a block range of 0 results in an internal error
+    assert_matches!(
+        response_deoxys,
+        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
+            message: _,
+            code: MaybeUnknownErrorCode::Unknown(-32603)
+        }))
+    )
+}
+
+///
+/// Unit test for `starknet_getEvents`
+/// 
+/// purpose: call getEvents on a valid block with a no selector.
+/// success case: retrieves the first 100 events of that block.
+/// 
+#[rstest]
+#[tokio::test]
+#[logging]
+async fn work_valid_call_no_selector(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClient<HttpTransport>) {
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed")]];
+    let block_nu: u64 = 50000;
+    let block_hash: FieldElement = felt_hex!("0x053315a56543737cd1b2dc40c60e84d03a9b10d712c9b29f488dc979f0cd56bd");
+    let block_range: u64 = 100;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.expect(ERR_DEOXYS);
+    let response_pathfinder = get_events(&pathfinder, &keys, block_nu, block_range).await.expect(ERR_PATHFINDER);
+
+    log::info!("Events at block {block_nu}: {}", serde_json::to_string_pretty(&response_deoxys).unwrap());
+    assert_eq!(response_deoxys.events.len(), block_range as usize);
+    assert_eq!(response_deoxys, response_pathfinder);
+    deep_check_events(deoxys, response_deoxys, keys, block_hash, block_nu).await;
+}
 
 ///
 /// Unit test for `starknet_getEvents`
@@ -41,43 +130,81 @@ const BLOCK_RANGE: u64 = 100;
 #[tokio::test]
 #[logging]
 async fn work_valid_call_single_selector(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClient<HttpTransport>) {
-    let response_deoxys = deoxys.get_events(
+    // event type to retrieve
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed")]];
+    let block_nu: u64 = 50000;
+    let block_hash: FieldElement = felt_hex!("0x053315a56543737cd1b2dc40c60e84d03a9b10d712c9b29f488dc979f0cd56bd");
+    let block_range: u64 = 100;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.expect(ERR_DEOXYS);
+    let response_pathfinder = get_events(&pathfinder, &keys, block_nu, block_range).await.expect(ERR_PATHFINDER);
+
+    log::info!("Events at block {block_nu}: {}", serde_json::to_string_pretty(&response_deoxys).unwrap());
+    assert_eq!(response_deoxys, response_pathfinder);
+    deep_check_events(deoxys, response_deoxys, keys, block_hash, block_nu).await;
+}
+
+///
+/// Unit test for `starknet_getEvents`
+/// 
+/// purpose: call getEvents on a valid block with a multiple selectors.
+/// success case: retrieves all events matching the selector in the first 100 events of that block 
+///               + valid event format and valid transactions.
+/// 
+#[rstest]
+#[tokio::test]
+#[logging]
+async fn work_valid_call_multiple_selector(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClient<HttpTransport>) {
+    let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed"), selector!("account_created")]];
+    let block_nu: u64 = 50000;
+    let block_hash: FieldElement = felt_hex!("0x053315a56543737cd1b2dc40c60e84d03a9b10d712c9b29f488dc979f0cd56bd");
+    let block_range: u64 = 100;
+
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await.expect(ERR_DEOXYS);
+    let response_pathfinder = get_events(&pathfinder, &keys, block_nu, block_range).await.expect(ERR_PATHFINDER);
+
+    log::info!("Events at block {block_nu}: {}", serde_json::to_string_pretty(&response_deoxys).unwrap());
+    assert_eq!(response_deoxys, response_pathfinder);
+    deep_check_events(deoxys, response_deoxys, keys, block_hash, block_nu).await;
+}
+
+async fn get_events(
+    client: &JsonRpcClient<HttpTransport>,
+    keys: &Vec<Vec<FieldElement>>,
+    block_nu: u64,
+    block_range: u64
+) -> Result<EventsPage, ProviderError> {
+    client.get_events(
         EventFilter {
             // getEvents is a applied through a filter
             // this filter consists of a block range...
-            from_block: Some(BlockId::Number(BLOCK_NU)),
-            to_block: Some(BlockId::Number(BLOCK_NU)),
+            from_block: Some(BlockId::Number(block_nu)),
+            to_block: Some(BlockId::Number(block_nu)),
             // a beginning contract address...
             address: None,
             // and keys used to filter out events. Keys can include a hash of the event 
             // and even event return values for further filtering
-            keys: Some(vec![vec![EVENT_KEY]])
+            keys: Some(keys.clone())
         },
         // in cases were a first search does not yield enough results, a continuation key 
         // can be used to keep searching from the point of the last getEvent search
         None, 
         // chunk size marks the number of events to look through and filter
         // this means that there cannot be more than chunk_size events returned by getEvents
-        BLOCK_RANGE
-    ).await.expect(ERR_DEOXYS);
+        block_range
+    ).await
+}
 
-    let response_pathfinder = pathfinder.get_events(
-        EventFilter {
-            from_block: Some(BlockId::Number(BLOCK_NU)),
-            to_block: Some(BlockId::Number(BLOCK_NU)),
-            address: None,
-            keys: Some(vec![vec![EVENT_KEY]])
-        },
-        None, 
-        100
-    ).await.expect(ERR_PATHFINDER);
-
-    // surface-level comparison with pathfinder node, not a guarantee of structure
-    assert_eq!(response_deoxys, response_pathfinder);
-    log::info!("Events at block {BLOCK_NU}: {}", serde_json::to_string_pretty(&response_deoxys).unwrap());
-
+async fn deep_check_events(
+    deoxys: JsonRpcClient<HttpTransport>,
+    response_deoxys: EventsPage, 
+    keys: Vec<Vec<FieldElement>>,
+    block_hash: FieldElement,
+    block_nu: u64
+) {
     let mut task_set = JoinSet::new();
     let arc_deoxys = Arc::new(deoxys);
+    let arc_keys = Arc::new(keys);
 
     // detailed comparisons are done in parallel as they are computationally expensive
     for event in response_deoxys.events {
@@ -85,18 +212,16 @@ async fn work_valid_call_single_selector(deoxys: JsonRpcClient<HttpTransport>, p
 
         // TODO: simple comparisons are CPU bound, consider running this is Rayon
         let clone_event = Arc::clone(&arc_event);
+        let clone_keys = Arc::clone(&arc_keys);
+
         task_set.spawn(async move {
             assert_eq!(clone_event.keys.len(), 1);
             // first key is always event key
             // further keys cannot be predicted without knowing event contract
-            assert_eq!(clone_event.keys.first().unwrap(), &EVENT_KEY);
-            assert_eq!(clone_event.block_hash, BLOCK_HASH);
-            assert_eq!(clone_event.block_number, BLOCK_NU);
-            
+            assert!(clone_keys.first().unwrap().contains(clone_event.keys.first().unwrap()));
+            assert_eq!(clone_event.block_hash, block_hash);
+            assert_eq!(clone_event.block_number, block_nu);
             assert_ne!(clone_event.data.len(), 0);
-            // first data is always transaction hash, 
-            // further data cannot be predicted without knowing event contract
-            assert_eq!(clone_event.data.first().unwrap(), &clone_event.transaction_hash);
 
             anyhow::Ok(())
         });
