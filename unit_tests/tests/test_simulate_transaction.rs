@@ -22,10 +22,10 @@ use unit_tests::{
 };
 
 /// Test for the `simulate transaction` Deoxys RPC Call
-/// Simulate a given sequence of transactions on the requested state, and generate the execution traces. 
+/// Simulate a given sequence of transactions on the requested state, and generate the execution traces.
 /// Note that some of the transactions may revert, in which case no error is thrown, but revert details can be seen on the returned trace object.
 /// Note that some of the transactions may revert, this will be reflected by the revert_error property in the trace.
-/// 
+///
 /// # Arguments
 // * `transactions` - A sequence of transactions to simulate, running each transaction on the state resulting from applying all the previous ones
 // * `block_id` - The hash of the requested block, or number (height) of the requested block, or a block tag,
@@ -37,8 +37,6 @@ use unit_tests::{
 // # Errors
 // * `block_not_found` - If the block is not found or invalid
 // * `transaction_execution_error` - If one of the transactions failed to execute
-
-
 
 type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
 
