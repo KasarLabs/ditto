@@ -10,8 +10,7 @@ use starknet_core::types::{
 };
 use starknet_core::utils::get_selector_from_name;
 use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, MaybeUnknownErrorCode, Provider, ProviderError,
-    StarknetErrorWithMessage,
+    jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError,
 };
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
@@ -46,7 +45,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     assert_matches!(
         deoxys.simulate_transactions(BlockId::Hash(FieldElement::ZERO),&[ok_invoke_transaction], []).await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::BlockNotFound
+        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
 
@@ -59,7 +58,7 @@ async fn fail_max_fee_too_big(clients: HashMap<String, JsonRpcClient<HttpTranspo
 
     assert_matches!(
         deoxys.simulate_transactions(BlockId::Tag(BlockTag::Latest), &[max_fee_transaction], []).await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Unknown(500), message })) if message == "Internal server error"
+        Err(ProviderError::StarknetError(StarknetError::UnexpectedError(_))) //TODO : compare this code error to pathfinder to be sure
     );
 }
 
@@ -78,7 +77,7 @@ async fn fail_if_one_txn_cannot_be_executed(
             bad_invoke_transaction,
             ok_invoke_transaction,
         ],[] ).await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::ContractError
+        Err(ProviderError::StarknetError(StarknetError::ContractError(_)))
     );
 }
 
