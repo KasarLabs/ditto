@@ -1,7 +1,7 @@
 [workspace]
-members = [
+members = [ "macros",
+    "macros",
     "unit_tests",
 ]
 default-members = ["unit_tests"]
 resolver = "2"
-
