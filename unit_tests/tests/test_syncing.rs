@@ -12,10 +12,10 @@ use std::collections::HashMap;
 
 ///
 /// Unit test for `starknet_syncing`
-/// 
+///
 /// purpose: returns starknet sync status
 /// success case: sync status matches between providers (NOT DETERMINISTIC)
-/// 
+///
 #[rstest]
 #[tokio::test]
 async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
