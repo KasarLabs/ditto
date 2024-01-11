@@ -129,12 +129,13 @@ async fn work_contract_v0(
 /// purpose: gets Cairo v1 contract and extracts it's data.
 /// success case: should retrieve contract correctly.
 ///
+#[require(block_min = 3000)]
 #[rstest]
 #[tokio::test]
-async fn work_contract_v1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-
+async fn work_contract_v1(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
     let response_deoxys = deoxys
         .get_class_at(
             BlockId::Tag(BlockTag::Latest),
