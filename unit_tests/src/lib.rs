@@ -1,6 +1,9 @@
 #![feature(assert_matches)]
 
+use std::{fs::File, io::Read};
+
 use constants::*;
+use serde::Deserialize;
 use starknet_core::{
     types::{BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement},
     utils::get_selector_from_name,
@@ -9,11 +12,6 @@ use starknet_core::{
 pub mod constants;
 pub mod fixtures;
 pub mod macros;
-
-use anyhow::Context;
-use serde::Deserialize;
-use serde_json::from_str;
-use std::{fs::File, io::Read};
 
 #[derive(PartialEq, Debug, Deserialize)]
 pub struct TestConfig {
@@ -28,8 +26,8 @@ impl TestConfig {
 
         file.read_to_string(&mut content)?;
 
-        let config: TestConfig = from_str(&content)
-            .with_context(|| format!("Could not deserialize test at {path} into Config"))?;
+        let config: TestConfig = serde_json::from_str(&content)
+            .expect("Could not deserialize test at {path} into Config");
 
         Ok(config)
     }
