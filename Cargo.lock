@@ -2556,6 +2556,7 @@ dependencies = [
  "serde",
  "serde_json",
  "starknet",
+ "starknet-accounts",
  "starknet-core",
  "starknet-providers",
  "tokio",

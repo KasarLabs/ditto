@@ -141,3 +141,9 @@ pub const TEST_CONTRACT_CLASS_HASH: &str = "";
 pub const ETHEREUM_ADDRESS: &str = "";
 pub const INVALID_ETHEREUM_ADDRESS: &str = "";
 pub const SELECTOR_NAME: &str = "";
+
+///
+/// Value to be used as a signer for simulate_transaction tests.
+///
+pub const SIGNER_PRIVATE: &str = "";
+pub const ARGENT_CONTRACT_ADDRESS: &str = "";

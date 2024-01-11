@@ -73,3 +73,23 @@ impl TransactionFactory for BadTransactionFactory {
         })
     }
 }
+
+pub struct MaxFeeTransactionFactory;
+
+impl TransactionFactory for MaxFeeTransactionFactory {
+    fn build(_: Option<FieldElement>) -> BroadcastedTransaction {
+        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+            max_fee: FieldElement::from_hex_be("0x100000000000000000000000000000000").unwrap(),
+            signature: vec![],
+            nonce: FieldElement::ZERO,
+            sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+            calldata: vec![
+                FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
+                get_selector_from_name("sqrt").unwrap(),
+                FieldElement::from_hex_be("1").unwrap(),
+                FieldElement::from(81u8),
+            ],
+            is_query: false,
+        })
+    }
+}

@@ -15,6 +15,7 @@ url = "2.5.0"
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
 starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
 starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
+starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "a35ce22", default-features = false }
 
 [dev-dependencies]
 jsonrpsee = { version = "0.21.0", features = ["client"] }
