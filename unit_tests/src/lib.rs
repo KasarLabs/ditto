@@ -4,10 +4,13 @@ use std::{fs::File, io::Read};
 
 use constants::*;
 use serde::Deserialize;
-use starknet_core::{types::{FieldElement, BroadcastedTransaction, BroadcastedInvokeTransaction}, utils::get_selector_from_name};
+use starknet_core::{
+    types::{BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement},
+    utils::get_selector_from_name,
+};
 
-pub mod fixtures;
 pub mod constants;
+pub mod fixtures;
 pub mod macros;
 
 #[derive(PartialEq, Debug, Deserialize)]
@@ -31,13 +34,13 @@ impl TestConfig {
 }
 
 pub trait TransactionFactory {
-    fn new(nonce: Option<FieldElement>) -> BroadcastedTransaction;
+    fn build(nonce: Option<FieldElement>) -> BroadcastedTransaction;
 }
 
 pub struct OkTransactionFactory;
 
 impl TransactionFactory for OkTransactionFactory {
-    fn new(nonce: Option<FieldElement>) -> BroadcastedTransaction {
+    fn build(nonce: Option<FieldElement>) -> BroadcastedTransaction {
         BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
             max_fee: FieldElement::ZERO,
             signature: vec![],
@@ -57,7 +60,7 @@ impl TransactionFactory for OkTransactionFactory {
 pub struct BadTransactionFactory;
 
 impl TransactionFactory for BadTransactionFactory {
-    fn new(_: Option<FieldElement>) -> BroadcastedTransaction {
+    fn build(_: Option<FieldElement>) -> BroadcastedTransaction {
         BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
             max_fee: FieldElement::default(),
             nonce: FieldElement::ZERO,

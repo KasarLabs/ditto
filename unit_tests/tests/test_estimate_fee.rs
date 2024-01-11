@@ -4,10 +4,13 @@ mod common;
 use common::*;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcClient}, MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,};
-use unit_tests::{OkTransactionFactory, TransactionFactory, BadTransactionFactory};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcClient},
+    MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,
+};
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
+use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
 
 #[rstest]
 #[tokio::test]
@@ -15,7 +18,7 @@ use std::collections::HashMap;
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    let ok_invoke_transaction = OkTransactionFactory::new(Some(FieldElement::ZERO));
+    let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
     assert_matches!(
         deoxys.estimate_fee(&vec![ok_invoke_transaction], BlockId::Hash(FieldElement::ZERO)).await,
@@ -26,11 +29,13 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
-async fn fail_if_one_txn_cannot_be_executed(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn fail_if_one_txn_cannot_be_executed(
+    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
+) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let bad_invoke_transaction = BadTransactionFactory::new(None);
+    let bad_invoke_transaction = BadTransactionFactory::build(None);
 
     let result_deoxys = deoxys
         .estimate_fee(
@@ -56,13 +61,13 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let ok_deoxys_invoke = OkTransactionFactory::new(Some(FieldElement::ZERO));
-    let ok_deoxys_invoke_1 = OkTransactionFactory::new(Some(FieldElement::ONE));
-    let ok_deoxys_invoke_2 = OkTransactionFactory::new(Some(FieldElement::TWO));
+    let ok_deoxys_invoke = OkTransactionFactory::build(Some(FieldElement::ZERO));
+    let ok_deoxys_invoke_1 = OkTransactionFactory::build(Some(FieldElement::ONE));
+    let ok_deoxys_invoke_2 = OkTransactionFactory::build(Some(FieldElement::TWO));
 
-    let ok_pathfinder_invoke = OkTransactionFactory::new(Some(FieldElement::ZERO));
-    let ok_pathfinder_invoke_1 = OkTransactionFactory::new(Some(FieldElement::ONE));
-    let ok_pathfinder_invoke_2 = OkTransactionFactory::new(Some(FieldElement::TWO));
+    let ok_pathfinder_invoke = OkTransactionFactory::build(Some(FieldElement::ZERO));
+    let ok_pathfinder_invoke_1 = OkTransactionFactory::build(Some(FieldElement::ONE));
+    let ok_pathfinder_invoke_2 = OkTransactionFactory::build(Some(FieldElement::TWO));
 
     let deoxys_estimates = deoxys
         .estimate_fee(
@@ -74,7 +79,11 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
 
     let pathfinder_estimates = pathfinder
         .estimate_fee(
-            &vec![ok_pathfinder_invoke, ok_pathfinder_invoke_1, ok_pathfinder_invoke_2],
+            &vec![
+                ok_pathfinder_invoke,
+                ok_pathfinder_invoke_1,
+                ok_pathfinder_invoke_2,
+            ],
             BlockId::Tag(BlockTag::Latest),
         )
         .await

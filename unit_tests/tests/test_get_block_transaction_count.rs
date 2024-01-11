@@ -1,7 +1,6 @@
 #![feature(assert_matches)]
 
 /// TODO test on a block withouth transactions
-
 mod common;
 use common::*;
 

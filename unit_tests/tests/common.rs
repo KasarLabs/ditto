@@ -1,11 +1,10 @@
-
 /* Common imports used throughout all unit tests */
 
 #[allow(unused_imports)]
-pub use rstest::*;
+pub use macros::*;
 #[allow(unused_imports)]
-pub use unit_tests::fixtures::*;
+pub use rstest::*;
 #[allow(unused_imports)]
 pub use unit_tests::constants::*;
 #[allow(unused_imports)]
-pub use macros::*;
+pub use unit_tests::fixtures::*;
