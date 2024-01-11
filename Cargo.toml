@@ -1,6 +1,7 @@
 [workspace]
-members = [ "macros",
-    "macros",
+members = [ 
+    "macro_utils",
+    "macro",
     "unit_tests",
 ]
 default-members = ["unit_tests"]

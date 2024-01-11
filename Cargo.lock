@@ -1256,11 +1256,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 
 [[package]]
-name = "macros"
+name = "macro"
 version = "0.1.0"
 dependencies = [
+ "macro_utils",
  "quote",
  "syn 2.0.48",
+]
+
+[[package]]
+name = "macro_utils"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "quote",
+ "serde",
+ "serde_json",
+ "starknet",
+ "starknet-core",
+ "starknet-providers",
+ "syn 2.0.48",
+ "tokio",
+ "url",
 ]
 
 [[package]]
@@ -2633,7 +2650,8 @@ dependencies = [
  "flate2",
  "jsonrpsee",
  "log",
- "macros",
+ "macro",
+ "macro_utils",
  "rstest",
  "serde",
  "serde_json",
