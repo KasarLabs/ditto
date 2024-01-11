@@ -22,3 +22,4 @@ jsonrpsee = { version = "0.21.0", features = ["client"] }
 tokio = { version = "1", features = ["full", "test-util"] }
 flate2 = "1.0.28"
 log = "0.4.20"
+macros = { path = "../macros/" }

@@ -1,11 +1,34 @@
 #![feature(assert_matches)]
 
+use std::{fs::File, io::Read};
+
 use constants::*;
+use serde::Deserialize;
 use starknet_core::{types::{FieldElement, BroadcastedTransaction, BroadcastedInvokeTransaction}, utils::get_selector_from_name};
 
 pub mod fixtures;
 pub mod constants;
 pub mod macros;
+
+#[derive(PartialEq, Debug, Deserialize)]
+pub struct TestConfig {
+    pub pathfinder: String,
+    pub deoxys: String,
+}
+
+impl TestConfig {
+    pub fn new(path: &str) -> anyhow::Result<Self> {
+        let mut file = File::open(path)?;
+        let mut content = String::new();
+
+        file.read_to_string(&mut content)?;
+
+        let config: TestConfig = serde_json::from_str(&content)
+            .expect("Could not deserialize test at {path} into Config");
+
+        Ok(config)
+    }
+}
 
 pub trait TransactionFactory {
     fn new(nonce: Option<FieldElement>) -> BroadcastedTransaction;
