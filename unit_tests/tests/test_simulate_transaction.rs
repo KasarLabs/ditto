@@ -131,18 +131,7 @@ async fn works_ok_on_no_validate(clients: HashMap<String, JsonRpcClient<HttpTran
         .unwrap();
 
     assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_consumed,
-        pathfinder_simulations[0].fee_estimation.gas_consumed
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.overall_fee,
-        pathfinder_simulations[0].fee_estimation.overall_fee
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_price,
-        pathfinder_simulations[0].fee_estimation.gas_price
-    );
+    assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
 #[rstest]
@@ -199,18 +188,7 @@ async fn works_ok_on_validate_with_signature(
         .unwrap();
 
     assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_consumed,
-        pathfinder_simulations[0].fee_estimation.gas_consumed
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.overall_fee,
-        pathfinder_simulations[0].fee_estimation.overall_fee
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_price,
-        pathfinder_simulations[0].fee_estimation.gas_price
-    );
+    assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
 #[rstest]
@@ -268,18 +246,7 @@ async fn works_ok_on_validate_without_signature_with_skip_validate(
         .unwrap();
 
     assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_consumed,
-        pathfinder_simulations[0].fee_estimation.gas_consumed
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.overall_fee,
-        pathfinder_simulations[0].fee_estimation.overall_fee
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_price,
-        pathfinder_simulations[0].fee_estimation.gas_price
-    );
+    assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
 #[rstest]
@@ -332,16 +299,5 @@ async fn works_ok_without_max_fee_with_skip_fee_charge(
         .unwrap();
 
     assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_consumed,
-        pathfinder_simulations[0].fee_estimation.gas_consumed
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.overall_fee,
-        pathfinder_simulations[0].fee_estimation.overall_fee
-    );
-    assert_eq!(
-        deoxys_simulations[0].fee_estimation.gas_price,
-        pathfinder_simulations[0].fee_estimation.gas_price
-    );
+    assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
