@@ -14,6 +14,7 @@ starknet = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c
 starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
 starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
 starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
+starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
 env_logger = "0.10.1"
 macro_utils = { path = "../macro_utils/" }
 

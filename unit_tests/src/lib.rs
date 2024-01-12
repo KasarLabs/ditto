@@ -1,7 +1,6 @@
 #![feature(assert_matches)]
 
 use constants::*;
-use starknet::signers::{LocalWallet, SigningKey};
 use starknet_accounts::{Account, Call, ConnectedAccount, Execution, SingleOwnerAccount};
 use starknet_core::chain_id;
 use starknet_core::{
@@ -9,6 +8,7 @@ use starknet_core::{
     utils::get_selector_from_name,
 };
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient};
+use starknet_signers::{LocalWallet, SigningKey};
 
 pub mod constants;
 pub mod fixtures;

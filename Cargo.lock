@@ -2811,6 +2811,7 @@ dependencies = [
  "starknet-accounts 0.7.0",
  "starknet-core 0.8.0",
  "starknet-providers 0.8.0",
+ "starknet-signers 0.6.0",
  "tokio",
  "url",
 ]
