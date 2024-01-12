@@ -8,7 +8,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 use starknet_core::types::{FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,
+    Provider, ProviderError,
 };
 
 // invalid transaction_hash
@@ -24,10 +24,9 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::TransactionHashNotFound)
-        }))
+        Some(ProviderError::StarknetError(
+            StarknetError::InvalidTransactionHash
+        ))
     );
 }
 

@@ -142,6 +142,12 @@ pub const ETHEREUM_ADDRESS: &str = "";
 pub const INVALID_ETHEREUM_ADDRESS: &str = "";
 pub const SELECTOR_NAME: &str = "";
 
+///
+/// Value to be used as a signer for simulate_transaction tests.
+///
+pub const SIGNER_PRIVATE: &str = "";
+pub const ARGENT_CONTRACT_ADDRESS: &str = "";
+
 pub const ERR_DEOXYS: &str = "Error waiting for response from Deoxys client";
 pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder client";
 

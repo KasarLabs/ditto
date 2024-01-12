@@ -9,10 +9,7 @@ use starknet_core::{
     types::{BlockId, BlockTag, FieldElement, FunctionCall, StarknetError},
     utils::get_selector_from_name,
 };
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, MaybeUnknownErrorCode, Provider, ProviderError,
-    StarknetErrorWithMessage,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 
 ///
 /// Unit test for `starknet_call`
@@ -39,11 +36,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::BlockNotFound)
-        }))
-    );
+        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    )
 }
 
 ///
@@ -71,10 +65,9 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::ContractNotFound)
-        }))
+        Some(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 
@@ -105,10 +98,9 @@ async fn fail_invalid_contract_entry_point_selector(
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::ContractError)
-        }))
+        Some(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 
@@ -137,10 +129,9 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::ContractError)
-        }))
+        Some(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 
@@ -198,10 +189,7 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::ContractError)
-        }))
+        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
 

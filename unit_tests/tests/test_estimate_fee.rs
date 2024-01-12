@@ -6,7 +6,7 @@ use common::*;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,
+    Provider, ProviderError,
 };
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
@@ -21,8 +21,15 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
     assert_matches!(
-        deoxys.estimate_fee(&vec![ok_invoke_transaction], BlockId::Hash(FieldElement::ZERO)).await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::BlockNotFound
+        deoxys
+            .estimate_fee(
+                &vec![ok_invoke_transaction],
+                BlockId::Hash(FieldElement::ZERO)
+            )
+            .await,
+        Err(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
     );
 }
 
