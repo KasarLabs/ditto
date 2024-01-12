@@ -12,6 +12,7 @@ use starknet_providers::{
 };
 
 // invalid transaction_hash
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -31,6 +32,7 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
 }
 
 /// reverted transaction on block 200000
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_rejected_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -56,6 +58,7 @@ async fn work_with_rejected_transaction(clients: HashMap<String, JsonRpcClient<H
 }
 
 /// first transaction on block 0
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_first_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -81,6 +84,7 @@ async fn work_with_first_transaction(clients: HashMap<String, JsonRpcClient<Http
 }
 
 /// deploy transaction
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -106,6 +110,7 @@ async fn work_with_deploy(clients: HashMap<String, JsonRpcClient<HttpTransport>>
 }
 
 ///invoke transaction
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

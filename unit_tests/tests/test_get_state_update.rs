@@ -20,6 +20,7 @@ use std::collections::HashMap;
 // # Errors
 // * `block_not_found` - If the block is not found or invalid
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]
@@ -32,6 +33,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]

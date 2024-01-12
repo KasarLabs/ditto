@@ -17,6 +17,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid block
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -46,6 +47,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid contract address
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -77,6 +79,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid field element
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_entry_point_selector(
@@ -110,6 +113,7 @@ async fn fail_invalid_contract_entry_point_selector(
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// fail case: missing call data. This is different from solely *invalid* call data, as we will see shortly
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -141,6 +145,7 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// fail case: invalid call data. This does not cause an error upon calling the contract but returns felt 0x0
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -170,6 +175,7 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: too many arguments in call data
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -199,6 +205,7 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// success case: should return 'Ether'
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -241,6 +248,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// success case: must return non-zero balance
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -283,6 +291,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
 /// purpose: function request `sort_tokens` to JediSwap exchange, with multiple arguments.
 /// success case: must return array of 2 non-zero values.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

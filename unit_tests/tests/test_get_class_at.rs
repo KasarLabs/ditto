@@ -16,6 +16,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: gets contract class for inexistent block.
 /// fail case: invalid block address.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -41,6 +42,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: gets contract class for inexistent contract.
 /// fail case: invalid contract address.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -65,6 +67,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: gets legacy contract and extracts it's data.
 /// success case: should retrieve contract and decompress it to a valid json string.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_contract_v0(
@@ -122,7 +125,7 @@ async fn work_contract_v0(
 /// purpose: gets Cairo v1 contract and extracts it's data.
 /// success case: should retrieve contract correctly.
 ///
-#[require(block_min = 3000)]
+#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_contract_v1(

@@ -40,6 +40,7 @@ pub fn get_message_from_l1(
     }
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]
@@ -64,6 +65,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]
@@ -91,6 +93,7 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
     )
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]
@@ -119,6 +122,7 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
     )
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]

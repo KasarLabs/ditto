@@ -1,4 +1,4 @@
-use macro_utils::{extract_u64_from_expr, get_block_number};
+use macro_utils::{extract_expr_to_str, extract_expr_to_u64, get_rpc_data, RpcData};
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use syn::{
@@ -24,19 +24,21 @@ pub fn logging(_: TokenStream, input: TokenStream) -> TokenStream {
     input.into_token_stream().into()
 }
 
-struct ArgsRequire {
+struct MacroDataRequire {
     pub block_min: u64,
     pub block_max: u64,
+    pub spec_version: Option<String>,
     pub err: Result<(), Path>,
 }
 
-impl Parse for ArgsRequire {
+impl Parse for MacroDataRequire {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         let args = input.parse_terminated(MetaNameValue::parse, Token![,])?;
 
         let mut parsed_params = Self {
             block_min: 0,
-            block_max: 0,
+            block_max: u64::MAX,
+            spec_version: None,
             err: Ok(()),
         };
 
@@ -44,11 +46,17 @@ impl Parse for ArgsRequire {
             match arg.path.get_ident() {
                 Some(ident) => match ident.to_string().as_str() {
                     "block_min" => {
-                        parsed_params.block_min = extract_u64_from_expr(arg.value).unwrap_or(0);
+                        parsed_params.block_min = extract_expr_to_u64(arg.value).unwrap_or(0);
                     }
                     "block_max" => {
                         parsed_params.block_max =
-                            extract_u64_from_expr(arg.value).unwrap_or(u64::MAX);
+                            extract_expr_to_u64(arg.value).unwrap_or(u64::MAX);
+                    }
+                    "spec_version" => {
+                        parsed_params.spec_version = match extract_expr_to_str(arg.value) {
+                            Ok(s) => Some(s),
+                            Err(_) => None,
+                        }
                     }
                     _ => {
                         parsed_params.err = Err(arg.path);
@@ -62,12 +70,27 @@ impl Parse for ArgsRequire {
     }
 }
 
+impl MacroDataRequire {
+    fn should_ignore(self, data: RpcData) -> bool {
+        let Self {
+            block_min,
+            block_max,
+            spec_version,
+            err: _,
+        } = self;
+
+        (data.block_number >= block_min)
+            && (data.block_number <= block_max)
+            && (data.spec_version == spec_version.unwrap_or(String::from("")))
+    }
+}
+
 #[proc_macro_attribute]
 pub fn require(args: TokenStream, item: TokenStream) -> TokenStream {
-    let bn = get_block_number();
-    let args_parsed = parse_macro_input!(args as ArgsRequire);
+    let block_data = get_rpc_data();
+    let macro_data = parse_macro_input!(args as MacroDataRequire);
 
-    if bn >= args_parsed.block_min && bn <= args_parsed.block_max {
+    if macro_data.should_ignore(block_data) {
         item
     } else {
         let mut func = parse_macro_input!(item as ItemFn);

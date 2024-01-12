@@ -151,4 +151,5 @@ pub const ARGENT_CONTRACT_ADDRESS: &str = "";
 pub const ERR_DEOXYS: &str = "Error waiting for response from Deoxys client";
 pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder client";
 
-pub const RPC_SPEC: &str = "0.5.1";
+pub const SPEC_0_5_1: &str = "0.5.1";
+pub const SPEC_0_6_0: &str = "0.6.0";

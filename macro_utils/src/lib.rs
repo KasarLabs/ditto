@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use serde::Deserialize;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::{fs::File, io::Read};
@@ -25,7 +26,12 @@ impl TestConfig {
     }
 }
 
-pub fn get_block_number() -> u64 {
+pub struct RpcData {
+    pub block_number: u64,
+    pub spec_version: String,
+}
+
+pub fn get_rpc_data() -> RpcData {
     let config =
         TestConfig::new("./secret.json").expect("'./secret.json' must contain correct node urls");
     let deoxys = JsonRpcClient::new(HttpTransport::new(
@@ -34,17 +40,33 @@ pub fn get_block_number() -> u64 {
 
     let rt = runtime::Runtime::new().unwrap();
 
-    rt.block_on(async { deoxys.block_number().await.unwrap() })
+    rt.block_on(async {
+        RpcData {
+            block_number: deoxys.block_number().await.unwrap(),
+            spec_version: deoxys.spec_version().await.unwrap(),
+        }
+    })
 }
 
-pub fn extract_u64_from_expr(expr: Expr) -> Result<u64, String> {
+pub fn extract_expr_to_str(expr: Expr) -> anyhow::Result<String> {
     match expr {
         Expr::Lit(expr_lit) => match expr_lit.lit {
-            Lit::Int(lit_int) => lit_int
-                .base10_parse::<u64>()
-                .map_err(|_| "Failed to parse integer".to_string()),
-            _ => Err("Not an integer literal".to_string()),
+            Lit::Str(lit_str) => anyhow::Ok(lit_str.value()),
+            _ => Err(anyhow!("Not a string literal")),
         },
-        _ => Err("Not a literal expression".to_string()),
+        _ => Err(anyhow!("Not a literal expression")),
+    }
+}
+
+pub fn extract_expr_to_u64(expr: Expr) -> anyhow::Result<u64> {
+    match expr {
+        Expr::Lit(expr_lit) => match expr_lit.lit {
+            Lit::Int(lit_int) => match lit_int.base10_parse::<u64>() {
+                Ok(n) => anyhow::Ok(n),
+                Err(_) => Err(anyhow!("Failed to convert literal")),
+            },
+            _ => Err(anyhow!("Not an integer literal")),
+        },
+        _ => Err(anyhow!("Not a literal expression")),
     }
 }

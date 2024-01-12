@@ -31,6 +31,7 @@ use tokio::task::JoinSet;
 /// purpose: call getEvents on an invalid block number.
 /// fail case: invalid block number (invalid param).
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -57,6 +58,7 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on an invalid event selector.
 /// fail case: invalid event selector.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -82,6 +84,7 @@ async fn fail_invalid_keys(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on an invalid event selector.
 /// fail case: invalid event selector.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -109,6 +112,7 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on a valid block with a no selector.
 /// success case: retrieves the first 100 events of that block.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -144,6 +148,7 @@ async fn work_valid_call_no_selector(
 /// purpose: call getEvents on a valid block with a single selector.
 /// success case: valid events format, events point to valid transactions.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -180,6 +185,7 @@ async fn work_valid_call_single_selector(
 /// success case: retrieves all events matching the selector in the first 100 events of that block
 ///               + valid event format and valid transactions.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -213,7 +219,7 @@ async fn work_valid_call_multiple_selector(
 
 async fn get_events(
     client: &JsonRpcClient<HttpTransport>,
-    keys: &Vec<Vec<FieldElement>>,
+    keys: &[Vec<FieldElement>],
     block_nu: u64,
     block_range: u64,
 ) -> Result<EventsPage, ProviderError> {
@@ -228,7 +234,7 @@ async fn get_events(
                 address: None,
                 // and keys used to filter out events. Keys can include a hash of the event
                 // and even event return values for further filtering
-                keys: Some(keys.clone()),
+                keys: Some(keys.to_vec()),
             },
             // in cases were a first search does not yield enough results, a continuation key
             // can be used to keep searching from the point of the last getEvent search

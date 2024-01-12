@@ -13,6 +13,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call on non-existent block.
 /// fail case: invalid block
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -35,6 +36,7 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call on valid block with out-of-range index.
 /// fail case: index out of block range (block 5000 only has 389 transactions)
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -59,6 +61,7 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 /// purpose: get INVOKE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -98,6 +101,7 @@ async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport
 /// purpose: get L1_HANDLER transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -137,6 +141,7 @@ async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTrans
 /// purpose: get DECLARE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -176,6 +181,7 @@ async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTranspor
 /// purpose: get DEPLOY_ACCOUNT transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

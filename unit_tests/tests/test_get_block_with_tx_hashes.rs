@@ -19,6 +19,7 @@ use unit_tests::constants::DEOXYS;
 /// purpose: call getBlockWithTxHashes on invalid block.
 /// fail case: invalid block.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -41,6 +42,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getBlockWithTxHashes on latest validated block.
 /// success case: retrieves valid block.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -71,6 +73,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 
     assert_eq!(block_deoxys, block_pathfinder);
 }
+
 ///
 /// Unit test for `starknet_get_block_with_tx_hashes`
 ///
@@ -79,6 +82,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 ///
 /// Note that this can fail at the last moments of a block being validated!!!
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
