@@ -13,6 +13,7 @@ use starknet_providers::{
 };
 use unit_tests::constants::DEOXYS;
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -32,6 +33,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -53,6 +55,7 @@ async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTrans
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_num(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -74,6 +77,7 @@ async fn work_with_block_one_num(clients: HashMap<String, JsonRpcClient<HttpTran
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -100,6 +104,7 @@ async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTra
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hundred_thousand_num(
@@ -123,6 +128,7 @@ async fn work_with_block_one_hundred_thousand_num(
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hundred_thousand_hash(

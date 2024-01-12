@@ -16,6 +16,7 @@ use std::collections::HashMap;
 /// purpose: returns starknet sync status
 /// success case: sync status matches between providers (NOT DETERMINISTIC)
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

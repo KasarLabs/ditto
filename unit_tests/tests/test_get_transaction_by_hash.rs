@@ -16,6 +16,7 @@ use starknet_providers::{
 /// purpose: call getTransactionHash on non existent transaction.
 /// fail case: transaction does not exist.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -41,6 +42,7 @@ async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<Ht
 /// purpose: call getTransactionHash on INVOKE transaction.
 /// success case: retrieve correct INVOKE transaction.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -67,6 +69,7 @@ async fn work_transaction_invoke(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getTransactionHash on L1_HANDLER transaction.
 /// success case: retrieve correct INVOKE transaction.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -93,6 +96,7 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
 /// purpose: call getTransactionHash on DECLARE transaction.
 /// success case: retrieve correct DECLARE transaction.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -121,6 +125,7 @@ async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getTransactionHash on DEPLOY_ACCOUNT transaction.
 /// success case: retrieve correct DEPLOY_ACCOUNT transaction.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

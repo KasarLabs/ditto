@@ -1,5 +1,6 @@
 mod common;
 use common::*;
+use r#macro::require;
 
 use std::collections::HashMap;
 
@@ -14,6 +15,7 @@ use starknet_providers::{
 /// purpose: get block hash and number on latest block.
 /// success case: retrieves correct block hash and number.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

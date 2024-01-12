@@ -18,6 +18,7 @@ use starknet_providers::{
 /// purpose: call getStorageAt on invalid block.
 /// fail case: invalid block.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -47,6 +48,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getStorageAt on non-existing contract.
 /// fail case: non-existing contract.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -76,6 +78,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getStorageAt with invalid storage key.
 /// fail case: invalid storage key.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -99,6 +102,7 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getStorageAt with valid arguments.
 /// success case: retrieve valid storage.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

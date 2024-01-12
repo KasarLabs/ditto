@@ -32,6 +32,7 @@ use starknet_providers::{
 /// purpose: call getNonce on invalid block.
 /// fail case: invalid block.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -60,6 +61,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getNonce on invalid contract.
 /// fail case: invalid contract.
 ///
+#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -91,7 +93,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getNonce on ERC721 contract.
 /// success case: must return a nonce of 0.
 ///
-#[require(block_min = 50000)]
+#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -114,7 +116,7 @@ async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
 /// purpose: call getNonce on ERC20 contract.
 /// success case: must return a nonce of 0.
 ///
-#[require(block_min = 50000)]
+#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -137,7 +139,7 @@ async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTranspor
 /// purpose: call getNonce on account contract.
 /// success case: must return a non-zero nonce.
 ///
-#[require(block_min = 50000)]
+#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -170,7 +172,7 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
 /// purpose: call getNonce on account proxy contract.
 /// success case: must return a non-zero nonce.
 ///
-#[require(block_min = 50000)]
+#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
