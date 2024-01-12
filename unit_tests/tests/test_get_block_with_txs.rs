@@ -9,7 +9,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,
+    Provider, ProviderError,
 };
 use unit_tests::constants::DEOXYS;
 
@@ -26,10 +26,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetErrorWithMessage {
-            message: _,
-            code: MaybeUnknownErrorCode::Known(StarknetError::BlockNotFound)
-        }))
+        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
 

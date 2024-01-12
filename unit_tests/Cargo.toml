@@ -9,12 +9,14 @@ edition = "2021"
 anyhow = "1.0.79"
 rstest = "0.18.2"
 tokio = { version = "1", features = ["full"] }
-starknet = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
+url = "2.5.0"
+starknet = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
+starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
+starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
+starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
+starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
 env_logger = "0.10.1"
 macro_utils = { path = "../macro_utils/" }
-url = "2.5.0"
 
 [dev-dependencies]
 jsonrpsee = { version = "0.21.0", features = ["client"] }

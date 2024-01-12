@@ -6,7 +6,7 @@ use common::*;
 use starknet_core::types::{BlockId, EthAddress, FieldElement, MsgFromL1, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage,
+    Provider, ProviderError,
 };
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
@@ -61,7 +61,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
     assert_matches!(
         deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::BlockNotFound
+        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
 
@@ -87,8 +87,10 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
     assert_matches!(
         deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::ContractNotFound
-    );
+        Err(ProviderError::StarknetError(
+            StarknetError::ContractNotFound
+        ))
+    )
 }
 
 #[require(spec_version = "0.5.1")]
@@ -114,8 +116,10 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
         .await;
     assert_matches!(
         deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::ContractError
-    );
+        Err(ProviderError::StarknetError(StarknetError::ContractError(
+            _
+        )))
+    )
 }
 
 #[require(spec_version = "0.5.1")]

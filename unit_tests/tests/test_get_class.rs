@@ -4,10 +4,7 @@ mod common;
 use common::*;
 
 use starknet_core::types::{BlockId, FieldElement, StarknetError};
-use starknet_providers::{
-    jsonrpc::HttpTransport, JsonRpcClient, MaybeUnknownErrorCode, Provider, ProviderError,
-    StarknetErrorWithMessage,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 
@@ -22,12 +19,9 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     assert_matches!(
         deoxys
-        .get_class(
-            BlockId::Number(100),
-            test_contract_class_hash,
-        )
-        .await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::BlockNotFound
+            .get_class(BlockId::Number(100), test_contract_class_hash,)
+            .await,
+        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
     );
 }
 
@@ -42,12 +36,11 @@ async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<Htt
 
     assert_matches!(
         deoxys
-        .get_class(
-            BlockId::Number(0),
-            unknown_contract_class_hash,
-        )
-        .await,
-        Err(ProviderError::StarknetError(StarknetErrorWithMessage { code: MaybeUnknownErrorCode::Known(code), .. })) if code == StarknetError::ClassHashNotFound
+            .get_class(BlockId::Number(0), unknown_contract_class_hash,)
+            .await,
+        Err(ProviderError::StarknetError(
+            StarknetError::ClassHashNotFound
+        ))
     );
 }
 

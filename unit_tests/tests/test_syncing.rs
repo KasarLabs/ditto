@@ -1,13 +1,8 @@
 mod common;
 use common::*;
 
-use starknet::{
-    core::types::SyncStatusType,
-    providers::{
-        jsonrpc::{HttpTransport, JsonRpcClient},
-        Provider,
-    },
-};
+use starknet_core::types::SyncStatusType;
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
 ///

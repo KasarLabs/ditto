@@ -1,10 +1,7 @@
 mod common;
 use common::*;
 
-use starknet::providers::{
-    jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider,
-};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
 ///
