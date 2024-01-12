@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
+use macro_utils::TestConfig;
 use rstest::fixture;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient};
 use url::Url;
 
 use crate::constants::*;
 use crate::map;
-use crate::TestConfig;
 
 #[fixture]
 pub fn config() -> TestConfig {
