@@ -10,7 +10,7 @@ use crate::TestConfig;
 
 #[fixture]
 pub fn config() -> TestConfig {
-    TestConfig::new("./secret.json").expect("'./secret.json' must contain correct node urls")
+    TestConfig::new("../secret.json").expect("'../secret.json' must contain correct node urls")
 }
 
 #[fixture]
