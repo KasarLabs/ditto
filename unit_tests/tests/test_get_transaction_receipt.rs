@@ -24,7 +24,9 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
 
     assert_matches!(
         response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::InvalidTransactionHash))
+        Some(ProviderError::StarknetError(
+            StarknetError::InvalidTransactionHash
+        ))
     );
 }
 
