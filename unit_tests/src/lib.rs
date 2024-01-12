@@ -1,9 +1,6 @@
 #![feature(assert_matches)]
 
-use std::{fs::File, io::Read};
-
 use constants::*;
-use serde::Deserialize;
 use starknet::signers::{LocalWallet, SigningKey};
 use starknet_accounts::{Account, Call, ConnectedAccount, Execution, SingleOwnerAccount};
 use starknet_core::chain_id;
@@ -17,25 +14,6 @@ pub mod constants;
 pub mod fixtures;
 pub mod macros;
 
-#[derive(PartialEq, Debug, Deserialize)]
-pub struct TestConfig {
-    pub pathfinder: String,
-    pub deoxys: String,
-}
-
-impl TestConfig {
-    pub fn new(path: &str) -> anyhow::Result<Self> {
-        let mut file = File::open(path)?;
-        let mut content = String::new();
-
-        file.read_to_string(&mut content)?;
-
-        let config: TestConfig = serde_json::from_str(&content)
-            .expect("Could not deserialize test at {path} into Config");
-
-        Ok(config)
-    }
-}
 pub trait TransactionFactory {
     fn build(nonce: Option<FieldElement>) -> BroadcastedTransaction;
 }
