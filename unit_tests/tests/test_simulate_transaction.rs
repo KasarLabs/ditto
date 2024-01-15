@@ -94,6 +94,7 @@ async fn fail_if_one_txn_cannot_be_executed(
     );
 }
 
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_on_no_validate(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -146,6 +147,7 @@ async fn works_ok_on_no_validate(clients: HashMap<String, JsonRpcClient<HttpTran
     assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_on_validate_with_signature(
@@ -203,6 +205,7 @@ async fn works_ok_on_validate_with_signature(
     assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_on_validate_without_signature_with_skip_validate(
@@ -261,6 +264,7 @@ async fn works_ok_on_validate_without_signature_with_skip_validate(
     assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_without_max_fee_with_skip_fee_charge(
