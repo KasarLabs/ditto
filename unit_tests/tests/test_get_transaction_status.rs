@@ -40,7 +40,7 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getTransactionStatus on transaction which has been accepted on L1.
 /// success case: retrieved transaction has been accepted on L1.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -67,7 +67,7 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
 /// purpose: call getTransactionStatus on last transaction from the latest block.
 /// success case: transaction is marked as accepted on L2.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -109,7 +109,7 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
 /// purpose: call getTransactionStatus on reverted transaction.
 /// success case: transaction is marked as reverted on L1.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

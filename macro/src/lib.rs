@@ -1,4 +1,4 @@
-use macro_utils::{extract_expr_to_str, extract_expr_to_u64, get_rpc_data, RpcData};
+use macro_utils::{extract_expr_to_str, extract_expr_to_u64, RpcData, RPC_DATA};
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use syn::{
@@ -46,14 +46,18 @@ impl Parse for MacroDataRequire {
             match arg.path.get_ident() {
                 Some(ident) => match ident.to_string().as_str() {
                     "block_min" => {
-                        parsed_params.block_min = extract_expr_to_u64(arg.value).unwrap_or(0);
+                        parsed_params.block_min = match extract_expr_to_str(&arg.value) {
+                            Ok(s) if s == "latest" => RPC_DATA.latest_chain_block,
+                            Ok(_) => 0,
+                            Err(_) => extract_expr_to_u64(&arg.value).unwrap_or(0),
+                        };
                     }
                     "block_max" => {
                         parsed_params.block_max =
-                            extract_expr_to_u64(arg.value).unwrap_or(u64::MAX);
+                            extract_expr_to_u64(&arg.value).unwrap_or(u64::MAX);
                     }
                     "spec_version" => {
-                        parsed_params.spec_version = match extract_expr_to_str(arg.value) {
+                        parsed_params.spec_version = match extract_expr_to_str(&arg.value) {
                             Ok(s) => Some(s),
                             Err(_) => None,
                         }
@@ -87,7 +91,7 @@ impl MacroDataRequire {
 
 #[proc_macro_attribute]
 pub fn require(args: TokenStream, item: TokenStream) -> TokenStream {
-    let block_data = get_rpc_data();
+    let block_data = RPC_DATA.clone();
     let macro_data = parse_macro_input!(args as MacroDataRequire);
 
     if macro_data.should_ignore(block_data) {

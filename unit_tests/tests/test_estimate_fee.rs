@@ -33,6 +33,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
@@ -61,6 +62,7 @@ async fn fail_if_one_txn_cannot_be_executed(
     assert_eq!(result_deoxys, result_pathfinder);
 }
 
+#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]

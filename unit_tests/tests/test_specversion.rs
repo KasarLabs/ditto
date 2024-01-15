@@ -17,5 +17,5 @@ async fn test_specversion(deoxys: JsonRpcClient<HttpTransport>) {
     let response_deoxys = deoxys.spec_version().await.expect(ERR_DEOXYS);
 
     log::info!("Deoxys RPC spec: {}", response_deoxys);
-    assert_eq!(response_deoxys, RPC_SPEC);
+    assert_eq!(response_deoxys, SPEC_0_5_1);
 }

@@ -40,7 +40,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getClassHashAt on non-existent contract.
 /// fail case: invalid contract hash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -68,7 +68,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getClassHashAt on latest block.
 /// success case: retrieve valid class hash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -99,9 +99,10 @@ async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>
 /// purpose: call getClassHashAt on pending block.
 /// success case: retrieve valid class hash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
+#[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
 async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];

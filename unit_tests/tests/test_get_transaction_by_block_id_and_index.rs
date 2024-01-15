@@ -61,7 +61,7 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 /// purpose: get INVOKE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -101,7 +101,7 @@ async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport
 /// purpose: get L1_HANDLER transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -141,7 +141,7 @@ async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTrans
 /// purpose: get DECLARE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 49_990, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -181,7 +181,7 @@ async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTranspor
 /// purpose: get DEPLOY_ACCOUNT transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

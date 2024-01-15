@@ -42,7 +42,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getBlockWithTxHashes on latest validated block.
 /// success case: retrieves valid block.
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -82,7 +82,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 ///
 /// Note that this can fail at the last moments of a block being validated!!!
 ///
-#[require(spec_version = "0.5.1")]
+#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
