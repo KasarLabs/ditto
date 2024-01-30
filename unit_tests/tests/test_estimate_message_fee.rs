@@ -3,6 +3,11 @@
 mod common;
 use common::*;
 
+use reqwest::Client;
+use reqwest::Error as ReqwestError;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use serde_json::Error as SerdeError;
 use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
@@ -10,12 +15,7 @@ use starknet_providers::{
 };
 use std::assert_matches::assert_matches;
 use std::collections::HashMap;
-use reqwest::Client;
-use serde_json::json;
-use serde::{Deserialize, Serialize};
 use std::convert::From;
-use serde_json::Error as SerdeError;
-use reqwest::Error as ReqwestError;
 use std::fmt;
 
 /// Test for the `get_state_update` Deoxys RPC method
@@ -32,7 +32,7 @@ use std::fmt;
 // * `contract_not_found` - If the contract is not found or invalid
 // * `contract_error` - If the contract is found but the message is invalid
 
-/// Following tests runs with various example of messages from L1, 
+/// Following tests runs with various example of messages from L1,
 /// you can of course modify address and payload to test with your own message.
 
 pub fn get_message_from_l1(
@@ -56,7 +56,10 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[PATHFINDER];
 
     let payload_message: Vec<FieldElement> = vec![];
-    let contract_address = FieldElement::from_hex_be("0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7").unwrap();
+    let contract_address = FieldElement::from_hex_be(
+        "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7",
+    )
+    .unwrap();
     let message = get_message_from_l1(
         "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419", //ETH address
         contract_address,
@@ -107,7 +110,10 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
     //On this test, the contract address must be valid,
     //but the from_address, entry_point_selector or the payload must be invalid
     let payload_message: Vec<FieldElement> = vec![];
-    let contract_address = FieldElement::from_hex_be("0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7").unwrap();
+    let contract_address = FieldElement::from_hex_be(
+        "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7",
+    )
+    .unwrap();
     let message = get_message_from_l1(
         "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
         contract_address,
@@ -190,7 +196,8 @@ async fn estimate_message_fee_works_ok() -> Result<(), CallError> {
         ]
     });
 
-    let response = client.post(url)
+    let response = client
+        .post(url)
         .header("accept", "application/json")
         .header("content-type", "application/json")
         .json(&request_body)
@@ -199,10 +206,19 @@ async fn estimate_message_fee_works_ok() -> Result<(), CallError> {
 
     let body = response.text().await?;
     let parsed_response: ApiResponse = serde_json::from_str(&body).map_err(CallError::from)?;
-    
-    assert_eq!(&parsed_response.result.gas_consumed, "0x4bd0", "Unexpected value for Gas Consumed");
-    assert_eq!(&parsed_response.result.gas_price, "0x34b9d74ac", "Unexpected value for Gas Price");
-    assert_eq!(&parsed_response.result.overall_fee, "0xf9d4911d2fc0", "Unexpected value for Overall Fee");
+
+    assert_eq!(
+        &parsed_response.result.gas_consumed, "0x4bd0",
+        "Unexpected value for Gas Consumed"
+    );
+    assert_eq!(
+        &parsed_response.result.gas_price, "0x34b9d74ac",
+        "Unexpected value for Gas Price"
+    );
+    assert_eq!(
+        &parsed_response.result.overall_fee, "0xf9d4911d2fc0",
+        "Unexpected value for Overall Fee"
+    );
 
     Ok(())
 }
