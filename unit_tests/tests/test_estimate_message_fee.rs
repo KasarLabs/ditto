@@ -2,21 +2,12 @@
 
 mod common;
 use common::*;
-
-use reqwest::Client;
-use reqwest::Error as ReqwestError;
-use serde::{Deserialize, Serialize};
-use serde_json::json;
-use serde_json::Error as SerdeError;
 use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider, ProviderError,
 };
 use std::assert_matches::assert_matches;
-use std::collections::HashMap;
-use std::convert::From;
-use std::fmt;
 
 /// Test for the `get_state_update` Deoxys RPC method
 /// # Arguments
@@ -50,11 +41,10 @@ pub fn get_message_from_l1(
     }
 }
 
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[PATHFINDER];
-
+async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
     let payload_message: Vec<FieldElement> = vec![];
     let contract_address = FieldElement::from_hex_be(
         "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7",
@@ -76,11 +66,10 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[PATHFINDER];
-
+async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
     let unknown_contract_address =
         FieldElement::from_hex_be("0x4269DEADBEEF").expect("Invalid Contract Address");
     let payload_message: Vec<FieldElement> = vec![];
@@ -102,11 +91,10 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
     )
 }
 
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[PATHFINDER];
-
+async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     //On this test, the contract address must be valid,
     //but the from_address, entry_point_selector or the payload must be invalid
     let payload_message: Vec<FieldElement> = vec![];
@@ -132,93 +120,54 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
     )
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct ApiResponse {
-    jsonrpc: String,
-    result: GasEstimate,
-    id: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct GasEstimate {
-    gas_consumed: String,
-    gas_price: String,
-    overall_fee: String,
-}
-
-#[derive(Debug)]
-enum CallError {
-    HttpRequestError(ReqwestError),
-    JsonParseError(SerdeError),
-}
-
-impl fmt::Display for CallError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            CallError::HttpRequestError(ref err) => write!(f, "HTTP Request Error: {}", err),
-            CallError::JsonParseError(ref err) => write!(f, "JSON Parse Error: {}", err),
-        }
-    }
-}
-
-impl From<ReqwestError> for CallError {
-    fn from(error: ReqwestError) -> Self {
-        CallError::HttpRequestError(error)
-    }
-}
-
-impl From<SerdeError> for CallError {
-    fn from(error: SerdeError) -> Self {
-        CallError::JsonParseError(error)
-    }
-}
-
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-async fn estimate_message_fee_works_ok() -> Result<(), CallError> {
-    let client = Client::new();
-    let url = ""; // enter a valid RPC Endpoint here
-
-    let request_body = json!({
-        "id": 1,
-        "jsonrpc": "2.0",
-        "method": "starknet_estimateMessageFee",
-        "params": [
-            {
-                "from_address": "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
-                "to_address": "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82",
-                "entry_point_selector": "0x2d757788a8d8d6f21d1cd40bce38a8222d70654214e96ff95d8086e684fbee5",
-                "payload": ["0x0622fc5c49c6b6b542e98b03b999f26f68b311512d6937c247a5a6a153df9a8a", "0x038d7ea4c68000", "0x00"]
-            },
-            {
-                "block_number": 487440
-            }
-        ]
-    });
-
-    let response = client
-        .post(url)
-        .header("accept", "application/json")
-        .header("content-type", "application/json")
-        .json(&request_body)
-        .send()
-        .await?;
-
-    let body = response.text().await?;
-    let parsed_response: ApiResponse = serde_json::from_str(&body).map_err(CallError::from)?;
-
-    assert_eq!(
-        &parsed_response.result.gas_consumed, "0x4bd0",
-        "Unexpected value for Gas Consumed"
+async fn estimate_message_fee_works_ok(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+    let contract_address = FieldElement::from_hex_be(
+        "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82",
     );
-    assert_eq!(
-        &parsed_response.result.gas_price, "0x34b9d74ac",
-        "Unexpected value for Gas Price"
-    );
-    assert_eq!(
-        &parsed_response.result.overall_fee, "0xf9d4911d2fc0",
-        "Unexpected value for Overall Fee"
+    let payload_hex_strings = vec![
+        "0x0622fc5c49c6b6b542e98b03b999f26f68b311512d6937c247a5a6a153df9a8a",
+        "0x038d7ea4c68000",
+        "0x00",
+    ];
+
+    let payload_message: Vec<FieldElement> = payload_hex_strings
+        .iter()
+        .map(|hex_str| FieldElement::from_hex_be(hex_str).unwrap())
+        .collect();
+
+    let message_fee_params = get_message_from_l1(
+        "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
+        contract_address.expect(""),
+        "0x2d757788a8d8d6f21d1cd40bce38a8222d70654214e96ff95d8086e684fbee5",
+        &payload_message,
     );
 
-    Ok(())
+    let deoxys_message_fee = deoxys
+        .estimate_message_fee(message_fee_params.clone(), BlockId::Tag(BlockTag::Latest))
+        .await
+        .unwrap();
+
+    let pathfinder_message_fee = pathfinder
+        .estimate_message_fee(message_fee_params, BlockId::Tag(BlockTag::Latest))
+        .await
+        .unwrap();
+
+    assert_eq!(
+        deoxys_message_fee.gas_consumed,
+        pathfinder_message_fee.gas_consumed
+    );
+    assert_eq!(
+        deoxys_message_fee.gas_price,
+        pathfinder_message_fee.gas_price
+    );
+    assert_eq!(
+        deoxys_message_fee.overall_fee,
+        pathfinder_message_fee.overall_fee
+    );
 }
