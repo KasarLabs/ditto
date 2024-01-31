@@ -2,14 +2,12 @@
 
 mod common;
 use common::*;
-
-use starknet_core::types::{BlockId, EthAddress, FieldElement, MsgFromL1, StarknetError};
+use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider, ProviderError,
 };
 use std::assert_matches::assert_matches;
-use std::collections::HashMap;
 
 /// Test for the `get_state_update` Deoxys RPC method
 /// # Arguments
@@ -24,6 +22,9 @@ use std::collections::HashMap;
 // * `block_not_found` - If the block is not found or invalid
 // * `contract_not_found` - If the contract is not found or invalid
 // * `contract_error` - If the contract is found but the message is invalid
+
+/// Following tests runs with various example of messages from L1,
+/// you can of course modify address and payload to test with your own message.
 
 pub fn get_message_from_l1(
     from: &str,
@@ -40,19 +41,19 @@ pub fn get_message_from_l1(
     }
 }
 
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-
-    let payload_message: Vec<FieldElement> = vec![]; //TODO: Fill this with a valid payload message [ACCOUNT, METHOD, ...]
-    let contract_address = FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap();
+async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
+    let payload_message: Vec<FieldElement> = vec![];
+    let contract_address = FieldElement::from_hex_be(
+        "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7",
+    )
+    .unwrap();
     let message = get_message_from_l1(
-        ETHEREUM_ADDRESS,
+        "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419", //ETH address
         contract_address,
-        SELECTOR_NAME,
+        "0x000000",
         &payload_message,
     );
 
@@ -65,25 +66,22 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
-async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-
+async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
     let unknown_contract_address =
         FieldElement::from_hex_be("0x4269DEADBEEF").expect("Invalid Contract Address");
-    let payload_message: Vec<FieldElement> = vec![]; //TODO: Fill this with a valid payload message [ACCOUNT, METHOD, ...]
+    let payload_message: Vec<FieldElement> = vec![];
     let message = get_message_from_l1(
-        ETHEREUM_ADDRESS,
+        "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
         unknown_contract_address,
-        SELECTOR_NAME,
+        "0x000000",
         &payload_message,
     );
 
     let deoxys_message_fee = deoxys
-        .estimate_message_fee(message, BlockId::Hash(FieldElement::ZERO))
+        .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
     assert_matches!(
         deoxys_message_fee,
@@ -93,26 +91,26 @@ async fn fail_contract_not_found(clients: HashMap<String, JsonRpcClient<HttpTran
     )
 }
 
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
-async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-
+async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     //On this test, the contract address must be valid,
     //but the from_address, entry_point_selector or the payload must be invalid
-    let payload_message: Vec<FieldElement> = vec![]; //TODO: Fill this with a valid payload message [ACCOUNT, METHOD, ...]
-    let contract_address = FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap();
+    let payload_message: Vec<FieldElement> = vec![];
+    let contract_address = FieldElement::from_hex_be(
+        "0x049D36570D4e46f48e99674bd3fcc84644DdD6b96F7C741B1562B82f9e004dC7",
+    )
+    .unwrap();
     let message = get_message_from_l1(
-        INVALID_ETHEREUM_ADDRESS,
+        "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
         contract_address,
-        SELECTOR_NAME,
+        "0x0000000",
         &payload_message,
     );
 
     let deoxys_message_fee = deoxys
-        .estimate_message_fee(message, BlockId::Hash(FieldElement::ZERO))
+        .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
     assert_matches!(
         deoxys_message_fee,
@@ -122,36 +120,54 @@ async fn fail_contract_error(clients: HashMap<String, JsonRpcClient<HttpTranspor
     )
 }
 
-#[require(spec_version = "0.5.1")]
+#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
-async fn estimate_message_fee_works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-
-    let payload_message: Vec<FieldElement> = vec![]; //TODO: Fill this with a valid payload message [ACCOUNT, METHOD, ...]
-    let contract_address = FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap();
-    let deoxys_message = get_message_from_l1(
-        ETHEREUM_ADDRESS,
-        contract_address,
-        SELECTOR_NAME,
-        &payload_message,
+async fn estimate_message_fee_works_ok(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+    let contract_address = FieldElement::from_hex_be(
+        "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82",
     );
-    let pathfinder_message = get_message_from_l1(
-        ETHEREUM_ADDRESS,
-        contract_address,
-        SELECTOR_NAME,
+    let payload_hex_strings = vec![
+        "0x0622fc5c49c6b6b542e98b03b999f26f68b311512d6937c247a5a6a153df9a8a",
+        "0x038d7ea4c68000",
+        "0x00",
+    ];
+
+    let payload_message: Vec<FieldElement> = payload_hex_strings
+        .iter()
+        .map(|hex_str| FieldElement::from_hex_be(hex_str).unwrap())
+        .collect();
+
+    let message_fee_params = get_message_from_l1(
+        "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419",
+        contract_address.expect(""),
+        "0x2d757788a8d8d6f21d1cd40bce38a8222d70654214e96ff95d8086e684fbee5",
         &payload_message,
     );
 
     let deoxys_message_fee = deoxys
-        .estimate_message_fee(deoxys_message, BlockId::Hash(FieldElement::ZERO))
+        .estimate_message_fee(message_fee_params.clone(), BlockId::Tag(BlockTag::Latest))
         .await
         .unwrap();
+
     let pathfinder_message_fee = pathfinder
-        .estimate_message_fee(pathfinder_message, BlockId::Hash(FieldElement::ZERO))
+        .estimate_message_fee(message_fee_params, BlockId::Tag(BlockTag::Latest))
         .await
         .unwrap();
-    assert_eq!(deoxys_message_fee, pathfinder_message_fee);
+
+    assert_eq!(
+        deoxys_message_fee.gas_consumed,
+        pathfinder_message_fee.gas_consumed
+    );
+    assert_eq!(
+        deoxys_message_fee.gas_price,
+        pathfinder_message_fee.gas_price
+    );
+    assert_eq!(
+        deoxys_message_fee.overall_fee,
+        pathfinder_message_fee.overall_fee
+    );
 }

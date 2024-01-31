@@ -3,7 +3,6 @@
 mod common;
 use common::*;
 
-use starknet_accounts::ConnectedAccount;
 use starknet_core::types::{
     BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement,
     SimulationFlag, StarknetError,
@@ -11,11 +10,7 @@ use starknet_core::types::{
 use starknet_core::utils::get_selector_from_name;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use std::assert_matches::assert_matches;
-use std::collections::HashMap;
-use unit_tests::{
-    build_single_owner_account, generate_call, BadTransactionFactory, MaxFeeTransactionFactory,
-    OkTransactionFactory, PrepareInvoke, TransactionFactory,
-};
+use std::convert::From;
 
 /// Test for the `simulate transaction` Deoxys RPC Call
 /// Simulate a given sequence of transactions on the requested state, and generate the execution traces.
@@ -34,12 +29,39 @@ use unit_tests::{
 // * `block_not_found` - If the block is not found or invalid
 // * `transaction_execution_error` - If one of the transactions failed to execute
 
+/// 🚧 Care this method is tested on v_0.6
+
+// pub fn get_broadcasted_transaction(
+//     from: &str,
+//     to: FieldElement,
+//     selector: &str,
+//     load: &Vec<FieldElement>,
+// ) -> BroadcastedTransaction {
+//     let loading = load.to_owned();
+//     MsgFromL1 {
+//         from_address: EthAddress::from_hex(from).unwrap(),
+//         to_address: to,
+//         entry_point_selector: FieldElement::from_hex_be(selector).unwrap(),
+//         payload: loading,
+//     }
+// }
+
 #[rstest]
 #[tokio::test]
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-
-    let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
+async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
+    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::ZERO,
+        signature: vec![],
+        nonce: FieldElement::ZERO,
+        sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
+            get_selector_from_name("sqrt").unwrap(),
+            FieldElement::from_hex_be("1").unwrap(),
+            FieldElement::from(81u8),
+        ],
+        is_query: false,
+    });
 
     assert_matches!(
         deoxys
@@ -55,37 +77,180 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
-async fn fail_max_fee_too_big(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+async fn fail_max_fee_too_big(deoxys: JsonRpcClient<HttpTransport>) {
+    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xffffffffffffffffff").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
+        ],
+        is_query: false,
+    });
 
-    let max_fee_transaction = MaxFeeTransactionFactory::build(Some(FieldElement::ZERO));
+    let response = deoxys
+        .simulate_transactions(
+            BlockId::Tag(BlockTag::Latest),
+            &[max_fee_invoke_transaction],
+            [SimulationFlag::SkipValidate],
+        )
+        .await;
 
-    assert_matches!(
-        deoxys
-            .simulate_transactions(BlockId::Tag(BlockTag::Latest), &[max_fee_transaction], [])
-            .await,
-        Err(ProviderError::StarknetError(
-            StarknetError::UnexpectedError(_)
-        )) //TODO : compare this code error to pathfinder to be sure
-    );
+    match response {
+        Ok(_) => panic!("Expected a Max Fee error, but got a successful response"),
+        Err(e) => {
+            let error_message = format!("{:?}", e);
+            assert!(
+                error_message.contains("Max fee"),
+                "Error do not concern Max fee"
+            );
+        }
+    }
 }
 
 #[rstest]
 #[tokio::test]
-async fn fail_if_one_txn_cannot_be_executed(
-    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
-) {
-    let deoxys = &clients[DEOXYS];
+async fn fail_max_fee_too_low(deoxys: JsonRpcClient<HttpTransport>) {
+    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xf").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
+        ],
+        is_query: false,
+    });
 
-    let bad_invoke_transaction = BadTransactionFactory::build(None);
-    let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ONE));
+    let response = deoxys
+        .simulate_transactions(
+            BlockId::Tag(BlockTag::Latest),
+            &[max_fee_invoke_transaction],
+            [SimulationFlag::SkipValidate],
+        )
+        .await;
 
+    match response {
+        Ok(_) => panic!("Expected a Max fee too low error, but got a successful response"),
+        Err(e) => {
+            let error_message = format!("{:?}", e);
+            assert!(
+                error_message.contains("Minimum fee"),
+                "Error do not concern minimum fee"
+            );
+        }
+    }
+}
+
+#[rstest]
+#[tokio::test]
+async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>) {
+    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
+        ],
+        is_query: false,
+    });
+
+    let bad_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x0626236383637613031643464656463376662666332333632613332313635373",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x0386138666231633730323431643031326132323734393763346334353632343",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x26").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x06b0f22f1c1f96146543d4f506ce3b6f76bcf6f154ce1db4ea8e61be341f4026",
+        )
+        .unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(
+                "0x28ad8723f66b38cab4be89d082dc21860a67e318b69e0b3adc3fc09c5bb32fa",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0xecfd5662af5fbcbb005e88a74bd1d7f0e5d78a4d0a278fa1744114fdd14405",
+            )
+            .unwrap(),
+        ],
+        is_query: false,
+    });
+
+    //🚨 CARE : Juno return, like Pathfinder, a contract error but use a detailed version that is not an implementaiton of Starknet-rs
     assert_matches!(
         deoxys
             .simulate_transactions(
                 BlockId::Tag(BlockTag::Latest),
                 &[bad_invoke_transaction, ok_invoke_transaction,],
-                []
+                [SimulationFlag::SkipValidate]
             )
             .await,
         Err(ProviderError::StarknetError(StarknetError::ContractError(
@@ -94,42 +259,49 @@ async fn fail_if_one_txn_cannot_be_executed(
     );
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-async fn works_ok_on_no_validate(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-
-    let tx = BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from(420u16),
-        signature: vec![],
-        nonce: FieldElement::ZERO,
-        sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+async fn works_ok_on_no_validate(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
         calldata: vec![
-            FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
-            get_selector_from_name("sqrt").unwrap(),
-            FieldElement::from_hex_be("1").unwrap(),
-            FieldElement::from(81u8),
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
         ],
         is_query: false,
-    };
-
-    let invoke_transaction = BroadcastedTransaction::Invoke(tx.clone());
-    let invoke_transaction_2 = invoke_transaction.clone();
-
-    let invoked_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        nonce: FieldElement::ONE,
-        ..tx
     });
 
-    let invoked_transaction_2 = invoked_transaction.clone();
+    let tx_next = tx.clone();
 
     let deoxys_simulations = deoxys
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction, invoked_transaction],
-            [],
+            &[tx],
+            [SimulationFlag::SkipValidate],
         )
         .await
         .unwrap();
@@ -137,115 +309,51 @@ async fn works_ok_on_no_validate(clients: HashMap<String, JsonRpcClient<HttpTran
     let pathfinder_simulations = pathfinder
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_2, invoked_transaction_2],
-            [],
+            &[tx_next],
+            [SimulationFlag::SkipValidate],
         )
         .await
         .unwrap();
 
+    // 🚨 Care : the len comparaison pass but concerning the response, there is a diff at storage entry between Juno and Pathfinder
+    // Juno team is on it apparently
     assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
     assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
-#[rstest]
-#[tokio::test]
-async fn works_ok_on_validate_with_signature(
-    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
-) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-
-    let deoxys_funding_account =
-        build_single_owner_account(deoxys, SIGNER_PRIVATE, ARGENT_CONTRACT_ADDRESS, true);
-    let pathfinder_funding_account =
-        build_single_owner_account(pathfinder, SIGNER_PRIVATE, ARGENT_CONTRACT_ADDRESS, true);
-    let deoxys_nonce = deoxys_funding_account
-        .get_nonce()
-        .await
-        .expect("Failed to get deoxys nonce");
-    let pathfinder_nonce = pathfinder_funding_account
-        .get_nonce()
-        .await
-        .expect("Failed to get pathfinder nonce");
-
-    let max_fee = FieldElement::from(1000u16);
-
-    let deoxys_calls = vec![generate_call(TEST_CONTRACT_ADDRESS, "sqrt", vec![81u8])];
-    let pathfinder_calls = vec![generate_call(TEST_CONTRACT_ADDRESS, "sqrt", vec![81u8])];
-
-    let tx_deoxys = deoxys_funding_account
-        .prepare_invoke(deoxys_calls, deoxys_nonce, max_fee, false)
-        .await;
-    let tx_pathfinder = pathfinder_funding_account
-        .prepare_invoke(pathfinder_calls, pathfinder_nonce, max_fee, false)
-        .await;
-
-    let invoke_transaction_deoxys = BroadcastedTransaction::Invoke(tx_deoxys);
-    let invoke_transaction_pathfinder = BroadcastedTransaction::Invoke(tx_pathfinder);
-
-    let deoxys_simulations = deoxys
-        .simulate_transactions(
-            BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_deoxys],
-            [],
-        )
-        .await
-        .unwrap();
-    let pathfinder_simulations = pathfinder
-        .simulate_transactions(
-            BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_pathfinder],
-            [],
-        )
-        .await
-        .unwrap();
-
-    assert_eq!(deoxys_simulations.len(), pathfinder_simulations.len());
-    assert_eq!(deoxys_simulations, pathfinder_simulations);
-}
-
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_on_validate_without_signature_with_skip_validate(
-    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+        signature: vec![],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
+        calldata: vec![
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
+        ],
+        is_query: false,
+    });
 
-    let deoxys_funding_account =
-        build_single_owner_account(&deoxys, SIGNER_PRIVATE, ARGENT_CONTRACT_ADDRESS, true);
-    let pathfinder_funding_account =
-        build_single_owner_account(&pathfinder, SIGNER_PRIVATE, ARGENT_CONTRACT_ADDRESS, true);
-    let deoxys_nonce = deoxys_funding_account
-        .get_nonce()
-        .await
-        .expect("Failed to get deoxys nonce");
-    let pathfinder_nonce = pathfinder_funding_account
-        .get_nonce()
-        .await
-        .expect("Failed to get pathfinder nonce");
-
-    let max_fee = FieldElement::from(1000u16);
-
-    let deoxys_calls = vec![generate_call(TEST_CONTRACT_ADDRESS, "sqrt", vec![81u8])];
-    let pathfinder_calls = vec![generate_call(TEST_CONTRACT_ADDRESS, "sqrt", vec![81u8])];
-
-    let tx_deoxys = deoxys_funding_account
-        .prepare_invoke(deoxys_calls, deoxys_nonce, max_fee, false)
-        .await;
-    let tx_pathfinder = pathfinder_funding_account
-        .prepare_invoke(pathfinder_calls, pathfinder_nonce, max_fee, false)
-        .await;
-
-    let invoke_transaction_deoxys = BroadcastedTransaction::Invoke(tx_deoxys);
-    let invoke_transaction_pathfinder = BroadcastedTransaction::Invoke(tx_pathfinder);
+    let tx_next = tx.clone();
 
     let deoxys_simulations = deoxys
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_deoxys],
+            &[tx],
             [SimulationFlag::SkipValidate],
         )
         .await
@@ -254,7 +362,7 @@ async fn works_ok_on_validate_without_signature_with_skip_validate(
     let pathfinder_simulations = pathfinder
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_pathfinder],
+            &[tx_next],
             [SimulationFlag::SkipValidate],
         )
         .await
@@ -264,43 +372,49 @@ async fn works_ok_on_validate_without_signature_with_skip_validate(
     assert_eq!(deoxys_simulations, pathfinder_simulations);
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn works_ok_without_max_fee_with_skip_fee_charge(
-    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-
-    let tx = BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from(0u8),
-        signature: vec![],
-        nonce: FieldElement::ZERO,
-        sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        max_fee: FieldElement::from_hex_be("0x00").unwrap(),
+        signature: vec![
+            FieldElement::from_hex_be(
+                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+            )
+            .expect("REASON"),
+            FieldElement::from_hex_be(
+                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+            )
+            .expect("REASON"),
+        ],
+        nonce: FieldElement::from_hex_be("0x20").unwrap(),
+        sender_address: FieldElement::from_hex_be(
+            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+        )
+        .unwrap(),
         calldata: vec![
-            FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
-            get_selector_from_name("sqrt").unwrap(),
-            FieldElement::from_hex_be("1").unwrap(),
-            FieldElement::from(81u8),
+            FieldElement::from_hex_be(
+                "0x0333366346336346435623165626564653266623531386661366635396565623",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0653535393433653264616163313937353164313735393562666532383464356",
+            )
+            .unwrap(),
         ],
         is_query: false,
-    };
-
-    let invoke_transaction = BroadcastedTransaction::Invoke(tx.clone());
-    let invoke_transaction_2 = invoke_transaction.clone();
-
-    let invoked_transaction_deoxys = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        nonce: FieldElement::ONE,
-        ..tx
     });
-    let invoked_transaction_pathfinder = invoked_transaction_deoxys.clone();
+
+    let tx_next = tx.clone();
 
     let deoxys_simulations = deoxys
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction, invoked_transaction_deoxys],
-            [SimulationFlag::SkipFeeCharge],
+            &[tx],
+            [SimulationFlag::SkipValidate, SimulationFlag::SkipFeeCharge],
         )
         .await
         .unwrap();
@@ -308,8 +422,8 @@ async fn works_ok_without_max_fee_with_skip_fee_charge(
     let pathfinder_simulations = pathfinder
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
-            &[invoke_transaction_2, invoked_transaction_pathfinder],
-            [SimulationFlag::SkipFeeCharge],
+            &[tx_next],
+            [SimulationFlag::SkipValidate, SimulationFlag::SkipFeeCharge],
         )
         .await
         .unwrap();

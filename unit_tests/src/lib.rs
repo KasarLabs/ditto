@@ -61,7 +61,10 @@ impl TransactionFactory for MaxFeeTransactionFactory {
             max_fee: FieldElement::from_hex_be("0x100000000000000000000000000000000").unwrap(),
             signature: vec![],
             nonce: FieldElement::ZERO,
-            sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
+            )
+            .unwrap(),
             calldata: vec![
                 FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
                 get_selector_from_name("sqrt").unwrap(),
