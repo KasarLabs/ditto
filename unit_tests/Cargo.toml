@@ -17,6 +17,8 @@ starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", r
 starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "96c6803", default-features = false }
 env_logger = "0.10.1"
 macro_utils = { path = "../macro_utils/" }
+rand = "0.8.5"
+serde_json = "1.0"
 
 [dev-dependencies]
 jsonrpsee = { version = "0.21.0", features = ["client"] }
