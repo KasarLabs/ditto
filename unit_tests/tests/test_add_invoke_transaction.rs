@@ -2,7 +2,9 @@
 
 mod common;
 use common::*;
-use starknet_core::types::{BroadcastedInvokeTransaction, FieldElement, StarknetError, TransactionStatus};
+use starknet_core::types::{
+    BroadcastedInvokeTransaction, FieldElement, StarknetError, TransactionStatus,
+};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider, ProviderError,
@@ -13,7 +15,7 @@ use std::time::Duration;
 
 /// Test for the `add_invoke_transaction` Deoxys RPC method
 /// Submit a new transaction to be added to the chain
-/// 
+///
 /// # Arguments
 /// * `invoke_transaction` - An invoke transaction,
 ///     with following fields:
@@ -24,10 +26,10 @@ use std::time::Duration;
 ///         * `version` - The version of the transaction
 ///         * `signature` - The transaction signature
 ///         * `nonce` - The nonce of the transaction
-/// 
+///
 /// # Returns
 /// * `result` - The result of the transaction submission, with the transaction hash that has been submitted
-/// 
+///
 /// # Errors
 /// * `invalid_transaction_nonce` - If the transaction nonce is invalid
 /// * `insufficient_account_balance` - If the account balance is insufficient
@@ -43,7 +45,6 @@ use std::time::Duration;
 #[rstest]
 #[tokio::test]
 async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_invoke_transaction = BroadcastedInvokeTransaction {
         sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
         calldata: vec![FieldElement::from_hex_be("calldata_array").unwrap()],
@@ -68,7 +69,6 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_invoke_transaction = BroadcastedInvokeTransaction {
         sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
         calldata: vec![FieldElement::from_hex_be("calldata_array").unwrap()],
@@ -93,7 +93,6 @@ async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn fail_if_bad_calldata(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_invoke_transaction = BroadcastedInvokeTransaction {
         sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
         calldata: vec![FieldElement::from_hex_be("0x000000").unwrap()], //here calldata is invalid
@@ -118,7 +117,6 @@ async fn fail_if_bad_calldata(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn works_ok_with_valid_params(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let valid_invoke_transaction = BroadcastedInvokeTransaction {
         sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
         calldata: vec![FieldElement::from_hex_be("calldata_array").unwrap()],
@@ -134,7 +132,9 @@ async fn works_ok_with_valid_params(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     //Now, if the transaction is valid, the rpc call response contain the transaction hash
-    let transaction_submitted_hash = response_deoxys.expect("Transaction submition failed").transaction_hash;
+    let transaction_submitted_hash = response_deoxys
+        .expect("Transaction submition failed")
+        .transaction_hash;
 
     //Wait for the transaction to be added to the chain
     thread::sleep(Duration::from_secs(15));
@@ -144,8 +144,5 @@ async fn works_ok_with_valid_params(deoxys: JsonRpcClient<HttpTransport>) {
         .get_transaction_status(transaction_submitted_hash)
         .await;
 
-    assert_matches!(
-        transaction_status.unwrap(),
-        TransactionStatus::Received
-    );
+    assert_matches!(transaction_status.unwrap(), TransactionStatus::Received);
 }

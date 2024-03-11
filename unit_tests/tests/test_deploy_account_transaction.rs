@@ -2,7 +2,9 @@
 
 mod common;
 use common::*;
-use starknet_core::types::{BroadcastedDeployAccountTransaction, FieldElement, StarknetError, TransactionStatus};
+use starknet_core::types::{
+    BroadcastedDeployAccountTransaction, FieldElement, StarknetError, TransactionStatus,
+};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider, ProviderError,
@@ -13,9 +15,9 @@ use std::time::Duration;
 
 /// Test for the `deploy_account_transaction` Deoxys RPC method
 /// Submit a new deploy account transaction
-/// 
+///
 /// There is two type of DeployAccountTransaction: V1 and V3
-/// 
+///
 /// # Arguments
 /// * `deploy_account_transaction` - A deploy account transaction
 ///    with following fields (V1):
@@ -27,13 +29,13 @@ use std::time::Duration;
 ///       * `constructor_calldata` - The parameters passed to the constructor
 ///       * `class_hash` - The hash of the deployed contract's class
 ///       * `is_query` - If set to `true`, uses a query-only transaction version that's invalid for execution
-/// 
+///
 /// # Returns
 /// * `result` - The result of the transaction submission
 ///    with following fields:
 ///       * `transaction_hash` - The hash of the transaction
 ///       * `contract_address` - The address of the deployed contract
-/// 
+///
 /// # Errors
 /// * `invalid_transaction_nonce` - If the transaction nonce is invalid
 /// * `insufficient_account_balance` - If the account balance is insufficient
@@ -48,7 +50,6 @@ use std::time::Duration;
 #[rstest]
 #[tokio::test]
 async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_deploy_account_transaction = BroadcastedDeployAccountTransaction {
         max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
         signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
@@ -65,14 +66,15 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
 
     assert_matches!(
         response_deoxys,
-        Err(ProviderError::StarknetError(StarknetError::InvalidTransactionNonce))
+        Err(ProviderError::StarknetError(
+            StarknetError::InvalidTransactionNonce
+        ))
     );
 }
 
 #[rstest]
 #[tokio::test]
 async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_deploy_account_transaction = BroadcastedDeployAccountTransaction {
         max_fee: FieldElement::from_hex_be("0x000000").unwrap(), //here max_fee is insufficient
         signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
@@ -89,14 +91,15 @@ async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
 
     assert_matches!(
         response_deoxys,
-        Err(ProviderError::StarknetError(StarknetError::InsufficientMaxFee))
+        Err(ProviderError::StarknetError(
+            StarknetError::InsufficientMaxFee
+        ))
     );
 }
 
 #[rstest]
 #[tokio::test]
 async fn fail_if_invalid_transaction_nonce(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let invalid_deploy_account_transaction = BroadcastedDeployAccountTransaction {
         max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
         signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
@@ -113,14 +116,15 @@ async fn fail_if_invalid_transaction_nonce(deoxys: JsonRpcClient<HttpTransport>)
 
     assert_matches!(
         response_deoxys,
-        Err(ProviderError::StarknetError(StarknetError::InvalidTransactionNonce))
+        Err(ProviderError::StarknetError(
+            StarknetError::InvalidTransactionNonce
+        ))
     );
 }
 
 #[rstest]
 #[tokio::test]
 async fn works_ok(deoxys: JsonRpcClient<HttpTransport>) {
-    
     let valid_deploy_account_transaction = BroadcastedDeployAccountTransaction {
         max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
         signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
@@ -139,18 +143,17 @@ async fn works_ok(deoxys: JsonRpcClient<HttpTransport>) {
     let result = response_deoxys.unwrap();
 
     //Now, if the transaction is valid, the rpc call response contain the transaction hash
-    let transaction_submitted_hash = response_deoxys.expect("Transaction submition failed").transaction_hash;
+    let transaction_submitted_hash = response_deoxys
+        .expect("Transaction submition failed")
+        .transaction_hash;
 
     //Wait for the transaction to be added to the chain
     thread::sleep(Duration::from_secs(15));
- 
+
     //Let's check the transaction status
-     let transaction_status = deoxys
-         .get_transaction_status(transaction_submitted_hash)
-         .await;
- 
-    assert_matches!(
-         transaction_status.unwrap(),
-         TransactionStatus::Received
-    );
+    let transaction_status = deoxys
+        .get_transaction_status(transaction_submitted_hash)
+        .await;
+
+    assert_matches!(transaction_status.unwrap(), TransactionStatus::Received);
 }
