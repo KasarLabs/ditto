@@ -2,6 +2,9 @@
 
 mod common;
 use common::*;
+use starknet::accounts::{Account, Call, ExecutionEncoding, SingleOwnerAccount};
+use starknet::signers::{LocalWallet, SigningKey};
+use starknet_core::chain_id;
 use starknet_core::types::{
     BroadcastedInvokeTransaction, FieldElement, StarknetError, TransactionStatus,
 };
@@ -42,21 +45,63 @@ use std::time::Duration;
 /// * `unexpected_error` - If an unexpected error occurs
 
 /// Following tests runs using V1 Invoke Transaction (params follow starknet-rs implementation)
+
+/// Invoke transaction method is used to trigger a transaction by using a valid account and the execute method.
+/// When used, its change the state (write), in opposition to the "call" method which is read-only.
+
+pub const TESTNET: &str = "sepolia";
+
+fn get_account(
+    provider: JsonRpcClient<HttpTransport>,
+    address: FieldElement,
+    chain_id: FieldElement,
+    exec_encoding: ExecutionEncoding,
+) -> SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>{
+    let signer = LocalWallet::from(SigningKey::from_secret_scalar(
+        FieldElement::from_hex_be("YOUR_PRIVATE_KEY_IN_HEX_HERE").unwrap(),
+    ));
+
+    let account = SingleOwnerAccount::new(provider, signer, address, chain_id, exec_encoding);
+
+    account
+}
+
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
-    let invalid_invoke_transaction = BroadcastedInvokeTransaction {
-        sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
+    let account = get_account(
+        deoxys,
+        FieldElement::from_hex_be("YOUR_ADDRESS_IN_HEX_HERE").unwrap(),
+        FieldElement::from_hex_be(TESTNET).unwrap(),
+        ExecutionEncoding::New,
+    );
+
+    /// This part is for the intern call so we dont manage it at this level
+    // let invalid_invoke_transaction = BroadcastedInvokeTransaction {
+    //     sender_address: FieldElement::from_hex_be("valid_address").unwrap(),
+    //     calldata: vec![FieldElement::from_hex_be("calldata_array").unwrap()],
+    //     max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
+    //     signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
+    //     nonce: FieldElement::from_hex_be("0x000000").unwrap(), //here nonce is invalid
+    //     is_query: false,
+    // };
+
+    let invalid_invoke_transaction = Call {
+        to: FieldElement::from_hex_be("contract_address").unwrap(),
+        selector: FieldElement::from_hex_be("selector").unwrap(), //use transfert here for example
         calldata: vec![FieldElement::from_hex_be("calldata_array").unwrap()],
-        max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
-        signature: vec![FieldElement::from_hex_be("signature_array").unwrap()],
-        nonce: FieldElement::from_hex_be("0x000000").unwrap(), //here nonce is invalid
-        is_query: false,
     };
 
-    let response_deoxys = deoxys
-        .add_invoke_transaction(invalid_invoke_transaction)
-        .await;
+    let invalid_transactions = vec![invalid_invoke_transaction];
+
+    let execution = account.execute(invalid_transactions);
+    let invoked_tx_hash = execution.send().await.unwrap().transaction_hash;
+
+
+    // let response_deoxys = deoxys
+    //     .add_invoke_transaction(invalid_invoke_transaction)
+    //     .await;
 
     assert_matches!(
         response_deoxys,
@@ -66,6 +111,7 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
@@ -90,6 +136,7 @@ async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_bad_calldata(deoxys: JsonRpcClient<HttpTransport>) {
@@ -114,6 +161,7 @@ async fn fail_if_bad_calldata(deoxys: JsonRpcClient<HttpTransport>) {
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn works_ok_with_valid_params(deoxys: JsonRpcClient<HttpTransport>) {

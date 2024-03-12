@@ -4,6 +4,7 @@
 mod common;
 use common::*;
 
+use rstest::rstest;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
@@ -11,13 +12,13 @@ use starknet_providers::{
 };
 use std::sync::Arc;
 use std::{assert_matches::assert_matches, collections::HashMap};
-use unit_tests::constants::DEOXYS;
+use unit_tests::constants::{DEOXYS, PATHFINDER};
 
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .get_block_transaction_count(BlockId::Hash(FieldElement::ZERO))
@@ -30,7 +31,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -72,7 +72,6 @@ async fn work_with_block(
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1(
@@ -82,7 +81,6 @@ async fn work_with_block_1(
     work_with_block(deoxys, pathfinder, 1).await;
 }
 
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -109,8 +107,6 @@ async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTrans
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-/// block 50066 is one of the biggest blocks in the mainnet
-#[require(block_min = 5066, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(
@@ -120,7 +116,6 @@ async fn work_with_block_5066(
     work_with_block(deoxys, pathfinder, 1).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_100_000(
@@ -130,7 +125,6 @@ async fn work_with_block_100_000(
     work_with_block(deoxys, pathfinder, 100_000).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -157,7 +151,6 @@ async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<Htt
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "ignore this test"]

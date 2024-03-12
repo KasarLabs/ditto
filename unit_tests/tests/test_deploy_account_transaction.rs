@@ -47,6 +47,7 @@ use std::time::Duration;
 /// * `unsupported_transaction_version` - If the transaction version is not supported
 /// * `unexpected_error` - If an unexpected error occurs
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
@@ -72,6 +73,7 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
@@ -97,6 +99,7 @@ async fn fail_if_insufficient_max_fee(deoxys: JsonRpcClient<HttpTransport>) {
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn fail_if_invalid_transaction_nonce(deoxys: JsonRpcClient<HttpTransport>) {
@@ -122,6 +125,7 @@ async fn fail_if_invalid_transaction_nonce(deoxys: JsonRpcClient<HttpTransport>)
     );
 }
 
+#[ignore = "For this one, you need to submit a valid account (private key) and address"]
 #[rstest]
 #[tokio::test]
 async fn works_ok(deoxys: JsonRpcClient<HttpTransport>) {
@@ -140,12 +144,10 @@ async fn works_ok(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     //Here, as response we got the transaction hash and the contract address deployed
-    let result = response_deoxys.unwrap();
+    let result = response_deoxys.expect("Error in the transaction submission");
 
     //Now, if the transaction is valid, the rpc call response contain the transaction hash
-    let transaction_submitted_hash = response_deoxys
-        .expect("Transaction submition failed")
-        .transaction_hash;
+    let transaction_submitted_hash = result.transaction_hash;
 
     //Wait for the transaction to be added to the chain
     thread::sleep(Duration::from_secs(15));

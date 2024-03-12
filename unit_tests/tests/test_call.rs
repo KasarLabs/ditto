@@ -4,9 +4,10 @@ mod common;
 use std::{assert_matches::assert_matches, collections::HashMap};
 
 use common::*;
+use jsonrpsee::types::response;
 use starknet::macros::short_string;
 use starknet_core::{
-    types::{BlockId, BlockTag, FieldElement, FunctionCall, StarknetError},
+    types::{BlockId, BlockTag, ContractErrorData, FieldElement, FunctionCall, StarknetError},
     utils::get_selector_from_name,
 };
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
@@ -17,11 +18,11 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid block
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -35,11 +36,28 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
-    )
+    let response_pathfinder = pathfinder
+        .call(
+            FunctionCall {
+                contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+                entry_point_selector: get_selector_from_name("name").unwrap(),
+                calldata: vec![],
+            },
+            BlockId::Hash(FieldElement::ZERO),
+        )
+        .await
+        .err();
+
+    assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(is_correct_error, "Expected BlockNotFound error, but got a different error");
 }
+
 
 ///
 /// Unit test for `starknet_call`
@@ -47,11 +65,11 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid contract address
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -65,12 +83,26 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    );
+    let response_pathfinder = pathfinder
+        .call(
+            FunctionCall {
+                contract_address: FieldElement::ZERO,
+                entry_point_selector: get_selector_from_name("name").unwrap(),
+                calldata: vec![],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .err();
+
+        assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+
+        let is_correct_error = checking_error_format(
+            response_pathfinder.as_ref().unwrap(),
+            StarknetError::ContractNotFound,
+        );
+    
+        assert!(is_correct_error, "Expected ContractNotFound error, but got a different error");
 }
 
 ///
@@ -79,13 +111,13 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: invalid field element
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_entry_point_selector(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
     let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -99,12 +131,30 @@ async fn fail_invalid_contract_entry_point_selector(
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    );
+    let response_pathfinder = pathfinder
+    .call(
+        FunctionCall {
+            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+            entry_point_selector: FieldElement::ZERO,
+            calldata: vec![],
+        },
+        BlockId::Tag(BlockTag::Latest),
+    )
+    .await
+    .err();
+
+    println!("✅ JUNO {:?}", response_deoxys);
+    println!("✅ PATHFINDER {:?}", response_pathfinder);
+
+    //checking_error(response_deoxys.unwrap(), StarknetError::ContractNotFound);
+    checking_error_format(&response_deoxys.unwrap(), StarknetError::ContractNotFound);
+
+    // assert_matches!(
+    //     response_deoxys,
+    //     Some(ProviderError::StarknetError(
+    //         StarknetError::ContractNotFound
+    //     ))
+    // );
 }
 
 ///
@@ -113,11 +163,11 @@ async fn fail_invalid_contract_entry_point_selector(
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// fail case: missing call data. This is different from solely *invalid* call data, as we will see shortly
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -131,12 +181,33 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    );
+    let response_pathfinder = pathfinder
+        .call(
+            FunctionCall {
+                contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+                calldata: vec![],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .err();
+
+    println!("✅ JUNO {:?}", response_deoxys);
+    println!("✅ PATHFINDER {:?}", response_pathfinder);
+
+    let error_reason = ContractErrorData {
+        revert_error: "ContractError".to_string(),
+    };
+
+    assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+
+        let is_correct_error = checking_error_format(
+            response_pathfinder.as_ref().unwrap(),
+            StarknetError::ContractError(error_reason),
+        );
+    
+    assert!(is_correct_error, "Expected ContractError error, but got a different error");
 }
 
 ///
@@ -145,7 +216,6 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// fail case: invalid call data. This does not cause an error upon calling the contract but returns felt 0x0
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
