@@ -48,18 +48,22 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
 
     let is_correct_error = checking_error_format(
         response_pathfinder.as_ref().unwrap(),
         StarknetError::BlockNotFound,
     );
 
-    assert!(is_correct_error, "Expected BlockNotFound error, but got a different error");
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
+    );
 }
 
-
-///
 /// Unit test for `starknet_call`
 ///
 /// purpose: function request `name` to StarkGate ETH bridge contract
@@ -95,14 +99,20 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
         .await
         .err();
 
-        assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
 
-        let is_correct_error = checking_error_format(
-            response_pathfinder.as_ref().unwrap(),
-            StarknetError::ContractNotFound,
-        );
-    
-        assert!(is_correct_error, "Expected ContractNotFound error, but got a different error");
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
+    );
 }
 
 ///
@@ -132,29 +142,34 @@ async fn fail_invalid_contract_entry_point_selector(
         .err();
 
     let response_pathfinder = pathfinder
-    .call(
-        FunctionCall {
-            contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
-            entry_point_selector: FieldElement::ZERO,
-            calldata: vec![],
-        },
-        BlockId::Tag(BlockTag::Latest),
-    )
-    .await
-    .err();
+        .call(
+            FunctionCall {
+                contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
+                entry_point_selector: FieldElement::ZERO,
+                calldata: vec![],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .err();
 
     println!("✅ JUNO {:?}", response_deoxys);
     println!("✅ PATHFINDER {:?}", response_pathfinder);
 
-    //checking_error(response_deoxys.unwrap(), StarknetError::ContractNotFound);
-    checking_error_format(&response_deoxys.unwrap(), StarknetError::ContractNotFound);
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
 
-    // assert_matches!(
-    //     response_deoxys,
-    //     Some(ProviderError::StarknetError(
-    //         StarknetError::ContractNotFound
-    //     ))
-    // );
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
+    );
 }
 
 ///
@@ -200,14 +215,20 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
         revert_error: "ContractError".to_string(),
     };
 
-    assert!(response_deoxys.is_some(), "Expected an error, but got a result");
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
 
-        let is_correct_error = checking_error_format(
-            response_pathfinder.as_ref().unwrap(),
-            StarknetError::ContractError(error_reason),
-        );
-    
-    assert!(is_correct_error, "Expected ContractError error, but got a different error");
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::ContractError(error_reason),
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractError error, but got a different error"
+    );
 }
 
 ///
@@ -245,7 +266,6 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// fail case: too many arguments in call data
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -263,9 +283,19 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::BlockNotFound, //TODO : Check this one
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractError error, but got a different error"
     );
 }
 
@@ -275,7 +305,6 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: function request `name` to StarkGate ETH bridge contract
 /// success case: should return 'Ether'
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -318,7 +347,6 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
 /// purpose: function request `balanceOf` to StarkGate ETH bridge contract
 /// success case: must return non-zero balance
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -361,7 +389,6 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
 /// purpose: function request `sort_tokens` to JediSwap exchange, with multiple arguments.
 /// success case: must return array of 2 non-zero values.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

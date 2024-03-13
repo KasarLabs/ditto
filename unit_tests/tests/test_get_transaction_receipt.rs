@@ -12,22 +12,26 @@ use starknet_providers::{
 };
 
 // invalid transaction_hash
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    let response_deoxys = deoxys
-        .get_transaction_receipt(FieldElement::ZERO)
-        .await
-        .err();
+    let response_deoxys = deoxys.get_transaction_receipt(FieldElement::ZERO).await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::InvalidTransactionHash
-        ))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::InvalidTransactionHash,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected InvalidTransactionHash error, but got a different error"
     );
 }
 
@@ -53,7 +57,6 @@ async fn work_with_hash(
 }
 
 /// reverted transaction on block 200000
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_reverted_transaction_block_200_000(
@@ -69,7 +72,6 @@ async fn work_with_reverted_transaction_block_200_000(
 }
 
 /// first transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_first_transaction_block_0(
@@ -85,7 +87,6 @@ async fn work_with_first_transaction_block_0(
 }
 
 /// deploy transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_0(
@@ -101,7 +102,6 @@ async fn work_with_deploy_transaction_block_0(
 }
 
 ///invoke transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke_transaction_block_0(
@@ -117,7 +117,6 @@ async fn work_with_invoke_transaction_block_0(
 }
 
 ///deploy transaction on block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_1(

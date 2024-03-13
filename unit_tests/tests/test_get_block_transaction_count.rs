@@ -18,16 +18,25 @@ use unit_tests::constants::{DEOXYS, PATHFINDER};
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
         .get_block_transaction_count(BlockId::Hash(FieldElement::ZERO))
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 

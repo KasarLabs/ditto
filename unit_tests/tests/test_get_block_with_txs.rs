@@ -25,13 +25,22 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -73,8 +82,6 @@ async fn work_with_block(
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-/// block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1(
@@ -84,7 +91,6 @@ async fn work_with_block_1(
     work_with_block(deoxys, pathfinder, 1).await;
 }
 
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -151,7 +157,6 @@ async fn work_with_block_one_hundred_thousand_hash(
 }
 
 /// block 3800 is the first block with starknet_version in the header
-#[require(block_min = 3800, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_3800(
@@ -162,7 +167,6 @@ async fn work_with_block_3800(
 }
 
 /// block 50066 is one of the biggest blocks in the mainnet
-#[require(block_min = 5066, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(
@@ -182,7 +186,6 @@ async fn work_with_block_1500(
     work_with_block(deoxys, pathfinder, 1500).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "ignore this test"]

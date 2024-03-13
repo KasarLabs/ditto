@@ -3,6 +3,7 @@
 mod common;
 use common::*;
 
+use jsonrpsee::types::response;
 use starknet_core::types::{BlockId, BlockTag, StarknetError};
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
 use std::assert_matches::assert_matches;
@@ -20,20 +21,30 @@ use std::collections::HashMap;
 // # Errors
 // * `block_not_found` - If the block is not found or invalid
 
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    assert_matches!(
-        deoxys.get_state_update(BlockId::Number(0)).await,
-        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    let response_deoxys = deoxys.get_state_update(BlockId::Number(0)).await;
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Need to fix unwrap on error due to empty constants"]

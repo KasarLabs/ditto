@@ -27,12 +27,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
             BlockId::Hash(FieldElement::ZERO),
             FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
@@ -53,11 +62,19 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
     );
 }
 
@@ -66,8 +83,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 ///
 /// purpose: gets legacy contract and extracts it's data.
 /// success case: should retrieve contract and decompress it to a valid json string.
-///
-#[require(block_min = 2891, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_contract_v0(
@@ -125,7 +140,6 @@ async fn work_contract_v0(
 /// purpose: gets Cairo v1 contract and extracts it's data.
 /// success case: should retrieve contract correctly.
 ///
-#[require(block_min = 500_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_contract_v1(

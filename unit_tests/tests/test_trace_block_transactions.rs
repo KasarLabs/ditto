@@ -15,11 +15,23 @@ use starknet_providers::{
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
-    assert_matches!(
-        deoxys
-            .trace_block_transactions(BlockId::Hash(FieldElement::ZERO))
-            .await,
-        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    let response_deoxys = deoxys
+        .trace_block_transactions(BlockId::Hash(FieldElement::ZERO))
+        .await;
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 

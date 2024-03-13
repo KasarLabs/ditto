@@ -13,7 +13,6 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call on non-existent block.
 /// fail case: invalid block
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -21,12 +20,21 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     let response_deoxys = deoxys
         .get_transaction_by_block_id_and_index(BlockId::Hash(FieldElement::ZERO), 0)
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
@@ -36,7 +44,6 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call on valid block with out-of-range index.
 /// fail case: index out of block range (block 5000 only has 389 transactions)
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -44,14 +51,21 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 
     let response_deoxys = deoxys
         .get_transaction_by_block_id_and_index(BlockId::Number(5000), 389)
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::InvalidTransactionIndex
-        ))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::InvalidTransactionIndex,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected InvalidTransactionIndex error, but got a different error"
     );
 }
 
@@ -61,7 +75,6 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 /// purpose: get INVOKE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -101,7 +114,6 @@ async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport
 /// purpose: get L1_HANDLER transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -141,7 +153,6 @@ async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTrans
 /// purpose: get DECLARE transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(block_min = 49_990, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -181,7 +192,6 @@ async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTranspor
 /// purpose: get DEPLOY_ACCOUNT transaction.
 /// success case: client retrieves same transaction with getTransactionByBlockIdAndIndex and getTransactionByHash.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

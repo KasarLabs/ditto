@@ -20,7 +20,6 @@ use unit_tests::constants::DEOXYS;
 /// purpose: call getBlockWithTxHashes on invalid block.
 /// fail case: invalid block.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -31,9 +30,19 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
@@ -43,7 +52,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getBlockWithTxHashes on latest validated block.
 /// success case: retrieves valid block.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -83,7 +91,6 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 ///
 /// Note that this can fail at the last moments of a block being validated!!!
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
@@ -134,7 +141,6 @@ async fn work_with_block(
 }
 
 /// block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1(
@@ -145,29 +151,26 @@ async fn work_with_block_1(
 }
 
 /// block 3800 is the first block with starknet_version in the header
-#[require(block_min = 3800, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_3800(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    work_with_block(deoxys, pathfinder, 1).await;
+    work_with_block(deoxys, pathfinder, 3000).await;
 }
 
 /// block 50066 is one of the biggest blocks in the mainnet
-#[require(block_min = 5066, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    work_with_block(deoxys, pathfinder, 1).await;
+    work_with_block(deoxys, pathfinder, 5066).await;
 }
 
 /// block 1466-2242 mismatch block_hash
-#[require(block_min = 1500, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1500(
@@ -177,7 +180,6 @@ async fn work_with_block_1500(
     work_with_block(deoxys, pathfinder, 1500).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "ignore this test"]

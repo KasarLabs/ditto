@@ -20,20 +20,29 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
-    assert_matches!(
-        deoxys
-            .estimate_fee(
-                &vec![ok_invoke_transaction],
-                BlockId::Hash(FieldElement::ZERO)
-            )
-            .await,
-        Err(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
+    let response_deoxys = deoxys
+        .estimate_fee(
+            &vec![ok_invoke_transaction],
+            BlockId::Hash(FieldElement::ZERO),
+        )
+        .await;
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
-#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
@@ -45,24 +54,29 @@ async fn fail_if_one_txn_cannot_be_executed(
 
     let bad_invoke_transaction = BadTransactionFactory::build(None);
 
-    let result_deoxys = deoxys
+    let response_deoxys = deoxys
         .estimate_fee(
             vec![bad_invoke_transaction.clone()],
             BlockId::Tag(BlockTag::Latest),
         )
-        .await
-        .unwrap();
+        .await;
 
-    // FIX: this causes an error during the tests
-    let result_pathfinder = pathfinder
-        .estimate_fee(vec![bad_invoke_transaction], BlockId::Tag(BlockTag::Latest))
-        .await
-        .unwrap();
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
 
-    assert_eq!(result_deoxys, result_pathfinder);
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    ); //TODO : check this error
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
+    );
 }
 
-#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]

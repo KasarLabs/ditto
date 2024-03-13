@@ -28,10 +28,20 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
-    )
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
+    );
 }
 
 ///
@@ -40,7 +50,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getClassHashAt on non-existent contract.
 /// fail case: invalid contract hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -51,15 +60,22 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
             BlockId::Tag(BlockTag::Latest),
             FieldElement::from_hex_be(INVALID_CONTRACT_ADDR).unwrap(),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    )
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
+    );
 }
 
 ///
@@ -68,7 +84,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getClassHashAt on latest block.
 /// success case: retrieve valid class hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -99,7 +114,6 @@ async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>
 /// purpose: call getClassHashAt on pending block.
 /// success case: retrieve valid class hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]

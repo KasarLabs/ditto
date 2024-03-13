@@ -41,7 +41,6 @@ pub fn get_message_from_l1(
     }
 }
 
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
@@ -60,13 +59,23 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
     let deoxys_message_fee = deoxys
         .estimate_message_fee(message, BlockId::Hash(FieldElement::ZERO))
         .await;
-    assert_matches!(
-        deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
@@ -83,12 +92,21 @@ async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
     let deoxys_message_fee = deoxys
         .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
-    assert_matches!(
-        deoxys_message_fee,
-        Err(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    )
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
+    );
 }
 
 #[require(block_min = 200_000, spec_version = "0.5.1")]
@@ -112,15 +130,27 @@ async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     let deoxys_message_fee = deoxys
         .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
-    assert_matches!(
-        deoxys_message_fee,
-        Err(ProviderError::StarknetError(StarknetError::ContractError(
-            _
-        )))
-    )
+
+    let error_reason = ContractErrorData {
+        revert_error: "ContractError".to_string(),
+    };
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_pathfinder.as_ref().unwrap(),
+        StarknetError::ContractError(error_reason),
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractError error, but got a different error"
+    );
 }
 
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn estimate_message_fee_works_ok(

@@ -63,15 +63,27 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         is_query: false,
     });
 
-    assert_matches!(
-        deoxys
-            .simulate_transactions(
-                BlockId::Hash(FieldElement::ZERO),
-                &[ok_invoke_transaction],
-                []
-            )
-            .await,
-        Err(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    let response_deoxys = deoxys
+        .simulate_transactions(
+            BlockId::Hash(FieldElement::ZERO),
+            &[ok_invoke_transaction],
+            [],
+        )
+        .await;
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
@@ -244,18 +256,31 @@ async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>
         is_query: false,
     });
 
-    //🚨 CARE : Juno return, like Pathfinder, a contract error but use a detailed version that is not an implementaiton of Starknet-rs
-    assert_matches!(
-        deoxys
-            .simulate_transactions(
-                BlockId::Tag(BlockTag::Latest),
-                &[bad_invoke_transaction, ok_invoke_transaction,],
-                [SimulationFlag::SkipValidate]
-            )
-            .await,
-        Err(ProviderError::StarknetError(StarknetError::ContractError(
-            _
-        )))
+    let deoxys_respoonse = deoxys
+        .simulate_transactions(
+            BlockId::Tag(BlockTag::Latest),
+            &[bad_invoke_transaction, ok_invoke_transaction],
+            [SimulationFlag::SkipValidate],
+        )
+        .await;
+
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let error_reason = ContractErrorData {
+        revert_error: "ContractError".to_string(),
+    };
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::ContractError((error_reason)),
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractError error, but got a different error"
     );
 }
 

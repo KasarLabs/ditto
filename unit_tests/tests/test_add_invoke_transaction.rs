@@ -56,7 +56,7 @@ fn get_account(
     address: FieldElement,
     chain_id: FieldElement,
     exec_encoding: ExecutionEncoding,
-) -> SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>{
+) -> SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet> {
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(
         FieldElement::from_hex_be("YOUR_PRIVATE_KEY_IN_HEX_HERE").unwrap(),
     ));
@@ -86,7 +86,6 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
     //     nonce: FieldElement::from_hex_be("0x000000").unwrap(), //here nonce is invalid
     //     is_query: false,
     // };
-
     let invalid_invoke_transaction = Call {
         to: FieldElement::from_hex_be("contract_address").unwrap(),
         selector: FieldElement::from_hex_be("selector").unwrap(), //use transfert here for example
@@ -97,7 +96,6 @@ async fn fail_if_param_(deoxys: JsonRpcClient<HttpTransport>) {
 
     let execution = account.execute(invalid_transactions);
     let invoked_tx_hash = execution.send().await.unwrap().transaction_hash;
-
 
     // let response_deoxys = deoxys
     //     .add_invoke_transaction(invalid_invoke_transaction)

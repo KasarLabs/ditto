@@ -29,7 +29,6 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call getNonce on invalid block.
 /// fail case: invalid block.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -40,12 +39,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
             BlockId::Hash(FieldElement::ZERO),
             FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap(),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
@@ -55,7 +63,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getNonce on invalid contract.
 /// fail case: invalid contract.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -66,14 +73,21 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
             BlockId::Tag(BlockTag::Latest),
             FieldElement::from_hex_be(INVALID_CONTRACT_ADDR).unwrap(),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::ContractNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected ContractNotFound error, but got a different error"
     );
 }
 
@@ -86,7 +100,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getNonce on ERC721 contract.
 /// success case: must return a nonce of 0.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -109,7 +122,6 @@ async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
 /// purpose: call getNonce on ERC20 contract.
 /// success case: must return a nonce of 0.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -165,7 +177,6 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
 /// purpose: call getNonce on account proxy contract.
 /// success case: must return a non-zero nonce.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
