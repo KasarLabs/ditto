@@ -11,6 +11,7 @@ use url::Url;
 pub struct TestConfig {
     pub pathfinder: String,
     pub deoxys: String,
+    pub juno: String,
 }
 
 impl TestConfig {

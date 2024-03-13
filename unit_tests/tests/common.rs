@@ -1,6 +1,5 @@
 use starknet_core::types::StarknetError;
 use starknet_providers::ProviderError;
-use std::assert;
 /* Common imports used throughout all unit tests */
 
 #[allow(unused_imports)]

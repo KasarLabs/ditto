@@ -1,16 +1,15 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use common::*;
-use jsonrpsee::types::response;
 use starknet::macros::short_string;
 use starknet_core::{
     types::{BlockId, BlockTag, ContractErrorData, FieldElement, FunctionCall, StarknetError},
     utils::get_selector_from_name,
 };
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_call`
@@ -21,7 +20,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[JUNO];
     let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
@@ -289,7 +288,7 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 
     let is_correct_error = checking_error_format(
-        response_pathfinder.as_ref().unwrap(),
+        response_deoxys.as_ref().unwrap(),
         StarknetError::BlockNotFound, //TODO : Check this one
     );
 
