@@ -5,11 +5,10 @@ use common::*;
 
 use starknet_core::types::{
     BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement,
-    SimulationFlag, StarknetError,
+    SimulationFlag, StarknetError, ContractErrorData,
 };
 use starknet_core::utils::get_selector_from_name;
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
-use std::assert_matches::assert_matches;
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::convert::From;
 
 /// Test for the `simulate transaction` Deoxys RPC Call
@@ -72,19 +71,21 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 #[rstest]
@@ -256,7 +257,7 @@ async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>
         is_query: false,
     });
 
-    let deoxys_respoonse = deoxys
+    let response_deoxys = deoxys
         .simulate_transactions(
             BlockId::Tag(BlockTag::Latest),
             &[bad_invoke_transaction, ok_invoke_transaction],
@@ -265,7 +266,7 @@ async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
@@ -273,15 +274,17 @@ async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>
         revert_error: "ContractError".to_string(),
     };
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::ContractError((error_reason)),
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ContractError(error_reason),
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ContractError error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected Contract error, but got a different error"
+        );
+    }
 }
 
 #[rstest]

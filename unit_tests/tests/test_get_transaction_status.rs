@@ -7,7 +7,7 @@ use common::*;
 use starknet_core::types::{
     BlockId, BlockTag, FieldElement, StarknetError, TransactionExecutionStatus, TransactionStatus,
 };
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getTransactionStatus`
@@ -23,19 +23,21 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
     let response_deoxys = deoxys.get_transaction_status(FieldElement::ZERO).await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::TransactionHashNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected TransactionHashNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 ///

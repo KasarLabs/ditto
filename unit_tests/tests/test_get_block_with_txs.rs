@@ -5,16 +5,15 @@ mod common;
 use common::*;
 use std::sync::Arc;
 
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 use unit_tests::constants::DEOXYS;
 
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -117,7 +116,6 @@ async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTra
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_100_000(
@@ -127,7 +125,6 @@ async fn work_with_block_100_000(
     work_with_block(deoxys, pathfinder, 100_000).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hundred_thousand_hash(
@@ -176,7 +173,6 @@ async fn work_with_block_5066(
     work_with_block(deoxys, pathfinder, 5066).await;
 }
 /// block 1466-2242 mismatch block_hash
-#[require(block_min = 1500, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1500(

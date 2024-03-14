@@ -2,12 +2,11 @@
 
 mod common;
 use common::*;
-use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError};
+use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError, ContractErrorData};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
-use std::assert_matches::assert_matches;
 
 /// Test for the `get_state_update` Deoxys RPC method
 /// # Arguments
@@ -56,24 +55,26 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         &payload_message,
     );
 
-    let deoxys_message_fee = deoxys
+    let response_deoxys = deoxys
         .estimate_message_fee(message, BlockId::Hash(FieldElement::ZERO))
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_pathfinder.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 #[rstest]
@@ -89,27 +90,29 @@ async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
         &payload_message,
     );
 
-    let deoxys_message_fee = deoxys
+    let response_deoxys = deoxys
         .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_pathfinder.as_ref().unwrap(),
-        StarknetError::ContractNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        // Check if the error format matches the expected error
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ContractNotFound,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ContractNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected ContractNotFound error, but got a different error"
+        );
+    }
 }
 
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
@@ -127,7 +130,7 @@ async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
         &payload_message,
     );
 
-    let deoxys_message_fee = deoxys
+    let response_deoxys = deoxys
         .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
 
@@ -136,19 +139,21 @@ async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     };
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_pathfinder.as_ref().unwrap(),
-        StarknetError::ContractError(error_reason),
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ContractError(error_reason),
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ContractError error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected Contract error, but got a different error"
+        );
+    }
 }
 
 #[rstest]

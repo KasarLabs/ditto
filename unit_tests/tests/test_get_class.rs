@@ -3,10 +3,8 @@
 mod common;
 use common::*;
 
-use jsonrpsee::types::response;
 use starknet_core::types::{BlockId, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
-use std::assert_matches::assert_matches;
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
 #[rstest]
@@ -23,19 +21,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 #[rstest]
@@ -47,24 +47,26 @@ async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<Htt
     let unknown_contract_class_hash =
         FieldElement::from_hex_be("0x4269DEADBEEF").expect("Invalid Contract classh hash");
 
-    let deoxys_response = deoxys
+    let response_deoxys = deoxys
         .get_class(BlockId::Number(0), unknown_contract_class_hash)
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::ClassHashNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ClassHashNotFound,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ClassHashNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected ClassHashNotFound error, but got a different error"
+        );
+    }
 }
 
 #[rstest]

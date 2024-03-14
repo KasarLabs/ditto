@@ -5,12 +5,12 @@ use common::*;
 use starknet_core::types::MaybePendingBlockWithTxHashes;
 
 use std::sync::Arc;
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 use unit_tests::constants::DEOXYS;
 

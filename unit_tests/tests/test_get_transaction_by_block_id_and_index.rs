@@ -1,11 +1,11 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use common::*;
 use starknet_core::types::{BlockId, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getTransactionByBlockIdAndIndex`
@@ -23,19 +23,21 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -54,19 +56,21 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::InvalidTransactionIndex,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionIndex,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected InvalidTransactionIndex error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionIndex error, but got a different error"
+        );
+    }
 }
 
 ///

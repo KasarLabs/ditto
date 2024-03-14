@@ -207,9 +207,6 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
         .await
         .err();
 
-    println!("✅ JUNO {:?}", response_deoxys);
-    println!("✅ PATHFINDER {:?}", response_pathfinder);
-
     let error_reason = ContractErrorData {
         revert_error: "ContractError".to_string(),
     };

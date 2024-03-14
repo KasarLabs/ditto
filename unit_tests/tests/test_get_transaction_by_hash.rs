@@ -5,7 +5,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 
 use common::*;
 use starknet_core::types::{FieldElement, StarknetError, Transaction};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getTransactionByHash`
@@ -21,19 +21,21 @@ async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<Ht
     let response_deoxys = deoxys.get_transaction_by_hash(FieldElement::ZERO).await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 ///

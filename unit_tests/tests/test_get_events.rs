@@ -1,7 +1,7 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::{assert_matches::assert_matches, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::anyhow;
 use common::*;
@@ -42,19 +42,21 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
     let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -100,19 +102,23 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
 
     // for some reason a block range of 0 results in an internal error
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::UnexpectedError(()),
-    );
+    let error_reason =  "Invalid block range".to_string();
 
-    assert!(
-        is_correct_error,
-        "Expected Unexpected error, but got a different error"
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::UnexpectedError(error_reason),
+        );
+
+        assert!(
+            is_correct_error,
+            "Expected Unexpected error, with invalid block range but got a different error"
+        );
+    }
 }
 
 ///

@@ -3,10 +3,8 @@
 mod common;
 use common::*;
 
-use jsonrpsee::types::response;
 use starknet_core::types::{BlockId, BlockTag, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
-use std::assert_matches::assert_matches;
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
 /// Test for the `get_state_update` Deoxys RPC method
@@ -30,19 +28,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let response_deoxys = deoxys.get_state_update(BlockId::Number(0)).await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::BlockNotFound,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 #[rstest]

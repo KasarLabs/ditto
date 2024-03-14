@@ -14,7 +14,6 @@ use starknet_providers::{
 /// purpose: call blockNumber on latest block.
 /// success case: must return valid non-zero block number.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

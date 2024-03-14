@@ -3,12 +3,12 @@
 mod common;
 use common::*;
 
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use starknet_core::types::{FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 
 // invalid transaction_hash
@@ -20,19 +20,21 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
     let response_deoxys = deoxys.get_transaction_receipt(FieldElement::ZERO).await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::InvalidTransactionHash,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected InvalidTransactionHash error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 async fn work_with_hash(

@@ -8,10 +8,10 @@ use rstest::rstest;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 use std::sync::Arc;
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 use unit_tests::constants::{DEOXYS, PATHFINDER};
 
 #[rstest]

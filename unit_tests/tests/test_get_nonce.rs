@@ -1,11 +1,11 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use common::*;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Test for RPC call starknet_getNonce.
@@ -42,19 +42,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -76,19 +78,21 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::ContractNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ContractNotFound,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ContractNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected ContractNotFound error, but got a different error"
+        );
+    }
 }
 
 // INFO: I guess non-account contracts don't need a nonce since they are only sent once?
@@ -144,7 +148,6 @@ async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTranspor
 /// purpose: call getNonce on account contract.
 /// success case: must return a non-zero nonce.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

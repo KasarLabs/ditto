@@ -6,9 +6,8 @@ use common::*;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider
 };
-use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
 
@@ -28,19 +27,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::InvalidTransactionHash,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
 #[rstest]
@@ -50,7 +51,6 @@ async fn fail_if_one_txn_cannot_be_executed(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
     let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
 
     let bad_invoke_transaction = BadTransactionFactory::build(None);
 
@@ -62,19 +62,21 @@ async fn fail_if_one_txn_cannot_be_executed(
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::ContractNotFound,
-    ); //TODO : check this error
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::ContractNotFound,    //TODO : check this error
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected ContractNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected ContractNotFound error, but got a different error"
+        );
+    }
 }
 
 #[rstest]

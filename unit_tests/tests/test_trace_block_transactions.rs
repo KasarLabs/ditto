@@ -9,7 +9,7 @@ use std::assert_matches::assert_matches;
 use starknet_core::types::{BlockId, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 
 #[rstest]
@@ -20,19 +20,21 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     assert!(
-        response_deoxys.is_some(),
+        response_deoxys.is_ok(),
         "Expected an error, but got a result"
     );
 
-    let is_correct_error = checking_error_format(
-        response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound,
-    );
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::BlockNotFound,
+        );
 
-    assert!(
-        is_correct_error,
-        "Expected BlockNotFound error, but got a different error"
-    );
+        assert!(
+            is_correct_error,
+            "Expected BlockNotFound error, but got a different error"
+        );
+    }
 }
 
 #[rstest]
