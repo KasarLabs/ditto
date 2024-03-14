@@ -29,19 +29,19 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
     if let Err(error) = response_deoxys {
         let is_correct_error = checking_error_format(
             &error,
-            StarknetError::InvalidTransactionHash,
+            StarknetError::BlockNotFound,
         );
 
         assert!(
             is_correct_error,
-            "Expected InvalidTransactionHash error, but got a different error"
+            "Expected BlockNotFound error, but got a different error"
         );
     }
 }

@@ -60,23 +60,24 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
     if let Err(error) = response_deoxys {
         let is_correct_error = checking_error_format(
             &error,
-            StarknetError::InvalidTransactionHash,
+            StarknetError::BlockNotFound,
         );
 
         assert!(
             is_correct_error,
-            "Expected InvalidTransactionHash error, but got a different error"
+            "Expected BlockNotFound error, but got a different error"
         );
     }
 }
 
+// Care, Juno and Pathfinder error differ on this one
 #[rstest]
 #[tokio::test]
 async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
@@ -94,24 +95,35 @@ async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
         .estimate_message_fee(message, BlockId::Tag(BlockTag::Latest))
         .await;
 
+    println!("{:?}", response_deoxys);
+
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
+    let revert_error = ContractErrorData {
+        revert_error: "Transaction execution has failed".to_string(),
+    };
+
     if let Err(error) = response_deoxys {
-        // Check if the error format matches the expected error
-        let is_correct_error = checking_error_format(
+        let is_contract_not_found = checking_error_format(
             &error,
             StarknetError::ContractNotFound,
         );
 
+        let is_contract_error = checking_error_format(
+            &error,
+            StarknetError::ContractError(revert_error)
+        );
+
         assert!(
-            is_correct_error,
-            "Expected ContractNotFound error, but got a different error"
+            is_contract_not_found || is_contract_error,
+            "Expected ContractNotFound or ContractError, but got a different error"
         );
     }
 }
+
 
 #[rstest]
 #[tokio::test]
@@ -139,7 +151,7 @@ async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     };
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 

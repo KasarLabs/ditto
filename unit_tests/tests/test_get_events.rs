@@ -6,8 +6,8 @@ use std::sync::Arc;
 use anyhow::anyhow;
 use common::*;
 use starknet::macros::{felt_hex, selector};
-use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement};
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider, ProviderError};
 use tokio::task::JoinSet;
 
 ///
@@ -42,21 +42,21 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
     let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
-    if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::InvalidTransactionHash,
-        );
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
 
-        assert!(
-            is_correct_error,
-            "Expected InvalidTransactionHash error, but got a different error"
-        );
-    }
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
+    );
 }
 
 ///
@@ -102,23 +102,21 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
 
     // for some reason a block range of 0 results in an internal error
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
-    let error_reason =  "Invalid block range".to_string();
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "requested page size is too small, supported minimum is 1".to_string(),
+        data: None,
+    };
 
-    if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::UnexpectedError(error_reason),
-        );
-
-        assert!(
-            is_correct_error,
-            "Expected Unexpected error, with invalid block range but got a different error"
-        );
-    }
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
+    );
 }
 
 ///

@@ -52,6 +52,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getBlockWithTxHashes on latest validated block.
 /// success case: retrieves valid block.
 ///
+/// Be aware that this test can fail due to the last moments of a block being validated
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

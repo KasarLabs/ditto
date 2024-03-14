@@ -23,19 +23,19 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
     let response_deoxys = deoxys.get_transaction_status(FieldElement::ZERO).await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
     if let Err(error) = response_deoxys {
         let is_correct_error = checking_error_format(
             &error,
-            StarknetError::InvalidTransactionHash,
+            StarknetError::TransactionHashNotFound,
         );
 
         assert!(
             is_correct_error,
-            "Expected InvalidTransactionHash error, but got a different error"
+            "Expected TransactionHashNotFound error, but got a different error"
         );
     }
 }

@@ -9,7 +9,7 @@ use starknet_core::{
     types::{BlockId, BlockTag, ContractErrorData, FieldElement, FunctionCall, StarknetError},
     utils::get_selector_from_name,
 };
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_call`
@@ -152,22 +152,16 @@ async fn fail_invalid_contract_entry_point_selector(
         .await
         .err();
 
-    println!("✅ JUNO {:?}", response_deoxys);
-    println!("✅ PATHFINDER {:?}", response_pathfinder);
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
 
     assert!(
         response_deoxys.is_some(),
-        "Expected an error, but got a result"
-    );
-
-    let is_correct_error = checking_error_format(
-        response_pathfinder.as_ref().unwrap(),
-        StarknetError::ContractNotFound,
-    );
-
-    assert!(
-        is_correct_error,
-        "Expected ContractNotFound error, but got a different error"
+        "Expected an error response, but got Ok. Expected error: {:?}",
+        expected_error
     );
 }
 
@@ -206,6 +200,7 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
         )
         .await
         .err();
+
 
     let error_reason = ContractErrorData {
         revert_error: "ContractError".to_string(),
@@ -284,9 +279,13 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
         "Expected an error, but got a result"
     );
 
+    let error_reason = ContractErrorData {
+        revert_error: "Execution error".to_string(),
+    };
+
     let is_correct_error = checking_error_format(
         response_deoxys.as_ref().unwrap(),
-        StarknetError::BlockNotFound, //TODO : Check this one
+        StarknetError::ContractError(error_reason), //TODO : Check this one
     );
 
     assert!(

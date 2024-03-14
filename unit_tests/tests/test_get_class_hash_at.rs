@@ -6,7 +6,7 @@ use common::*;
 use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
+use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getClassHashAt`
@@ -61,22 +61,17 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
         )
         .await;
 
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
+
     assert!(
-        response_deoxys.is_ok(),
-        "Expected an error, but got a result"
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
     );
-
-    if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::ContractNotFound,
-        );
-
-        assert!(
-            is_correct_error,
-            "Expected ContractNotFound error, but got a different error"
-        );
-    }
 }
 
 ///

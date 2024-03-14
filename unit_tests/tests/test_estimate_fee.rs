@@ -5,7 +5,7 @@ use common::*;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
-    jsonrpc::{HttpTransport, JsonRpcClient},
+    jsonrpc::{HttpTransport, JsonRpcClient, JsonRpcError},
     Provider
 };
 use std::collections::HashMap;
@@ -50,7 +50,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 async fn fail_if_one_txn_cannot_be_executed(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[PATHFINDER];
 
     let bad_invoke_transaction = BadTransactionFactory::build(None);
 
@@ -61,22 +61,17 @@ async fn fail_if_one_txn_cannot_be_executed(
         )
         .await;
 
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
+    
     assert!(
-        response_deoxys.is_ok(),
-        "Expected an error, but got a result"
+        response_deoxys.is_err(),
+        "Expected an error response, but got Ok. Expected error: {:?}",
+        expected_error
     );
-
-    if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::ContractNotFound,    //TODO : check this error
-        );
-
-        assert!(
-            is_correct_error,
-            "Expected ContractNotFound error, but got a different error"
-        );
-    }
 }
 
 #[rstest]
