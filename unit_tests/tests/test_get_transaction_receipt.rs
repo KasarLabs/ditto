@@ -20,19 +20,19 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
     let response_deoxys = deoxys.get_transaction_receipt(FieldElement::ZERO).await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
     if let Err(error) = response_deoxys {
         let is_correct_error = checking_error_format(
             &error,
-            StarknetError::InvalidTransactionHash,
+            StarknetError::TransactionHashNotFound,
         );
 
         assert!(
             is_correct_error,
-            "Expected InvalidTransactionHash error, but got a different error"
+            "Expected TransactionHashNotFound error, but got a different error"
         );
     }
 }
@@ -48,13 +48,16 @@ async fn work_with_hash(
     let response_deoxys = deoxys
         .get_transaction_receipt(transaction_hash)
         .await
-        .expect("Error waiting for response from Deoxys node");
+        .unwrap();
 
     let response_pathfinder = pathfinder
         .get_transaction_receipt(transaction_hash)
         .await
-        .expect("Error waiting for response from Pathfinder node");
+        .unwrap();
 
+    
+        println!("✅ {:?}", response_deoxys);
+        println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 

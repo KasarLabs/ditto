@@ -183,14 +183,13 @@ async fn work_with_block_1500(
 
 #[rstest]
 #[tokio::test]
-#[ignore = "ignore this test"]
 async fn work_loop(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClient<HttpTransport>) {
     let arc_deoxys = Arc::new(deoxys);
     let arc_pathfinder = Arc::new(pathfinder);
     let parallels_queries = 10;
     let mut diff = false;
 
-    for block_group in (0..=100_000).step_by(parallels_queries) {
+    for block_group in (0..=100).step_by(parallels_queries) {
         let mut set = tokio::task::JoinSet::new();
         for offset in 0..parallels_queries {
             let block_id = (block_group + offset) as u64;

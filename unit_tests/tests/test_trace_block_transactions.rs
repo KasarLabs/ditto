@@ -20,7 +20,7 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
         .await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
@@ -72,13 +72,12 @@ async fn works_ok_for_random_block(
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
     let mut rng = rand::thread_rng();
-    let random_block_number = rng.gen_range(100000..602000);
+    let random_block_number = rng.gen_range(100000..650000);
 
     let block_number = BlockId::Number(random_block_number);
 
     let deoxys_trace = deoxys.trace_block_transactions(block_number).await;
     let _pathfinder_trace = pathfinder.trace_block_transactions(block_number).await;
-    println!("{:?}", deoxys_trace);
     println!("block choose is: {:?}", block_number);
 
     assert_matches!(deoxys_trace, _pathfinder_trace);
