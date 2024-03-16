@@ -6,7 +6,10 @@ use common::*;
 use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcError},
+    JsonRpcClient, Provider,
+};
 
 ///
 /// Unit test for `starknet_getClassHashAt`

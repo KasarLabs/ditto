@@ -4,8 +4,8 @@ mod common;
 use common::*;
 use starknet_core::types::MaybePendingBlockWithTxHashes;
 
-use std::sync::Arc;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{

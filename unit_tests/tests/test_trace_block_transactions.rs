@@ -25,10 +25,7 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::BlockNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
 
         assert!(
             is_correct_error,

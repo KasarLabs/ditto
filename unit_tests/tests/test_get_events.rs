@@ -7,7 +7,10 @@ use anyhow::anyhow;
 use common::*;
 use starknet::macros::{felt_hex, selector};
 use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement};
-use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcError},
+    JsonRpcClient, Provider, ProviderError,
+};
 use tokio::task::JoinSet;
 
 ///

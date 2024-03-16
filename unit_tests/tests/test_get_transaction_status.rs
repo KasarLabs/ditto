@@ -28,10 +28,8 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::TransactionHashNotFound,
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
 
         assert!(
             is_correct_error,

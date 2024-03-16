@@ -10,8 +10,8 @@ use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
 };
-use std::sync::Arc;
 use std::collections::HashMap;
+use std::sync::Arc;
 use unit_tests::constants::{DEOXYS, PATHFINDER};
 
 #[rstest]

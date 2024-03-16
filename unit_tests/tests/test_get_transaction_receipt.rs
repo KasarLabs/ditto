@@ -25,10 +25,8 @@ async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<Ht
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::TransactionHashNotFound,
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
 
         assert!(
             is_correct_error,
@@ -55,9 +53,8 @@ async fn work_with_hash(
         .await
         .unwrap();
 
-    
-        println!("✅ {:?}", response_deoxys);
-        println!("✅ {:?}", response_pathfinder);
+    println!("✅ {:?}", response_deoxys);
+    println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 

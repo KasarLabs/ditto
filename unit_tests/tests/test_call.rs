@@ -9,7 +9,10 @@ use starknet_core::{
     types::{BlockId, BlockTag, ContractErrorData, FieldElement, FunctionCall, StarknetError},
     utils::get_selector_from_name,
 };
-use starknet_providers::{jsonrpc::{HttpTransport, JsonRpcError}, JsonRpcClient, Provider};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcError},
+    JsonRpcClient, Provider,
+};
 
 ///
 /// Unit test for `starknet_call`
@@ -126,21 +129,8 @@ async fn fail_invalid_contract_entry_point_selector(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
     let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
-        .call(
-            FunctionCall {
-                contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
-                entry_point_selector: FieldElement::ZERO,
-                calldata: vec![],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .err();
-
-    let response_pathfinder = pathfinder
         .call(
             FunctionCall {
                 contract_address: FieldElement::from_hex_be(STARKGATE_ETH_BRIDGE_ADDR).unwrap(),
@@ -200,7 +190,6 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
         )
         .await
         .err();
-
 
     let error_reason = ContractErrorData {
         revert_error: "ContractError".to_string(),

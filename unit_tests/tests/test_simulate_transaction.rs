@@ -4,8 +4,8 @@ mod common;
 use common::*;
 
 use starknet_core::types::{
-    BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement,
-    SimulationFlag, StarknetError, ContractErrorData,
+    BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, ContractErrorData,
+    FieldElement, SimulationFlag, StarknetError,
 };
 use starknet_core::utils::get_selector_from_name;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
@@ -76,10 +76,7 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::BlockNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
 
         assert!(
             is_correct_error,
@@ -275,10 +272,8 @@ async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>
     };
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::ContractError(error_reason),
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::ContractError(error_reason));
 
         assert!(
             is_correct_error,

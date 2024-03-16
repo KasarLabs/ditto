@@ -26,10 +26,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::BlockNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
 
         assert!(
             is_correct_error,
@@ -52,15 +49,12 @@ async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<Htt
         .await;
 
     assert!(
-        response_deoxys.is_ok(),
+        response_deoxys.is_err(),
         "Expected an error, but got a result"
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::ClassHashNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::ClassHashNotFound);
 
         assert!(
             is_correct_error,

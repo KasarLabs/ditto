@@ -2,7 +2,9 @@
 
 mod common;
 use common::*;
-use starknet_core::types::{BlockId, BlockTag, EthAddress, FieldElement, MsgFromL1, StarknetError, ContractErrorData};
+use starknet_core::types::{
+    BlockId, BlockTag, ContractErrorData, EthAddress, FieldElement, MsgFromL1, StarknetError,
+};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
@@ -65,10 +67,7 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::BlockNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
 
         assert!(
             is_correct_error,
@@ -107,15 +106,10 @@ async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
     };
 
     if let Err(error) = response_deoxys {
-        let is_contract_not_found = checking_error_format(
-            &error,
-            StarknetError::ContractNotFound,
-        );
+        let is_contract_not_found = checking_error_format(&error, StarknetError::ContractNotFound);
 
-        let is_contract_error = checking_error_format(
-            &error,
-            StarknetError::ContractError(revert_error)
-        );
+        let is_contract_error =
+            checking_error_format(&error, StarknetError::ContractError(revert_error));
 
         assert!(
             is_contract_not_found || is_contract_error,
@@ -123,7 +117,6 @@ async fn fail_contract_not_found(deoxys: JsonRpcClient<HttpTransport>) {
         );
     }
 }
-
 
 #[rstest]
 #[tokio::test]
@@ -156,10 +149,8 @@ async fn fail_contract_error(deoxys: JsonRpcClient<HttpTransport>) {
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::ContractError(error_reason),
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::ContractError(error_reason));
 
         assert!(
             is_correct_error,

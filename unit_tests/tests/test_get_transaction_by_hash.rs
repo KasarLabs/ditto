@@ -26,10 +26,8 @@ async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<Ht
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::TransactionHashNotFound,
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
 
         assert!(
             is_correct_error,

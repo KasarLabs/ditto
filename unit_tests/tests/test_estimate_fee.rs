@@ -6,7 +6,7 @@ use common::*;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient, JsonRpcError},
-    Provider
+    Provider,
 };
 use std::collections::HashMap;
 use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
@@ -32,10 +32,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::InvalidTransactionHash,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::InvalidTransactionHash);
 
         assert!(
             is_correct_error,
@@ -66,7 +63,7 @@ async fn fail_if_one_txn_cannot_be_executed(
         message: "Invalid params".to_string(),
         data: None,
     };
-    
+
     assert!(
         response_deoxys.is_err(),
         "Expected an error response, but got Ok. Expected error: {:?}",

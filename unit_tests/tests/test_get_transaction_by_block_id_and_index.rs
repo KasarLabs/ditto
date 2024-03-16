@@ -28,10 +28,7 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::BlockNotFound,
-        );
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
 
         assert!(
             is_correct_error,
@@ -61,10 +58,8 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(
-            &error,
-            StarknetError::InvalidTransactionIndex,
-        );
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::InvalidTransactionIndex);
 
         assert!(
             is_correct_error,
