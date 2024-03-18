@@ -2,6 +2,9 @@
 
 test_files=($(basename -a $(find unit_tests/tests -type f -name "*.rs" ! -name "common.rs")))
 
+cat art.txt
+
+echo "\n"
 echo "\033[31mSelect a test file to run:\033[0m"
 echo "🧬 0) Run all tests 💥"
 

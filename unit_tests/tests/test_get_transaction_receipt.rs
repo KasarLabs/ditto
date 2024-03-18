@@ -139,5 +139,4 @@ async fn work_ok_with_pending_transaction(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    
 }
