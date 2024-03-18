@@ -234,6 +234,7 @@ async fn work_loop(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClie
     assert_eq!(diff, false);
 }
 
+/// This test may crash because if 2 clients doesnt exactly have the same computation time, the trace will be different
 #[rstest]
 #[tokio::test]
 async fn work_ok_with_pending_block(

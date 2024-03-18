@@ -4,11 +4,11 @@ mod common;
 use common::*;
 
 use rand::Rng;
+use std::assert_matches::assert_matches;
 use std::sync::Arc;
 use tokio::task::JoinSet;
-use std::assert_matches::assert_matches;
 
-use starknet_core::types::{BlockId, BlockTag,FieldElement, StarknetError};
+use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
@@ -120,12 +120,23 @@ async fn works_ok_for_pending_block(
                 } else if pathfinder_result.is_none() {
                     pathfinder_result = Some(response);
                 }
-            },
+            }
             Err(e) => panic!("Task panicked or encountered an error: {:?}", e),
         }
     }
 
-    println!("response_deoxys: {:?}", deoxys_result.clone().expect("Deoxys result not found"));
-    println!("response_pathfinder: {:?}", pathfinder_result.clone().expect("Pathfinder result not found"));
-    assert_eq!(deoxys_result, pathfinder_result, "Responses from Deoxys and Pathfinder do not match");
+    println!(
+        "response_deoxys: {:?}",
+        deoxys_result.clone().expect("Deoxys result not found")
+    );
+    println!(
+        "response_pathfinder: {:?}",
+        pathfinder_result
+            .clone()
+            .expect("Pathfinder result not found")
+    );
+    assert_eq!(
+        deoxys_result, pathfinder_result,
+        "Responses from Deoxys and Pathfinder do not match"
+    );
 }
