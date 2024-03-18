@@ -5,8 +5,10 @@ use common::*;
 
 use rand::Rng;
 use std::assert_matches::assert_matches;
+use std::sync::Arc;
+use tokio::task::JoinSet;
 
-use starknet_core::types::{BlockId, FieldElement, StarknetError};
+use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
@@ -78,4 +80,63 @@ async fn works_ok_for_random_block(
     println!("block choose is: {:?}", block_number);
 
     assert_matches!(deoxys_trace, _pathfinder_trace);
+}
+
+//This test may crash because if 2 clients doesnt exactly have the same computation time, the trace will be different
+#[rstest]
+#[tokio::test]
+async fn works_ok_for_pending_block(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+    let mut set = JoinSet::new();
+    let arc_deoxys = Arc::new(deoxys);
+    let arc_pathfinder = Arc::new(pathfinder);
+
+    let clone_deoxys = Arc::clone(&arc_deoxys);
+    set.spawn(async move {
+        clone_deoxys
+            .trace_block_transactions(BlockId::Tag(BlockTag::Pending))
+            .await
+            .expect("Error waiting for response from Deoxys node")
+    });
+
+    let clone_pathfinder = Arc::clone(&arc_pathfinder);
+    set.spawn(async move {
+        clone_pathfinder
+            .trace_block_transactions(BlockId::Tag(BlockTag::Pending))
+            .await
+            .expect("Error waiting for response from Pathfinder node")
+    });
+
+    let mut deoxys_result = None;
+    let mut pathfinder_result = None;
+
+    while let Some(result) = set.join_next().await {
+        match result {
+            Ok(response) => {
+                if deoxys_result.is_none() {
+                    deoxys_result = Some(response);
+                } else if pathfinder_result.is_none() {
+                    pathfinder_result = Some(response);
+                }
+            }
+            Err(e) => panic!("Task panicked or encountered an error: {:?}", e),
+        }
+    }
+
+    println!(
+        "response_deoxys: {:?}",
+        deoxys_result.clone().expect("Deoxys result not found")
+    );
+    println!(
+        "response_pathfinder: {:?}",
+        pathfinder_result
+            .clone()
+            .expect("Pathfinder result not found")
+    );
+    assert_eq!(
+        deoxys_result, pathfinder_result,
+        "Responses from Deoxys and Pathfinder do not match"
+    );
 }

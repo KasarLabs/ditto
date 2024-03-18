@@ -132,3 +132,11 @@ async fn work_with_deploy_transaction_block_1(
     )
     .await;
 }
+
+#[rstest]
+#[tokio::test]
+async fn work_ok_with_pending_transaction(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+}
