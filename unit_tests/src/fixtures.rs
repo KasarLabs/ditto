@@ -23,7 +23,14 @@ pub fn deoxys(config: TestConfig) -> JsonRpcClient<HttpTransport> {
 #[fixture]
 pub fn pathfinder(config: TestConfig) -> JsonRpcClient<HttpTransport> {
     JsonRpcClient::new(HttpTransport::new(
-        Url::parse(&config.pathfinder).expect("Error parsing Deoxys node url"),
+        Url::parse(&config.pathfinder).expect("Error parsing Pathfinder node url"),
+    ))
+}
+
+#[fixture]
+pub fn juno(config: TestConfig) -> JsonRpcClient<HttpTransport> {
+    JsonRpcClient::new(HttpTransport::new(
+        Url::parse(&config.juno).expect("Error parsing Juno node url"),
     ))
 }
 
@@ -31,9 +38,11 @@ pub fn pathfinder(config: TestConfig) -> JsonRpcClient<HttpTransport> {
 pub fn clients(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
+    juno: JsonRpcClient<HttpTransport>,
 ) -> HashMap<String, JsonRpcClient<HttpTransport>> {
     map! {
         String::from(DEOXYS) => deoxys,
         String::from(PATHFINDER) => pathfinder,
+        String::from(JUNO) => juno,
     }
 }

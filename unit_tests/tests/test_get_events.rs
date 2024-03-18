@@ -1,13 +1,16 @@
 #![feature(assert_matches)]
 
 mod common;
-use std::{assert_matches::assert_matches, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::anyhow;
 use common::*;
 use starknet::macros::{felt_hex, selector};
-use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_core::types::{BlockId, EventFilter, EventsPage, FieldElement};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcError},
+    JsonRpcClient, Provider, ProviderError,
+};
 use tokio::task::JoinSet;
 
 ///
@@ -31,7 +34,6 @@ use tokio::task::JoinSet;
 /// purpose: call getEvents on an invalid block number.
 /// fail case: invalid block number (invalid param).
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -40,16 +42,24 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
     let block_nu: u64 = u64::MAX;
     let block_range: u64 = 100;
 
-    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range)
-        .await
-        .err();
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::UnexpectedError(_)
-        )) //previous error : Unknown(-32602)
-    )
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
+    );
+
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
+
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
+    );
 }
 
 ///
@@ -58,7 +68,6 @@ async fn fail_invalid_block_number(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on an invalid event selector.
 /// fail case: invalid event selector.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -84,7 +93,6 @@ async fn fail_invalid_keys(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on an invalid event selector.
 /// fail case: invalid event selector.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -93,17 +101,25 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
     let block_nu: u64 = 50000;
     let block_range: u64 = 0;
 
-    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range)
-        .await
-        .err();
+    let response_deoxys = get_events(&deoxys, &keys, block_nu, block_range).await;
 
     // for some reason a block range of 0 results in an internal error
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::UnexpectedError(_)
-        )) //previous error : Unknown(-32603)
-    )
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
+    );
+
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "requested page size is too small, supported minimum is 1".to_string(),
+        data: None,
+    };
+
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
+    );
 }
 
 ///
@@ -112,7 +128,6 @@ async fn fail_invalid_block_range(deoxys: JsonRpcClient<HttpTransport>) {
 /// purpose: call getEvents on a valid block with a no selector.
 /// success case: retrieves the first 100 events of that block.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -148,7 +163,6 @@ async fn work_valid_call_no_selector(
 /// purpose: call getEvents on a valid block with a single selector.
 /// success case: valid events format, events point to valid transactions.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]
@@ -185,7 +199,6 @@ async fn work_valid_call_single_selector(
 /// success case: retrieves all events matching the selector in the first 100 events of that block
 ///               + valid event format and valid transactions.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[logging]

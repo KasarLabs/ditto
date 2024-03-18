@@ -4,16 +4,16 @@
 mod common;
 use common::*;
 
+use rstest::rstest;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
+use std::collections::HashMap;
 use std::sync::Arc;
-use std::{assert_matches::assert_matches, collections::HashMap};
-use unit_tests::constants::DEOXYS;
+use unit_tests::constants::{DEOXYS, PATHFINDER};
 
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -24,13 +24,22 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
     );
 }
 
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -72,7 +81,6 @@ async fn work_with_block(
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1(
@@ -82,7 +90,6 @@ async fn work_with_block_1(
     work_with_block(deoxys, pathfinder, 1).await;
 }
 
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -109,8 +116,6 @@ async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTrans
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-/// block 50066 is one of the biggest blocks in the mainnet
-#[require(block_min = 5066, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(
@@ -120,7 +125,6 @@ async fn work_with_block_5066(
     work_with_block(deoxys, pathfinder, 1).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_100_000(
@@ -130,7 +134,6 @@ async fn work_with_block_100_000(
     work_with_block(deoxys, pathfinder, 100_000).await;
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -157,17 +160,15 @@ async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<Htt
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
-#[require(block_min = 100_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
-#[ignore = "ignore this test"]
 async fn work_loop(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClient<HttpTransport>) {
     let arc_deoxys = Arc::new(deoxys);
     let arc_pathfinder = Arc::new(pathfinder);
     let parallels_queries = 10;
     let mut diff = false;
 
-    for block_group in (0..=100_000).step_by(parallels_queries) {
+    for block_group in (0..=100).step_by(parallels_queries) {
         let mut set = tokio::task::JoinSet::new();
         for offset in 0..parallels_queries {
             let block_id = (block_group + offset) as u64;

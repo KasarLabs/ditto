@@ -5,7 +5,7 @@ use std::{assert_matches::assert_matches, collections::HashMap};
 
 use common::*;
 use starknet_core::types::{FieldElement, StarknetError, Transaction};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getTransactionByHash`
@@ -13,23 +13,27 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call getTransactionHash on non existent transaction.
 /// fail case: transaction does not exist.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    let response_deoxys = deoxys
-        .get_transaction_by_hash(FieldElement::ZERO)
-        .await
-        .err();
+    let response_deoxys = deoxys.get_transaction_by_hash(FieldElement::ZERO).await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::TransactionHashNotFound
-        ))
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
     );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
+
+        assert!(
+            is_correct_error,
+            "Expected TransactionHashNotFound error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -38,7 +42,6 @@ async fn fail_non_existing_transaction(clients: HashMap<String, JsonRpcClient<Ht
 /// purpose: call getTransactionHash on INVOKE transaction.
 /// success case: retrieve correct INVOKE transaction.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -65,7 +68,6 @@ async fn work_transaction_invoke(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getTransactionHash on L1_HANDLER transaction.
 /// success case: retrieve correct INVOKE transaction.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -92,7 +94,6 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
 /// purpose: call getTransactionHash on DECLARE transaction.
 /// success case: retrieve correct DECLARE transaction.
 ///
-#[require(block_min = 49_990spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -121,7 +122,6 @@ async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getTransactionHash on DEPLOY_ACCOUNT transaction.
 /// success case: retrieve correct DEPLOY_ACCOUNT transaction.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -165,7 +165,6 @@ async fn work_with_hash(
 }
 
 /// first transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_first_transaction_block_0(
@@ -181,7 +180,6 @@ async fn work_with_first_transaction_block_0(
 }
 
 /// deploy transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_0(
@@ -197,7 +195,6 @@ async fn work_with_deploy_transaction_block_0(
 }
 
 /// invoke transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke_transaction_block_0(
@@ -213,7 +210,6 @@ async fn work_with_invoke_transaction_block_0(
 }
 
 /// deploy transaction on block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_1(
@@ -229,7 +225,6 @@ async fn work_with_deploy_transaction_block_1(
 }
 
 /// invoke transaction on block 0
-#[require(block_min = 10, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke_transaction_block_10(
@@ -245,7 +240,6 @@ async fn work_with_invoke_transaction_block_10(
 }
 
 /// deploy transaction on block 10
-#[require(block_min = 10, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_10(

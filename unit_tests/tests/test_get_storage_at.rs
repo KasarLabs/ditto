@@ -3,11 +3,10 @@
 mod common;
 use common::*;
 
-use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getStorageAt`
@@ -15,7 +14,6 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call getStorageAt on invalid block.
 /// fail case: invalid block.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -27,13 +25,21 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
             FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
             BlockId::Hash(FieldElement::ZERO),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
-    )
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
+    );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(&error, StarknetError::BlockNotFound);
+
+        assert!(
+            is_correct_error,
+            "Expected BlockNotFound error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -42,7 +48,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getStorageAt on non-existing contract.
 /// fail case: non-existing contract.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -54,15 +59,21 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
             FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
             BlockId::Tag(BlockTag::Latest),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
     );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(&error, StarknetError::ContractNotFound);
+
+        assert!(
+            is_correct_error,
+            "Expected ContractNotFound error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -71,7 +82,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getStorageAt with invalid storage key.
 /// fail case: invalid storage key.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -95,7 +105,6 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getStorageAt with valid arguments.
 /// success case: retrieve valid storage.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {

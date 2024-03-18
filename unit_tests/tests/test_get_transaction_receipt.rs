@@ -3,32 +3,36 @@
 mod common;
 use common::*;
 
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use starknet_core::types::{FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    Provider,
 };
 
 // invalid transaction_hash
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    let response_deoxys = deoxys
-        .get_transaction_receipt(FieldElement::ZERO)
-        .await
-        .err();
+    let response_deoxys = deoxys.get_transaction_receipt(FieldElement::ZERO).await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::InvalidTransactionHash
-        ))
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
     );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
+
+        assert!(
+            is_correct_error,
+            "Expected TransactionHashNotFound error, but got a different error"
+        );
+    }
 }
 
 async fn work_with_hash(
@@ -42,18 +46,19 @@ async fn work_with_hash(
     let response_deoxys = deoxys
         .get_transaction_receipt(transaction_hash)
         .await
-        .expect("Error waiting for response from Deoxys node");
+        .unwrap();
 
     let response_pathfinder = pathfinder
         .get_transaction_receipt(transaction_hash)
         .await
-        .expect("Error waiting for response from Pathfinder node");
+        .unwrap();
 
+    println!("✅ {:?}", response_deoxys);
+    println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
 /// reverted transaction on block 200000
-#[require(block_min = 200_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_reverted_transaction_block_200_000(
@@ -69,7 +74,6 @@ async fn work_with_reverted_transaction_block_200_000(
 }
 
 /// first transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_first_transaction_block_0(
@@ -85,7 +89,6 @@ async fn work_with_first_transaction_block_0(
 }
 
 /// deploy transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_0(
@@ -101,7 +104,6 @@ async fn work_with_deploy_transaction_block_0(
 }
 
 ///invoke transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke_transaction_block_0(
@@ -117,7 +119,6 @@ async fn work_with_invoke_transaction_block_0(
 }
 
 ///deploy transaction on block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_1(

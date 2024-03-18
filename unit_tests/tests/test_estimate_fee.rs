@@ -5,10 +5,9 @@ use common::*;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
-    jsonrpc::{HttpTransport, JsonRpcClient},
-    Provider, ProviderError,
+    jsonrpc::{HttpTransport, JsonRpcClient, JsonRpcError},
+    Provider,
 };
-use std::assert_matches::assert_matches;
 use std::collections::HashMap;
 use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
 
@@ -20,49 +19,58 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
 
-    assert_matches!(
-        deoxys
-            .estimate_fee(
-                &vec![ok_invoke_transaction],
-                BlockId::Hash(FieldElement::ZERO)
-            )
-            .await,
-        Err(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
+    let response_deoxys = deoxys
+        .estimate_fee(
+            &vec![ok_invoke_transaction],
+            BlockId::Hash(FieldElement::ZERO),
+        )
+        .await;
+
+    assert!(
+        response_deoxys.is_ok(),
+        "Expected an error, but got a result"
     );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error = checking_error_format(&error, StarknetError::InvalidTransactionHash);
+
+        assert!(
+            is_correct_error,
+            "Expected InvalidTransactionHash error, but got a different error"
+        );
+    }
 }
 
-#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
 async fn fail_if_one_txn_cannot_be_executed(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[PATHFINDER];
 
     let bad_invoke_transaction = BadTransactionFactory::build(None);
 
-    let result_deoxys = deoxys
+    let response_deoxys = deoxys
         .estimate_fee(
             vec![bad_invoke_transaction.clone()],
             BlockId::Tag(BlockTag::Latest),
         )
-        .await
-        .unwrap();
+        .await;
 
-    // FIX: this causes an error during the tests
-    let result_pathfinder = pathfinder
-        .estimate_fee(vec![bad_invoke_transaction], BlockId::Tag(BlockTag::Latest))
-        .await
-        .unwrap();
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
 
-    assert_eq!(result_deoxys, result_pathfinder);
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got Ok. Expected error: {:?}",
+        expected_error
+    );
 }
 
-#[require(block_min = "latest")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]

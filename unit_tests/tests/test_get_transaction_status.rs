@@ -7,7 +7,7 @@ use common::*;
 use starknet_core::types::{
     BlockId, BlockTag, FieldElement, StarknetError, TransactionExecutionStatus, TransactionStatus,
 };
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 
 ///
 /// Unit test for `starknet_getTransactionStatus`
@@ -15,23 +15,27 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call getTransactionStatus on non-existent transaction hash.
 /// fail case: non-existent transaction hash.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    let response_deoxys = deoxys
-        .get_transaction_status(FieldElement::ZERO)
-        .await
-        .err();
+    let response_deoxys = deoxys.get_transaction_status(FieldElement::ZERO).await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::TransactionHashNotFound
-        ))
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error, but got a result"
     );
+
+    if let Err(error) = response_deoxys {
+        let is_correct_error =
+            checking_error_format(&error, StarknetError::TransactionHashNotFound);
+
+        assert!(
+            is_correct_error,
+            "Expected TransactionHashNotFound error, but got a different error"
+        );
+    }
 }
 
 ///
@@ -40,7 +44,6 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
 /// purpose: call getTransactionStatus on transaction which has been accepted on L1.
 /// success case: retrieved transaction has been accepted on L1.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -67,7 +70,6 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
 /// purpose: call getTransactionStatus on last transaction from the latest block.
 /// success case: transaction is marked as accepted on L2.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -109,7 +111,6 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
 /// purpose: call getTransactionStatus on reverted transaction.
 /// success case: transaction is marked as reverted on L1.
 ///
-#[require(block_min = 50_000, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -150,7 +151,6 @@ async fn work_with_hash(
 }
 
 /// first transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_first_transaction_block_0(
@@ -166,7 +166,6 @@ async fn work_with_first_transaction_block_0(
 }
 
 /// deploy transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_0(
@@ -182,7 +181,6 @@ async fn work_with_deploy_transaction_block_0(
 }
 
 ///invoke transaction on block 0
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_invoke_transaction_block_0(
@@ -198,7 +196,6 @@ async fn work_with_invoke_transaction_block_0(
 }
 
 ///deploy transaction on block 1
-#[require(block_min = 1, spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_with_deploy_transaction_block_1(

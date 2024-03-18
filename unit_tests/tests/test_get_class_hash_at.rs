@@ -3,10 +3,13 @@
 mod common;
 use common::*;
 
-use std::{assert_matches::assert_matches, collections::HashMap};
+use std::collections::HashMap;
 
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
-use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError};
+use starknet_providers::{
+    jsonrpc::{HttpTransport, JsonRpcError},
+    JsonRpcClient, Provider,
+};
 
 ///
 /// Unit test for `starknet_getClassHashAt`
@@ -14,7 +17,6 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, Provid
 /// purpose: call getClassHashAt on invalid block.
 /// fail case: invalid block hash.
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -28,10 +30,20 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         .await
         .err();
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(StarknetError::BlockNotFound))
-    )
+    assert!(
+        response_deoxys.is_some(),
+        "Expected an error, but got a result"
+    );
+
+    let is_correct_error = checking_error_format(
+        response_deoxys.as_ref().unwrap(),
+        StarknetError::BlockNotFound,
+    );
+
+    assert!(
+        is_correct_error,
+        "Expected BlockNotFound error, but got a different error"
+    );
 }
 
 ///
@@ -40,7 +52,6 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 /// purpose: call getClassHashAt on non-existent contract.
 /// fail case: invalid contract hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -51,15 +62,19 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
             BlockId::Tag(BlockTag::Latest),
             FieldElement::from_hex_be(INVALID_CONTRACT_ADDR).unwrap(),
         )
-        .await
-        .err();
+        .await;
 
-    assert_matches!(
-        response_deoxys,
-        Some(ProviderError::StarknetError(
-            StarknetError::ContractNotFound
-        ))
-    )
+    let expected_error = JsonRpcError {
+        code: -32602,
+        message: "Invalid params".to_string(),
+        data: None,
+    };
+
+    assert!(
+        response_deoxys.is_err(),
+        "Expected an error response, but got result. Expected error: {:?}",
+        expected_error
+    );
 }
 
 ///
@@ -68,7 +83,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 /// purpose: call getClassHashAt on latest block.
 /// success case: retrieve valid class hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
@@ -99,7 +113,6 @@ async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>
 /// purpose: call getClassHashAt on pending block.
 /// success case: retrieve valid class hash.
 ///
-#[require(block_min = "latest", spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]

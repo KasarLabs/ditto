@@ -10,7 +10,6 @@ use std::collections::HashMap;
 /// purpose: get currently configured Starknet chain id
 /// success case: retrieve correct chain id
 ///
-#[require(spec_version = "0.5.1")]
 #[rstest]
 #[tokio::test]
 async fn chain_id(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
