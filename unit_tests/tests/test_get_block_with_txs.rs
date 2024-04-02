@@ -70,8 +70,6 @@ async fn work_with_block(
     pathfinder: JsonRpcClient<HttpTransport>,
     block_number: u64,
 ) {
-    let block_number = get_max_block_value();
-
     let response_deoxys = deoxys
         .get_block_with_txs(block_number)
         .await

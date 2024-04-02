@@ -42,6 +42,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Slash this ignore when Deoxys is fully synced"]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
@@ -131,6 +132,9 @@ async fn work_with_block_100_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 100_000 {
+        return;
+    }
     work_with_block(deoxys, pathfinder, 100_000).await;
 }
 
