@@ -147,7 +147,6 @@ async fn work_contract_v1(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-
     let block_number = get_max_block_value();
 
     let response_deoxys = deoxys

@@ -103,7 +103,8 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    if MAX_BLOCK < 500200 { //This contract was created at Block 500198
+    if MAX_BLOCK < 500200 {
+        //This contract was created at Block 500198
         return;
     }
 
@@ -131,7 +132,8 @@ async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
 async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    if MAX_BLOCK < 500200 { //This contract was created at Block 500192
+    if MAX_BLOCK < 500200 {
+        //This contract was created at Block 500192
         return;
     }
 
@@ -160,7 +162,8 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 500300 { //This contract was created at Block 500209
+    if MAX_BLOCK < 500300 {
+        //This contract was created at Block 500209
         return;
     }
 
@@ -198,7 +201,8 @@ async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 500300 { //This contract was created at Block 500192
+    if MAX_BLOCK < 500300 {
+        //This contract was created at Block 500192
         return;
     }
 
