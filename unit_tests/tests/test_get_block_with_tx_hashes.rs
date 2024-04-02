@@ -233,3 +233,52 @@ async fn work_loop(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClie
     }
     assert_eq!(diff, false);
 }
+
+/// This test may crash because if 2 clients doesnt exactly have the same computation time, the trace will be different
+#[rstest]
+#[tokio::test]
+async fn work_ok_with_pending_block(
+    deoxys: JsonRpcClient<HttpTransport>,
+    pathfinder: JsonRpcClient<HttpTransport>,
+) {
+    let mut set = tokio::task::JoinSet::new();
+    let arc_deoxys = Arc::new(deoxys);
+    let arc_pathfinder = Arc::new(pathfinder);
+
+    let clone_deoxys = Arc::clone(&arc_deoxys);
+    set.spawn(async move {
+        clone_deoxys
+            .get_block_with_tx_hashes(BlockId::Tag(BlockTag::Pending))
+            .await
+            .expect("Error waiting for response from Deoxys node")
+    });
+
+    let clone_pathfinder = Arc::clone(&arc_pathfinder);
+    set.spawn(async move {
+        clone_pathfinder
+            .get_block_with_tx_hashes(BlockId::Tag(BlockTag::Pending))
+            .await
+            .expect("Error waiting for response from Pathfinder node")
+    });
+
+    let mut deoxys_result = None;
+    let mut pathfinder_result = None;
+
+    while let Some(result) = set.join_next().await {
+        match result {
+            Ok(response) => {
+                if deoxys_result.is_none() {
+                    deoxys_result = Some(response);
+                } else if pathfinder_result.is_none() {
+                    pathfinder_result = Some(response);
+                }
+            }
+            Err(e) => panic!("Task panicked or encountered an error: {:?}", e),
+        }
+    }
+
+    assert_eq!(
+        deoxys_result, pathfinder_result,
+        "Responses from Deoxys and Pathfinder do not match"
+    );
+}
