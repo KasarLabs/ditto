@@ -48,7 +48,7 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
 async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
-    if MAX_BLOCK < 5000 {
+    if *MAX_BLOCK < 5000 {
         return;
     }
 
@@ -84,7 +84,7 @@ async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 50000 {
+    if *MAX_BLOCK < 50000 {
         return;
     }
     // getting transaction through block number and index
@@ -126,7 +126,7 @@ async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTrans
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 50000 {
+    if *MAX_BLOCK < 50000 {
         return;
     }
     // getting transaction through block number and index
@@ -168,7 +168,7 @@ async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 50000 {
+    if *MAX_BLOCK < 50000 {
         return;
     }
 

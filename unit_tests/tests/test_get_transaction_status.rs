@@ -50,7 +50,7 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 5001 {
+    if *MAX_BLOCK < 5001 {
         return;
     }
     let response_deoxys = deoxys
@@ -121,7 +121,7 @@ async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTr
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 500672 {
+    if *MAX_BLOCK < 500672 {
         return;
     }
     let response_deoxys = deoxys

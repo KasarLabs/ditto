@@ -88,7 +88,7 @@ async fn work_contract_v0(
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < BLOCK_LEGACY {
+    if *MAX_BLOCK < BLOCK_LEGACY {
         return Ok(());
     }
 

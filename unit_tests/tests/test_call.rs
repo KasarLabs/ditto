@@ -258,7 +258,7 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![FieldElement::ZERO],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_max_block_value(),
         )
         .await
         .err();
@@ -304,7 +304,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_max_block_value()
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -316,7 +316,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_max_block_value()
         )
         .await
         .expect("Error waiting for response from Pathfinder node");

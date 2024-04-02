@@ -140,7 +140,7 @@ async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<Htt
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 100_000 {
+    if *MAX_BLOCK < 100_000 {
         return;
     }
 

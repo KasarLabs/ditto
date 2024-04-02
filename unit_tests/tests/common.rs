@@ -36,8 +36,8 @@ pub fn checking_error_format(response: &ProviderError, expected_error: StarknetE
 }
 
 pub fn get_max_block_value() -> BlockId {
-    let max_block = BlockId::Number((MAX_BLOCK));
-    if MAX_BLOCK == 0 {
+    let max_block = BlockId::Number(*MAX_BLOCK);
+    if *MAX_BLOCK == 0 {
         BlockId::Tag(starknet_core::types::BlockTag::Latest)
     } else {
         max_block

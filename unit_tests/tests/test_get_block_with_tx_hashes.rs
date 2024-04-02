@@ -160,7 +160,7 @@ async fn work_with_block_3800(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 3800 {
+    if *MAX_BLOCK < 3800 {
         return;
     }
     work_with_block(deoxys, pathfinder, 3000).await;
@@ -173,7 +173,7 @@ async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 5066 {
+    if *MAX_BLOCK < 5066 {
         return;
     }
     work_with_block(deoxys, pathfinder, 5066).await;
@@ -186,7 +186,7 @@ async fn work_with_block_1500(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 1500 {
+    if *MAX_BLOCK < 1500 {
         return;
     }
     work_with_block(deoxys, pathfinder, 1500).await;
