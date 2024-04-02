@@ -34,5 +34,9 @@ pub fn checking_error_format(response: &ProviderError, expected_error: StarknetE
     }
 }
 
+pub fn get_max_block_value() -> u64 {
+    MAX_BLOCK
+}
+
 // TODO : Maybe create a function for each executions call that retrieves
 // responses from the 3 differents full nodes and compare releveant fields

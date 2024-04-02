@@ -22,6 +22,17 @@ fi
 ((choice--))
 
 if [[ $choice -ge 0 && $choice -lt ${#test_files[@]} ]]; then
+
+    read -p "Enter the maximum block number: " max_block
+
+    if grep -q "pub const MAX_BLOCK" unit_tests/src/constants.rs; then
+        sed -i "" "/pub const MAX_BLOCK/c\\
+        pub const MAX_BLOCK: u64 = $max_block;" unit_tests/src/constants.rs
+    else
+        echo "pub const MAX_BLOCK: u64 = $max_block;" >> unit_tests/src/constants.rs
+    fi
+
+
     cargo test --test "${test_files[$choice]%.*}"
 else
     echo "Invalid selection."

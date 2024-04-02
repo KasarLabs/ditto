@@ -1,3 +1,5 @@
+// Max block number used for testing
+pub const MAX_BLOCK: u64 = 5000;
 // Constants used throughout unit tests
 
 pub const DEOXYS: &str = "deoxys";
