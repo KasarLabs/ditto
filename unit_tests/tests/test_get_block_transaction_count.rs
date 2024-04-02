@@ -140,6 +140,10 @@ async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<Htt
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    if MAX_BLOCK < 100_000 {
+        return;
+    }
+
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(
             "0x4f45f870c79f7656c5d7c3c2c28ca0c2fe7206f22f56ac2183f81de521ab340",

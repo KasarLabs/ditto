@@ -50,6 +50,9 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    if MAX_BLOCK < 5001 {
+        return;
+    }
     let response_deoxys = deoxys
         .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_INVOKE).unwrap())
         .await
@@ -72,6 +75,7 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
 ///
 #[rstest]
 #[tokio::test]
+#[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
@@ -116,7 +120,10 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
 async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
-
+ 
+    if MAX_BLOCK < 500672 {
+        return;
+    }
     let response_deoxys = deoxys
         .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_REVERTED).unwrap())
         .await

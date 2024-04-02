@@ -337,6 +337,8 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -344,7 +346,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
                 entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
                 calldata: vec![FieldElement::from_hex_be(CONTRACT_ADDR).unwrap()],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -356,7 +358,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
                 entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
                 calldata: vec![FieldElement::from_hex_be(CONTRACT_ADDR).unwrap()],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
@@ -379,6 +381,8 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -389,7 +393,7 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
                     FieldElement::from_hex_be(STARKGATE_USDC).unwrap(),
                 ],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -404,7 +408,7 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
                     FieldElement::from_hex_be(STARKGATE_USDC).unwrap(),
                 ],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");

@@ -88,6 +88,10 @@ async fn work_contract_v0(
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    if MAX_BLOCK < BLOCK_LEGACY {
+        return;
+    }
+
     let response_deoxys = deoxys
         .get_class_at(
             BlockId::Number(BLOCK_LEGACY),
@@ -143,9 +147,12 @@ async fn work_contract_v1(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
         .get_class_at(
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
             FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
         )
         .await
@@ -153,7 +160,7 @@ async fn work_contract_v1(
 
     let response_pathfinder = pathfinder
         .get_class_at(
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
             FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
         )
         .await

@@ -2,7 +2,7 @@
 
 test_files=($(basename -a $(find unit_tests/tests -type f -name "*.rs" ! -name "common.rs")))
 
-cat art.txt
+cat ditto.txt
 
 echo "\n"
 echo "\033[31mSelect a test file to run:\033[0m"
@@ -23,7 +23,7 @@ fi
 
 if [[ $choice -ge 0 && $choice -lt ${#test_files[@]} ]]; then
 
-    read -p "Enter the maximum block number: " max_block
+    read -p "Enter the maximum block number (or 0 for the latest): " max_block
 
     if grep -q "pub const MAX_BLOCK" unit_tests/src/constants.rs; then
         sed -i "" "/pub const MAX_BLOCK/c\\

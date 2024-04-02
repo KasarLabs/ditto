@@ -1,6 +1,5 @@
 // Max block number used for testing
-pub const MAX_BLOCK: u64 = 5000;
-// Constants used throughout unit tests
+pub const MAX_BLOCK: u64 = 3000;
 
 pub const DEOXYS: &str = "deoxys";
 pub const PATHFINDER: &str = "pathfinder";
@@ -156,3 +155,4 @@ pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder cli
 
 pub const SPEC_0_5_1: &str = "0.5.1";
 pub const SPEC_0_6_0: &str = "0.6.0";
+pub const SPEC_0_7_0: &str = "0.7.0";

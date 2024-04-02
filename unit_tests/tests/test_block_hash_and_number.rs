@@ -16,6 +16,7 @@ use starknet_providers::{
 ///
 #[rstest]
 #[tokio::test]
+#[ignore = "Slash this ignore when Deoxys node is fully synced"]
 async fn work_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
