@@ -1,5 +1,5 @@
 // Max block number used for testing
-pub const MAX_BLOCK: u64 = 3000;
+pub const MAX_BLOCK: u64 = 5000;
 
 pub const DEOXYS: &str = "deoxys";
 pub const PATHFINDER: &str = "pathfinder";

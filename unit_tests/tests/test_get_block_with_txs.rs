@@ -53,12 +53,12 @@ async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTrans
     }
 
     let response_deoxys = deoxys
-        .get_block_with_txs(block_tag)
+        .get_block_with_txs(block_number)
         .await
         .expect("Error waiting for response from Deoxys node");
 
     let response_pathfinder = pathfinder
-        .get_block_with_txs(block_tag)
+        .get_block_with_txs(block_number)
         .await
         .expect("Error waiting for response from Pathfinder node");
 

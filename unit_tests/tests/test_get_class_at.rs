@@ -89,7 +89,7 @@ async fn work_contract_v0(
     let pathfinder = &clients[PATHFINDER];
 
     if MAX_BLOCK < BLOCK_LEGACY {
-        return;
+        return Ok(());
     }
 
     let response_deoxys = deoxys
