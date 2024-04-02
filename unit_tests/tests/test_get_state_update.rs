@@ -21,7 +21,6 @@ use std::collections::HashMap;
 
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
 
@@ -44,17 +43,18 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 
 #[rstest]
 #[tokio::test]
-#[ignore = "Need to fix unwrap on error due to empty constants"]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
-        .get_state_update(BlockId::Tag(BlockTag::Latest))
+        .get_state_update(block_number)
         .await
         .expect("Deoxys : Error while getting the state update");
     let response_pathfinder = pathfinder
-        .get_state_update(BlockId::Tag(BlockTag::Latest))
+        .get_state_update(block_number)
         .await
         .expect("RPC : Error while getting the state update");
 

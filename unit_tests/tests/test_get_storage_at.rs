@@ -107,6 +107,7 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 ///
 #[rstest]
 #[tokio::test]
+#[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];

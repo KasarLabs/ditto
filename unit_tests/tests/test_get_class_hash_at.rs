@@ -85,6 +85,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 ///
 #[rstest]
 #[tokio::test]
+#[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];

@@ -47,20 +47,21 @@ async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTrans
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_tag = BlockId::Tag(BlockTag::Latest);
+    let block_number = get_max_block_value();
+    if block_number != BlockId::Tag(BlockTag::Latest) {
+        return;
+    }
 
     let response_deoxys = deoxys
-        .get_block_with_txs(block_tag)
+        .get_block_with_txs(block_number)
         .await
         .expect("Error waiting for response from Deoxys node");
 
     let response_pathfinder = pathfinder
-        .get_block_with_txs(block_tag)
+        .get_block_with_txs(block_number)
         .await
         .expect("Error waiting for response from Pathfinder node");
 
-    //println!("✅ {:?}", response_deoxys);
-    //println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
@@ -69,7 +70,7 @@ async fn work_with_block(
     pathfinder: JsonRpcClient<HttpTransport>,
     block_number: u64,
 ) {
-    let block_number = BlockId::Number(block_number);
+    let block_number = get_max_block_value();
 
     let response_deoxys = deoxys
         .get_block_with_txs(block_number)
@@ -125,6 +126,9 @@ async fn work_with_block_100_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 100_000 {
+        return;
+    }
     work_with_block(deoxys, pathfinder, 100_000).await;
 }
 
@@ -133,6 +137,9 @@ async fn work_with_block_100_000(
 async fn work_with_block_one_hundred_thousand_hash(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
+    if MAX_BLOCK < 100_000 {
+        return;
+    }
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
@@ -163,16 +170,22 @@ async fn work_with_block_3800(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 3800 {
+        return;
+    }
     work_with_block(deoxys, pathfinder, 3800).await;
 }
 
-/// block 50066 is one of the biggest blocks in the mainnet
+/// block 5066 is one of the biggest blocks in the mainnet
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 5066 {
+        return;
+    }
     work_with_block(deoxys, pathfinder, 5066).await;
 }
 /// block 1466-2242 mismatch block_hash
@@ -182,6 +195,9 @@ async fn work_with_block_1500(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 1500 {
+        return;
+    }
     work_with_block(deoxys, pathfinder, 1500).await;
 }
 

@@ -1,3 +1,4 @@
+use starknet_core::types::BlockId;
 use starknet_core::types::StarknetError;
 use starknet_providers::ProviderError;
 /* Common imports used throughout all unit tests */
@@ -31,6 +32,15 @@ pub fn checking_error_format(response: &ProviderError, expected_error: StarknetE
             }
         }
         _ => false,
+    }
+}
+
+pub fn get_max_block_value() -> BlockId {
+    let max_block = BlockId::Number((MAX_BLOCK));
+    if MAX_BLOCK == 0 {
+        BlockId::Tag(starknet_core::types::BlockTag::Latest)
+    } else {
+        max_block
     }
 }
 

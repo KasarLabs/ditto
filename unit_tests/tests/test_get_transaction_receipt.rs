@@ -3,7 +3,7 @@
 mod common;
 use common::*;
 
-use std::collections::HashMap;
+use std::{char::MAX, collections::HashMap};
 
 use starknet_core::types::{FieldElement, StarknetError};
 use starknet_providers::{
@@ -65,6 +65,9 @@ async fn work_with_reverted_transaction_block_200_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
+    if MAX_BLOCK < 200_000 {
+        return;
+    }
     work_with_hash(
         deoxys,
         pathfinder,
@@ -131,12 +134,4 @@ async fn work_with_deploy_transaction_block_1(
         "0x2f07a65f9f7a6445b2a0b1fb90ef12f5fd3b94128d06a67712efd3b2f163533",
     )
     .await;
-}
-
-#[rstest]
-#[tokio::test]
-async fn work_ok_with_pending_transaction(
-    deoxys: JsonRpcClient<HttpTransport>,
-    pathfinder: JsonRpcClient<HttpTransport>,
-) {
 }

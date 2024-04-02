@@ -85,6 +85,7 @@ async fn works_ok_for_random_block(
 //This test may crash because if 2 clients doesnt exactly have the same computation time, the trace will be different
 #[rstest]
 #[tokio::test]
+#[ignore = "Slash this ignore when Deoxys node is fully synced, but it may not works at all bc of computation"]
 async fn works_ok_for_pending_block(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,

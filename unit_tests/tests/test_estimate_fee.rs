@@ -78,6 +78,8 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let ok_deoxys_invoke = OkTransactionFactory::build(Some(FieldElement::ZERO));
     let ok_deoxys_invoke_1 = OkTransactionFactory::build(Some(FieldElement::ONE));
     let ok_deoxys_invoke_2 = OkTransactionFactory::build(Some(FieldElement::TWO));
@@ -89,7 +91,7 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys_estimates = deoxys
         .estimate_fee(
             &vec![ok_deoxys_invoke, ok_deoxys_invoke_1, ok_deoxys_invoke_2],
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .unwrap();
@@ -101,7 +103,7 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
                 ok_pathfinder_invoke_1,
                 ok_pathfinder_invoke_2,
             ],
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .unwrap();

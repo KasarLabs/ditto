@@ -258,10 +258,12 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![FieldElement::ZERO],
             },
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(MAX_BLOCK),
         )
         .await
         .err();
+
+    println!("{:?}", response_deoxys);
 
     assert!(
         response_deoxys.is_some(),
@@ -302,7 +304,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(MAX_BLOCK),
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -314,12 +316,15 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(MAX_BLOCK),
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
 
     let response_expected = short_string!("Ether");
+
+    println!("{:?}", response_deoxys);
+    println!("{:?}", response_pathfinder);
 
     assert_eq!(response_deoxys, vec![response_expected]);
     assert_eq!(response_deoxys, response_pathfinder);
@@ -337,6 +342,8 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -344,7 +351,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
                 entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
                 calldata: vec![FieldElement::from_hex_be(CONTRACT_ADDR).unwrap()],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -356,7 +363,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
                 entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
                 calldata: vec![FieldElement::from_hex_be(CONTRACT_ADDR).unwrap()],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
@@ -379,6 +386,8 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+    let block_number = get_max_block_value();
+
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -389,7 +398,7 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
                     FieldElement::from_hex_be(STARKGATE_USDC).unwrap(),
                 ],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -404,7 +413,7 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
                     FieldElement::from_hex_be(STARKGATE_USDC).unwrap(),
                 ],
             },
-            BlockId::Tag(BlockTag::Latest),
+            block_number,
         )
         .await
         .expect("Error waiting for response from Deoxys node");
