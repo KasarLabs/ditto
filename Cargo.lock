@@ -2811,6 +2811,7 @@ dependencies = [
  "log",
  "macro",
  "macro_utils",
+ "once_cell",
  "rand",
  "rstest",
  "serde_json",

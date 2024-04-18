@@ -165,7 +165,7 @@ async fn estimate_message_fee_works_ok(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let contract_address = FieldElement::from_hex_be(
         "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82",

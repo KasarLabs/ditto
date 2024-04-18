@@ -50,9 +50,6 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 5001 {
-        return;
-    }
     let response_deoxys = deoxys
         .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_INVOKE).unwrap())
         .await
@@ -121,9 +118,7 @@ async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTr
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if MAX_BLOCK < 500672 {
-        return;
-    }
+    //This contract was created at Block 500670, so need to be synced to this minimum block
     let response_deoxys = deoxys
         .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_REVERTED).unwrap())
         .await

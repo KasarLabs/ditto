@@ -11,6 +11,8 @@ use starknet_providers::{
 use std::collections::HashMap;
 use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
 
+
+//TODO(Tbelleng : Add Simulation Flag to params)
 #[rstest]
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
@@ -78,7 +80,7 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let ok_deoxys_invoke = OkTransactionFactory::build(Some(FieldElement::ZERO));
     let ok_deoxys_invoke_1 = OkTransactionFactory::build(Some(FieldElement::ONE));

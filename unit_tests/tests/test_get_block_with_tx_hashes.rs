@@ -59,7 +59,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(block_number)
@@ -126,9 +126,9 @@ async fn work_pending_block(clients: HashMap<String, JsonRpcClient<HttpTransport
 async fn work_with_block(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
-    block_number: u64,
+    _block_number: u64,
 ) {
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(block_number)
@@ -160,9 +160,6 @@ async fn work_with_block_3800(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 3800 {
-        return;
-    }
     work_with_block(deoxys, pathfinder, 3000).await;
 }
 
@@ -173,9 +170,6 @@ async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 5066 {
-        return;
-    }
     work_with_block(deoxys, pathfinder, 5066).await;
 }
 
@@ -186,9 +180,6 @@ async fn work_with_block_1500(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 1500 {
-        return;
-    }
     work_with_block(deoxys, pathfinder, 1500).await;
 }
 

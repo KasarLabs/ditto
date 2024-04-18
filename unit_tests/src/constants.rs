@@ -1,5 +1,13 @@
-// Max block number used for testing
-        pub const MAX_BLOCK: u64 = 20000;
+use once_cell::sync::Lazy;
+use std::env;
+
+// Max block number used for testing fetched from environment variable MAX_BLOCK
+pub static MAX_BLOCK: Lazy<u64> = Lazy::new(|| {
+    env::var("MAX_BLOCK")
+        .map(|val| val.parse().unwrap_or(0))
+        .unwrap_or(0)
+});
+
 pub const DEOXYS: &str = "deoxys";
 pub const PATHFINDER: &str = "pathfinder";
 pub const JUNO: &str = "juno";

@@ -135,9 +135,6 @@ async fn work_valid_call_no_selector(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 50000 {
-        return;
-    }
     let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed")]];
     let block_nu: u64 = 50000;
     let block_hash: FieldElement =
@@ -173,9 +170,6 @@ async fn work_valid_call_single_selector(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 50000 {
-        return;
-    }
     // event type to retrieve
     let keys: Vec<Vec<FieldElement>> = vec![vec![selector!("transaction_executed")]];
     let block_nu: u64 = 50000;
@@ -212,9 +206,6 @@ async fn work_valid_call_multiple_selector(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if MAX_BLOCK < 50000 {
-        return;
-    }
     let keys: Vec<Vec<FieldElement>> = vec![vec![
         selector!("transaction_executed"),
         selector!("account_created"),

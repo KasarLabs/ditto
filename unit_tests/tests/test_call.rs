@@ -258,7 +258,7 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![FieldElement::ZERO],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_block_setting(),
         )
         .await
         .err();
@@ -297,6 +297,8 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
+
+
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -304,7 +306,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_block_setting()
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -316,15 +318,12 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            BlockId::Number(MAX_BLOCK),
+            get_block_setting()
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
 
     let response_expected = short_string!("Ether");
-
-    println!("{:?}", response_deoxys);
-    println!("{:?}", response_pathfinder);
 
     assert_eq!(response_deoxys, vec![response_expected]);
     assert_eq!(response_deoxys, response_pathfinder);
@@ -342,7 +341,7 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let response_deoxys = deoxys
         .call(
@@ -386,7 +385,7 @@ async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let response_deoxys = deoxys
         .call(
