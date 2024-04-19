@@ -53,8 +53,6 @@ async fn work_with_hash(
         .await
         .unwrap();
 
-    println!("✅ {:?}", response_deoxys);
-    println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 

@@ -4,8 +4,8 @@ mod common;
 use common::*;
 
 use starknet_core::types::{
-    BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedTransaction, ContractErrorData,
-    FieldElement, SimulationFlag, StarknetError,
+    BlockId, BlockTag, BroadcastedInvokeTransaction, BroadcastedInvokeTransactionV1,
+    BroadcastedTransaction, ContractErrorData, FieldElement, SimulationFlag, StarknetError,
 };
 use starknet_core::utils::get_selector_from_name;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
@@ -48,19 +48,21 @@ use std::convert::From;
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
-    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::ZERO,
-        signature: vec![],
-        nonce: FieldElement::ZERO,
-        sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
-            get_selector_from_name("sqrt").unwrap(),
-            FieldElement::from_hex_be("1").unwrap(),
-            FieldElement::from(81u8),
-        ],
-        is_query: false,
-    });
+    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::ZERO,
+            signature: vec![],
+            nonce: FieldElement::ZERO,
+            sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+            calldata: vec![
+                FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
+                get_selector_from_name("sqrt").unwrap(),
+                FieldElement::from_hex_be("1").unwrap(),
+                FieldElement::from(81u8),
+            ],
+            is_query: false,
+        },
+    ));
 
     let response_deoxys = deoxys
         .simulate_transactions(
@@ -88,35 +90,37 @@ async fn fail_non_existing_block(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn fail_max_fee_too_big(deoxys: JsonRpcClient<HttpTransport>) {
-    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0xffffffffffffffffff").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(
+        BroadcastedInvokeTransaction::V1(BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0xffffffffffffffffff").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        }),
+    );
 
     let response = deoxys
         .simulate_transactions(
@@ -141,35 +145,37 @@ async fn fail_max_fee_too_big(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn fail_max_fee_too_low(deoxys: JsonRpcClient<HttpTransport>) {
-    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0xf").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let max_fee_invoke_transaction = BroadcastedTransaction::Invoke(
+        BroadcastedInvokeTransaction::V1(BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0xf").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        }),
+    );
 
     let response = deoxys
         .simulate_transactions(
@@ -194,65 +200,69 @@ async fn fail_max_fee_too_low(deoxys: JsonRpcClient<HttpTransport>) {
 #[rstest]
 #[tokio::test]
 async fn fail_if_one_txn_cannot_be_executed(deoxys: JsonRpcClient<HttpTransport>) {
-    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let ok_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        },
+    ));
 
-    let bad_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x0626236383637613031643464656463376662666332333632613332313635373",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x0386138666231633730323431643031326132323734393763346334353632343",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x26").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x06b0f22f1c1f96146543d4f506ce3b6f76bcf6f154ce1db4ea8e61be341f4026",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x28ad8723f66b38cab4be89d082dc21860a67e318b69e0b3adc3fc09c5bb32fa",
+    let bad_invoke_transaction = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x0626236383637613031643464656463376662666332333632613332313635373",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x0386138666231633730323431643031326132323734393763346334353632343",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x26").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x06b0f22f1c1f96146543d4f506ce3b6f76bcf6f154ce1db4ea8e61be341f4026",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0xecfd5662af5fbcbb005e88a74bd1d7f0e5d78a4d0a278fa1744114fdd14405",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x28ad8723f66b38cab4be89d082dc21860a67e318b69e0b3adc3fc09c5bb32fa",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0xecfd5662af5fbcbb005e88a74bd1d7f0e5d78a4d0a278fa1744114fdd14405",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        },
+    ));
 
     let response_deoxys = deoxys
         .simulate_transactions(
@@ -289,35 +299,37 @@ async fn works_ok_on_no_validate(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0x00").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0x00").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        },
+    ));
 
     let tx_next = tx.clone();
 
@@ -352,26 +364,28 @@ async fn works_ok_on_validate_without_signature_with_skip_validate(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
-        signature: vec![],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0xffffffffffff").unwrap(),
+            signature: vec![],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        },
+    ));
 
     let tx_next = tx.clone();
 
@@ -404,35 +418,37 @@ async fn works_ok_without_max_fee_with_skip_fee_charge(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-        max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
-        signature: vec![
-            FieldElement::from_hex_be(
-                "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
-            )
-            .expect("REASON"),
-            FieldElement::from_hex_be(
-                "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
-            )
-            .expect("REASON"),
-        ],
-        nonce: FieldElement::from_hex_be("0x22").unwrap(),
-        sender_address: FieldElement::from_hex_be(
-            "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
-        )
-        .unwrap(),
-        calldata: vec![
-            FieldElement::from_hex_be(
-                "0x0333366346336346435623165626564653266623531386661366635396565623",
+    let tx = BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+        BroadcastedInvokeTransactionV1 {
+            max_fee: FieldElement::from_hex_be("0x0ffffffff").unwrap(),
+            signature: vec![
+                FieldElement::from_hex_be(
+                    "0x5687164368262e1885f904c31bfe55362d91b9a5195d220d5d59aa3c8286349",
+                )
+                .expect("REASON"),
+                FieldElement::from_hex_be(
+                    "0x2bf8dd834492afe810152fe45083b8c768d62556f772885624ccbd52c6b80d7",
+                )
+                .expect("REASON"),
+            ],
+            nonce: FieldElement::from_hex_be("0x22").unwrap(),
+            sender_address: FieldElement::from_hex_be(
+                "0x019f57133d6a46990231a58a8f45be87405b4494161bf9ac7b25bd14de6e4d40",
             )
             .unwrap(),
-            FieldElement::from_hex_be(
-                "0x0653535393433653264616163313937353164313735393562666532383464356",
-            )
-            .unwrap(),
-        ],
-        is_query: false,
-    });
+            calldata: vec![
+                FieldElement::from_hex_be(
+                    "0x0333366346336346435623165626564653266623531386661366635396565623",
+                )
+                .unwrap(),
+                FieldElement::from_hex_be(
+                    "0x0653535393433653264616163313937353164313735393562666532383464356",
+                )
+                .unwrap(),
+            ],
+            is_query: false,
+        },
+    ));
 
     let tx_next = tx.clone();
 

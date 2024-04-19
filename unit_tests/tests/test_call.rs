@@ -234,7 +234,6 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
         .await
         .expect("Error waiting for response from Deoxys node");
 
-    println!("{:?}", response_deoxys);
     assert_eq!(
         response_deoxys,
         vec![FieldElement::ZERO, FieldElement::ZERO]
@@ -263,8 +262,6 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
         )
         .await
         .err();
-
-    println!("{:?}", response_deoxys);
 
     assert!(
         response_deoxys.is_some(),
@@ -321,9 +318,6 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
-
-    println!("✅{:?}", response_deoxys);
-    println!("✅{:?}", response_pathfinder);
 
     let response_expected = short_string!("Ether");
 

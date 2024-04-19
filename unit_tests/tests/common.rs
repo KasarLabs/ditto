@@ -36,15 +36,6 @@ pub fn checking_error_format(response: &ProviderError, expected_error: StarknetE
     }
 }
 
-// pub fn get_block_setting() -> BlockId {
-//     let max_block = BlockId::Number(*MAX_BLOCK);
-//     if *MAX_BLOCK == 0 {
-//         BlockId::Tag(starknet_core::types::BlockTag::Latest)
-//     } else {
-//         max_block
-//     }
-// }
-
 // TODO : Maybe create a function for each executions call that retrieves
 // responses from the 3 differents full nodes and compare releveant fields
 
