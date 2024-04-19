@@ -23,7 +23,7 @@ use starknet_providers::{
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[JUNO];
+    let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
@@ -234,6 +234,7 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
         .await
         .expect("Error waiting for response from Deoxys node");
 
+    println!("{:?}", response_deoxys);
     assert_eq!(
         response_deoxys,
         vec![FieldElement::ZERO, FieldElement::ZERO]
@@ -297,8 +298,6 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-
-
     let response_deoxys = deoxys
         .call(
             FunctionCall {
@@ -306,7 +305,7 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            get_block_setting()
+            BlockId::Tag(BlockTag::Latest),
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -318,10 +317,13 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
                 entry_point_selector: get_selector_from_name("name").unwrap(),
                 calldata: vec![],
             },
-            get_block_setting()
+            BlockId::Tag(BlockTag::Latest),
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
+
+    println!("✅{:?}", response_deoxys);
+    println!("✅{:?}", response_pathfinder);
 
     let response_expected = short_string!("Ether");
 

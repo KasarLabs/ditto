@@ -3,14 +3,15 @@
 mod common;
 use common::*;
 
-use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
+use starknet_core::types::{
+    BlockId, BlockTag, FieldElement, SimulationFlagForEstimateFee, StarknetError,
+};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient, JsonRpcError},
     Provider,
 };
 use std::collections::HashMap;
 use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory};
-
 
 //TODO(Tbelleng : Add Simulation Flag to params)
 #[rstest]
@@ -24,6 +25,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let response_deoxys = deoxys
         .estimate_fee(
             &vec![ok_invoke_transaction],
+            SimulationFlagForEstimateFee::SkipValidate,
             BlockId::Hash(FieldElement::ZERO),
         )
         .await;
@@ -56,6 +58,7 @@ async fn fail_if_one_txn_cannot_be_executed(
     let response_deoxys = deoxys
         .estimate_fee(
             vec![bad_invoke_transaction.clone()],
+            SimulationFlagForEstimateFee::SkipValidate,
             BlockId::Tag(BlockTag::Latest),
         )
         .await;
@@ -93,6 +96,7 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys_estimates = deoxys
         .estimate_fee(
             &vec![ok_deoxys_invoke, ok_deoxys_invoke_1, ok_deoxys_invoke_2],
+            SimulationFlagForEstimateFee::SkipValidate,
             block_number,
         )
         .await
@@ -105,6 +109,7 @@ async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
                 ok_pathfinder_invoke_1,
                 ok_pathfinder_invoke_2,
             ],
+            SimulationFlagForEstimateFee::SkipValidate,
             block_number,
         )
         .await

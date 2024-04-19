@@ -1,7 +1,7 @@
-use std::env;
-use starknet_core::types::{BlockId, BlockTag};
 use starknet_core::types::StarknetError;
+use starknet_core::types::{BlockId, BlockTag};
 use starknet_providers::ProviderError;
+use std::env;
 /* Common imports used throughout all unit tests */
 
 #[allow(unused_imports)]
@@ -47,7 +47,6 @@ pub fn checking_error_format(response: &ProviderError, expected_error: StarknetE
 
 // TODO : Maybe create a function for each executions call that retrieves
 // responses from the 3 differents full nodes and compare releveant fields
-
 
 // If no env variable, by default we use block 100000
 pub fn get_block_setting() -> BlockId {

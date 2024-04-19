@@ -286,8 +286,8 @@ async fn deep_check_events(
                 .first()
                 .unwrap()
                 .contains(clone_event.keys.first().unwrap()));
-            assert_eq!(clone_event.block_hash, block_hash);
-            assert_eq!(clone_event.block_number, block_nu);
+            assert_eq!(clone_event.block_hash, Some(block_hash));
+            assert_eq!(clone_event.block_number, Some(block_nu));
             assert_ne!(clone_event.data.len(), 0);
 
             anyhow::Ok(())

@@ -3,8 +3,9 @@
 use constants::*;
 use starknet_accounts::{Account, Call, ConnectedAccount, Execution, SingleOwnerAccount};
 use starknet_core::chain_id;
+use starknet_core::types::BroadcastedInvokeTransaction;
 use starknet_core::{
-    types::{BroadcastedInvokeTransaction, BroadcastedTransaction, FieldElement},
+    types::{BroadcastedInvokeTransactionV1, BroadcastedTransaction, FieldElement},
     utils::get_selector_from_name,
 };
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient};
@@ -22,19 +23,21 @@ pub struct OkTransactionFactory;
 
 impl TransactionFactory for OkTransactionFactory {
     fn build(nonce: Option<FieldElement>) -> BroadcastedTransaction {
-        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
-            max_fee: FieldElement::ZERO,
-            signature: vec![],
-            nonce: nonce.unwrap_or(FieldElement::ZERO),
-            sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
-            calldata: vec![
-                FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
-                get_selector_from_name("sqrt").unwrap(),
-                FieldElement::from_hex_be("1").unwrap(),
-                FieldElement::from(81u8),
-            ],
-            is_query: true,
-        })
+        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(
+            BroadcastedInvokeTransactionV1 {
+                max_fee: FieldElement::ZERO,
+                signature: vec![],
+                nonce: nonce.unwrap_or(FieldElement::ZERO),
+                sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+                calldata: vec![
+                    FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
+                    get_selector_from_name("sqrt").unwrap(),
+                    FieldElement::from_hex_be("1").unwrap(),
+                    FieldElement::from(81u8),
+                ],
+                is_query: true,
+            },
+        ))
     }
 }
 
@@ -42,14 +45,15 @@ pub struct BadTransactionFactory;
 
 impl TransactionFactory for BadTransactionFactory {
     fn build(_: Option<FieldElement>) -> BroadcastedTransaction {
-        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        let transaction_v1 = BroadcastedInvokeTransactionV1 {
             max_fee: FieldElement::default(),
             nonce: FieldElement::ZERO,
             sender_address: FieldElement::default(),
             signature: vec![],
             calldata: vec![FieldElement::from_hex_be("0x0").unwrap()],
             is_query: true,
-        })
+        };
+        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(transaction_v1))
     }
 }
 
@@ -57,7 +61,7 @@ pub struct MaxFeeTransactionFactory;
 
 impl TransactionFactory for MaxFeeTransactionFactory {
     fn build(_: Option<FieldElement>) -> BroadcastedTransaction {
-        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction {
+        let transaction_v1 = BroadcastedInvokeTransactionV1 {
             max_fee: FieldElement::from_hex_be("0x100000000000000000000000000000000").unwrap(),
             signature: vec![],
             nonce: FieldElement::ZERO,
@@ -72,7 +76,8 @@ impl TransactionFactory for MaxFeeTransactionFactory {
                 FieldElement::from(81u8),
             ],
             is_query: false,
-        })
+        };
+        BroadcastedTransaction::Invoke(BroadcastedInvokeTransaction::V1(transaction_v1))
     }
 }
 
@@ -98,7 +103,7 @@ pub fn build_single_owner_account<'a>(
         rpc,
         signer,
         account_address,
-        chain_id::TESTNET,
+        chain_id::SEPOLIA,
         execution_encoding,
     )
 }
@@ -111,7 +116,7 @@ pub trait PrepareInvoke {
         nonce: FieldElement,
         max_fee: FieldElement,
         query_only: bool,
-    ) -> BroadcastedInvokeTransaction;
+    ) -> BroadcastedInvokeTransactionV1;
 }
 
 impl PrepareInvoke for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalWallet> {
@@ -121,7 +126,7 @@ impl PrepareInvoke for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalWa
         nonce: FieldElement,
         max_fee: FieldElement,
         query_only: bool,
-    ) -> BroadcastedInvokeTransaction
+    ) -> BroadcastedInvokeTransactionV1
     where
         Self: Account + ConnectedAccount,
     {
@@ -130,10 +135,16 @@ impl PrepareInvoke for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalWa
             .max_fee(max_fee)
             .prepared()
             .unwrap();
-        prepared_execution
+
+        let invoke_request = prepared_execution
             .get_invoke_request(query_only)
             .await
-            .unwrap()
+            .unwrap();
+
+        match invoke_request {
+            BroadcastedInvokeTransaction::V1(invoke_transaction) => invoke_transaction,
+            BroadcastedInvokeTransaction::V3(_) => panic!("V3 transactions are not supported yet"),
+        }
     }
 }
 
