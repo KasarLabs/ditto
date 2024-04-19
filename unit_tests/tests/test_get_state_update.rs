@@ -47,7 +47,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_max_block_value();
+    let block_number = get_block_setting();
 
     let response_deoxys = deoxys
         .get_state_update(block_number)

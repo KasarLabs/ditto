@@ -53,8 +53,6 @@ async fn work_with_hash(
         .await
         .unwrap();
 
-    println!("✅ {:?}", response_deoxys);
-    println!("✅ {:?}", response_pathfinder);
     assert_eq!(response_deoxys, response_pathfinder);
 }
 
@@ -65,9 +63,6 @@ async fn work_with_reverted_transaction_block_200_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if *MAX_BLOCK < 200_000 {
-        return;
-    }
     work_with_hash(
         deoxys,
         pathfinder,

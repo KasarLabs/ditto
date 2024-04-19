@@ -78,6 +78,8 @@ async fn works_ok_for_random_block(
     let deoxys_trace = deoxys.trace_block_transactions(block_number).await;
     let _pathfinder_trace = pathfinder.trace_block_transactions(block_number).await;
     println!("block choose is: {:?}", block_number);
+    println!("deoxys_trace: {:?}", deoxys_trace);
+    println!("pathfinder_trace: {:?}", _pathfinder_trace);
 
     assert_matches!(deoxys_trace, _pathfinder_trace);
 }

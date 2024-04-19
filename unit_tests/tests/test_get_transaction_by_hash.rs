@@ -48,10 +48,6 @@ async fn work_transaction_invoke(clients: HashMap<String, JsonRpcClient<HttpTran
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if *MAX_BLOCK < 50001 {
-        return;
-    }
-
     let response_deoxys = deoxys
         .get_transaction_by_hash(FieldElement::from_hex_be(TRANSACTION_INVOKE).unwrap())
         .await
@@ -78,10 +74,6 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    if *MAX_BLOCK < 50001 {
-        return;
-    }
-
     let response_deoxys = deoxys
         .get_transaction_by_hash(FieldElement::from_hex_be(TRANSACTION_L1_HANDLER).unwrap())
         .await
@@ -107,10 +99,6 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
 async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
-
-    if *MAX_BLOCK < 50000 {
-        return;
-    }
 
     let response_deoxys = deoxys
         .get_transaction_by_hash(FieldElement::from_hex_be(TRANSACTION_DECLARE).unwrap())
@@ -139,10 +127,6 @@ async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTra
 async fn work_transaction_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
-
-    if *MAX_BLOCK < 50000 {
-        return;
-    }
 
     let response_deoxys = deoxys
         .get_transaction_by_hash(FieldElement::from_hex_be(TRANSACTION_DEPLOY_ACCOUNT).unwrap())
@@ -262,9 +246,6 @@ async fn work_with_deploy_transaction_block_10(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
 ) {
-    if *MAX_BLOCK < 10 {
-        return;
-    }
     work_with_hash(
         deoxys,
         pathfinder,
