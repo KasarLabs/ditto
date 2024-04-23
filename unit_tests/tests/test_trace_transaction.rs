@@ -61,7 +61,7 @@ async fn fail_no_trace_available(deoxys: JsonRpcClient<HttpTransport>) {
         let is_correct_error = checking_error_format(
             &error,
             StarknetError::NoTraceAvailable(NoTraceAvailableErrorData {
-                status: SequencerTransactionStatus::Rejected, //Check this because here Pathfinder and Juno return a Trace but with a revert_reason":"Error in the called contract
+                status: SequencerTransactionStatus::Rejected, //Check this because here Pathfinder and Juno return a ContractError but with a revert_reason":"Error in the called contract,
             }),
         );
 
