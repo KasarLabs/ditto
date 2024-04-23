@@ -59,7 +59,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_block_setting();
+    let block_number = BlockId::Number(193); //2243
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(block_number)
@@ -163,7 +163,7 @@ async fn work_with_block_3800(
     work_with_block(deoxys, pathfinder, 3000).await;
 }
 
-/// block 50066 is one of the biggest blocks in the mainnet
+/// block 5066 is one of the biggest blocks in the mainnet
 #[rstest]
 #[tokio::test]
 async fn work_with_block_5066(

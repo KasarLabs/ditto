@@ -91,7 +91,7 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
         .get_storage_at(
             FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
             FieldElement::ZERO,
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(1000),
         )
         .await
         .expect("Error waiting for response from Deoxys client");
@@ -107,7 +107,6 @@ async fn fail_invalid_storage_key(clients: HashMap<String, JsonRpcClient<HttpTra
 ///
 #[rstest]
 #[tokio::test]
-#[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
@@ -115,17 +114,29 @@ async fn work_get_storage(clients: HashMap<String, JsonRpcClient<HttpTransport>>
     // TODO: get contract key from field name
     let response_deoxys = deoxys
         .get_storage_at(
-            FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
-            FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
-            BlockId::Tag(BlockTag::Latest),
+            FieldElement::from_hex_be(
+                "0x06c780b25d325d49e08175b47d3bc93c53323917d7df3a8084d387d63e84a49b",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0000000000000000000000000000000000000000000000000000000000000005",
+            )
+            .unwrap(),
+            BlockId::Number(2000),
         )
         .await
         .expect("Error waiting for response from Deoxys client");
     let response_pathfinder = pathfinder
         .get_storage_at(
-            FieldElement::from_hex_be(CONTRACT_ADDR).unwrap(),
-            FieldElement::from_hex_be(CONTRACT_KEY).unwrap(),
-            BlockId::Tag(BlockTag::Latest),
+            FieldElement::from_hex_be(
+                "0x06c780b25d325d49e08175b47d3bc93c53323917d7df3a8084d387d63e84a49b",
+            )
+            .unwrap(),
+            FieldElement::from_hex_be(
+                "0x0000000000000000000000000000000000000000000000000000000000000005",
+            )
+            .unwrap(),
+            BlockId::Number(2000),
         )
         .await
         .expect("Error waiting for response from Pathfinder client");
