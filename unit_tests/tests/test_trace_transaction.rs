@@ -6,7 +6,10 @@ use common::*;
 use std::assert_matches::assert_matches;
 use std::sync::Arc;
 
-use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
+use starknet_core::types::{
+    BlockId, BlockTag, FieldElement, NoTraceAvailableErrorData, SequencerTransactionStatus,
+    StarknetError,
+};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
@@ -16,7 +19,7 @@ use starknet_providers::{
 #[tokio::test]
 async fn fail_non_existing_hash(deoxys: JsonRpcClient<HttpTransport>) {
     let transaction_hash = FieldElement::from_hex_be(
-        "0x02x02d6f0d7sbc71bsc629cde0w8199ccfb6er8343a76943475405817737f76c",
+        "0x04456c75586c033f4c8f6731a87d10ff5779e40c351e9c8378590ae2a3f823d1",
     )
     .unwrap(); // non-existent transaction hash
 
@@ -55,7 +58,12 @@ async fn fail_no_trace_available(deoxys: JsonRpcClient<HttpTransport>) {
     );
 
     if let Err(error) = response_deoxys {
-        let is_correct_error = checking_error_format(&error, StarknetError::NoTraceAvailable);
+        let is_correct_error = checking_error_format(
+            &error,
+            StarknetError::NoTraceAvailable(NoTraceAvailableErrorData {
+                status: SequencerTransactionStatus::Rejected, //Check this because here Pathfinder and Juno return a Trace but with a revert_reason":"Error in the called contract
+            }),
+        );
 
         assert!(
             is_correct_error,
