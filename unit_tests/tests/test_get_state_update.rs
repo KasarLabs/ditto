@@ -3,7 +3,7 @@
 mod common;
 use common::*;
 
-use starknet_core::types::{BlockId, BlockTag, StarknetError};
+use starknet_core::types::{BlockId, StarknetError};
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
@@ -47,7 +47,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let block_number = get_block_setting();
+    let block_number = BlockId::Number(100);
 
     let response_deoxys = deoxys
         .get_state_update(block_number)

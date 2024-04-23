@@ -51,12 +51,12 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
     let pathfinder = &clients[PATHFINDER];
 
     let response_deoxys = deoxys
-        .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_INVOKE).unwrap())
+        .get_transaction_status(FieldElement::from_hex_be("0x02cdada29d741a0e0308ce56ac23376d7ca735474d53b2d5da0400b8eab0c7aa").unwrap())
         .await
         .expect(ERR_DEOXYS);
 
     let response_pathfinder = pathfinder
-        .get_transaction_status(FieldElement::from_hex_be(TRANSACTION_INVOKE).unwrap())
+        .get_transaction_status(FieldElement::from_hex_be("0x02cdada29d741a0e0308ce56ac23376d7ca735474d53b2d5da0400b8eab0c7aa").unwrap())
         .await
         .expect(ERR_PATHFINDER);
 
