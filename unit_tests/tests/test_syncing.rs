@@ -27,9 +27,6 @@ async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
         .await
         .expect("Error while getting sync status from pathfinder node");
 
-    println!("Deoxys: {:?}", response_deoxys);
-    println!("Pathfinder: {:?}", response_pathfinder);
-
     assert!(compare_sync_status(response_deoxys, response_pathfinder));
 }
 
