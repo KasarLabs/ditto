@@ -1,21 +1,41 @@
 #![feature(assert_matches)]
 
 mod common;
+use std::collections::HashMap;
+
 use common::*;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
+use colored::*;
 
 ///
 /// Unit test for `starknet_specversion`
 ///
-/// purpose: retrieve the Deoxys node spec version
-/// success case: spec version should be 0.7.0
+/// Purpose: Retrieve the Deoxys node spec version
+/// Success case: Spec version should be 0.7.1
 ///
 #[rstest]
 #[tokio::test]
-#[logging]
-async fn test_specversion(deoxys: JsonRpcClient<HttpTransport>) {
-    let response_deoxys = deoxys.spec_version().await.expect(ERR_DEOXYS);
+async fn test_spec_version_7_1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+    let juno = &clients[JUNO];
 
-    log::info!("Deoxys RPC spec: {}", response_deoxys);
-    assert_eq!(response_deoxys, SPEC_0_7_0);
+    let response_deoxys = deoxys
+        .spec_version()
+        .await
+        .expect("Deoxys: Error while getting the block number");
+    let response_pathfinder = pathfinder
+        .spec_version()
+        .await
+        .expect("RPC: Error while getting the block number");
+    let response_juno = juno
+        .spec_version()
+        .await
+        .expect("Juno: Error while getting the block number");
+
+    assert_eq!(response_deoxys, SPEC_0_7_1, "Deoxys spec version mismatch");
+    assert_eq!(response_pathfinder, SPEC_0_7_0, "Pathfinder spec version mismatch");
+    assert_eq!(response_juno, SPEC_0_7_1, "Juno spec version mismatch");
+
+    println!("{}", format!("All clients returned the same spec version: 0.7.1").green());
 }

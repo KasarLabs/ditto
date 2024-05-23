@@ -45,9 +45,9 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
 
     if !ab_sync_status_match || !bc_sync_status_match || !ca_sync_status_match {
         println!("{}", "Sync status mismatch detected\n".red().bold());
-        println!("Deoxys: {}", format!("{:?}\n", a).cyan().bold());
-        println!("Pathfinder: {}", format!("{:?}\n", b).magenta().bold());
-        println!("Juno: {}", format!("{:?}\n", c).green().bold());
+        println!("- Deoxys: {}", format!("{:?}", a).cyan().bold());
+        println!("- Pathfinder: {}", format!("{:?}", b).magenta().bold());
+        println!("- Juno: {}\n", format!("{:?}", c).green().bold());
 
         let nodes = vec![("Deoxys", &a), ("Pathfinder", &b), ("Juno", &c)];
         for i in 0..nodes.len() {
@@ -59,20 +59,22 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
                         (SyncStatusType::Syncing(sync1), SyncStatusType::Syncing(sync2)) => {
                             if sync1.current_block_num != sync2.current_block_num {
                                 println!(
-                                    "{}: {} {} != {}",
-                                    "Current block number mismatch:".red(),
+                                    "{}: {} {} != {} {}",
+                                    "Current block number mismatch".red(),
                                     name1,
                                     sync1.current_block_num.to_string().yellow().bold(),
-                                    sync2.current_block_num.to_string().yellow().bold()
+                                    sync2.current_block_num.to_string().yellow().bold(),
+                                    name2
                                 );
                             }
                             if sync1.current_block_hash != sync2.current_block_hash {
                                 println!(
-                                    "{}: {} {} != {}",
+                                    "{}: {} {} != {} {}",
                                     "Current block hash mismatch:".red(),
                                     name1,
                                     format!("0x{:x}", sync1.current_block_hash).yellow().bold(),
-                                    format!("0x{:x}", sync2.current_block_hash).yellow().bold()
+                                    format!("0x{:x}", sync2.current_block_hash).yellow().bold(),
+                                    name2
                                 );
                             }
                             if sync1.highest_block_num != sync2.highest_block_num {
@@ -86,25 +88,26 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
                             }
                             if sync1.highest_block_hash != sync2.highest_block_hash {
                                 println!(
-                                    "{}: {} {} != {}",
+                                    "{}: {} {} != {} {}",
                                     "Highest block hash mismatch:".red(),
                                     name1,
                                     format!("0x{:x}", sync1.highest_block_hash).yellow().bold(),
-                                    format!("0x{:x}", sync2.highest_block_hash).yellow().bold()
+                                    format!("0x{:x}", sync2.highest_block_hash).yellow().bold(),
+                                    name2
                                 );
                             }
                             if sync1.current_block_num != sync2.current_block_num {
-                                println!("{}", "\nMismatch skipped since both nodes do not have the same height".green().bold());
+                                println!("Mismatch skipped: {}", "Nodes are not on the same height".green().bold());
                             }
                         },
                         (SyncStatusType::Syncing(_), SyncStatusType::NotSyncing) => {
-                            println!("{}", format!("\nMismatch skipped since {} is not syncing.", name2).green().bold());
+                            println!("Mismatch skipped: {}", format!("Node {} is not syncing.", name2).green().bold());
                         },
                         (SyncStatusType::NotSyncing, SyncStatusType::Syncing(_)) => {
-                            println!("{}", format!("\nMismatch skipped since {} is not syncing.", name1).green().bold());
+                            println!("Mismatch skipped: {}", format!("Node {} is not syncing.", name1).green().bold());
                         },
                         _ => {
-                            panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
+                            panic!("Mismatch skipped: {}", "starknet_syncing mismatch detected".red().bold());
                         }
                     }
                 }
