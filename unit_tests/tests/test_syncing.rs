@@ -17,6 +17,7 @@ use colored::*;
 async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
+    let node_c = &clients[JUNO];
 
     let response_deoxys = deoxys
         .syncing()
@@ -28,67 +29,88 @@ async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
         .await
         .expect("Error while getting sync status from pathfinder node");
 
-    assert_sync_status(response_deoxys, response_pathfinder);
+    let response_node_c = node_c
+        .syncing()
+        .await
+        .expect("Error while getting sync status from node C");
+
+    assert_sync_status(response_deoxys, response_pathfinder, response_node_c);
 }
 
-/// Assert and print detailed differences between two SyncStatusType
-fn assert_sync_status(a: SyncStatusType, b: SyncStatusType) {
-    if !compare_sync_status(&a, &b) {
+/// Assert and print detailed differences between three SyncStatusType
+fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
+    let ab_sync_status_match = compare_sync_status(&a, &b);
+    let bc_sync_status_match = compare_sync_status(&b, &c);
+    let ca_sync_status_match = compare_sync_status(&c, &a);
+
+    if !ab_sync_status_match || !bc_sync_status_match || !ca_sync_status_match {
         println!("{}", "Sync status mismatch detected\n".red().bold());
         println!("Deoxys: {}", format!("{:?}\n", a).cyan().bold());
         println!("Pathfinder: {}", format!("{:?}\n", b).magenta().bold());
+        println!("Juno: {}", format!("{:?}\n", c).green().bold());
 
-        match (&a, &b) {
-            (SyncStatusType::Syncing(a_sync), SyncStatusType::Syncing(b_sync)) => {
-                if a_sync.current_block_num != b_sync.current_block_num {
-                    println!(
-                        "{} {} != {}",
-                        "Current block number mismatch:".red(),
-                        a_sync.current_block_num.to_string().yellow().bold(),
-                        b_sync.current_block_num.to_string().yellow().bold()
-                    );
+        let nodes = vec![("Deoxys", &a), ("Pathfinder", &b), ("Juno", &c)];
+        for i in 0..nodes.len() {
+            for j in (i + 1)..nodes.len() {
+                let (name1, status1) = &nodes[i];
+                let (name2, status2) = &nodes[j];
+                if !compare_sync_status(status1, status2) {
+                    match (status1, status2) {
+                        (SyncStatusType::Syncing(sync1), SyncStatusType::Syncing(sync2)) => {
+                            if sync1.current_block_num != sync2.current_block_num {
+                                println!(
+                                    "{}: {} {} != {}",
+                                    "Current block number mismatch:".red(),
+                                    name1,
+                                    sync1.current_block_num.to_string().yellow().bold(),
+                                    sync2.current_block_num.to_string().yellow().bold()
+                                );
+                            }
+                            if sync1.current_block_hash != sync2.current_block_hash {
+                                println!(
+                                    "{}: {} {} != {}",
+                                    "Current block hash mismatch:".red(),
+                                    name1,
+                                    format!("0x{:x}", sync1.current_block_hash).yellow().bold(),
+                                    format!("0x{:x}", sync2.current_block_hash).yellow().bold()
+                                );
+                            }
+                            if sync1.highest_block_num != sync2.highest_block_num {
+                                println!(
+                                    "{}: {} {} != {}",
+                                    "Highest block number mismatch:".red(),
+                                    name1,
+                                    sync1.highest_block_num.to_string().yellow().bold(),
+                                    sync2.highest_block_num.to_string().yellow().bold()
+                                );
+                            }
+                            if sync1.highest_block_hash != sync2.highest_block_hash {
+                                println!(
+                                    "{}: {} {} != {}",
+                                    "Highest block hash mismatch:".red(),
+                                    name1,
+                                    format!("0x{:x}", sync1.highest_block_hash).yellow().bold(),
+                                    format!("0x{:x}", sync2.highest_block_hash).yellow().bold()
+                                );
+                            }
+                            if sync1.current_block_num != sync2.current_block_num {
+                                println!("{}", "\nMismatch skipped since both nodes do not have the same height".green().bold());
+                            }
+                        },
+                        (SyncStatusType::Syncing(_), SyncStatusType::NotSyncing) => {
+                            println!("{}", format!("\nMismatch skipped since {} is not syncing.", name2).green().bold());
+                        },
+                        (SyncStatusType::NotSyncing, SyncStatusType::Syncing(_)) => {
+                            println!("{}", format!("\nMismatch skipped since {} is not syncing.", name1).green().bold());
+                        },
+                        _ => {
+                            panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
+                        }
+                    }
                 }
-                if a_sync.current_block_hash != b_sync.current_block_hash {
-                    println!(
-                        "{} {} != {}",
-                        "Current block hash mismatch:".red(),
-                        format!("0x{:x}", a_sync.current_block_hash).yellow().bold(),
-                        format!("0x{:x}", b_sync.current_block_hash).yellow().bold()
-                    );
-                }
-                if a_sync.highest_block_num != b_sync.highest_block_num {
-                    println!(
-                        "{} {} != {}",
-                        "Highest block number mismatch:".red(),
-                        a_sync.highest_block_num.to_string().yellow().bold(),
-                        b_sync.highest_block_num.to_string().yellow().bold()
-                    );
-                }
-                if a_sync.highest_block_hash != b_sync.highest_block_hash {
-                    println!(
-                        "{} {} != {}",
-                        "Highest block hash mismatch:".red(),
-                        format!("0x{:x}", a_sync.highest_block_hash).yellow().bold(),
-                        format!("0x{:x}", b_sync.highest_block_hash).yellow().bold()
-                    );
-                }
-                if a_sync.current_block_num != b_sync.current_block_num {
-                    println!("{}", "\nMismatch skipped since both nodes do not have the same height".green().bold());
-                } else if matches!(b, SyncStatusType::NotSyncing) {
-                    panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
-                }
-            },
-            (SyncStatusType::Syncing(_), SyncStatusType::NotSyncing) => {
-                println!("{}", "\nMismatch skipped since node B is not syncing.".green().bold());
-            },
-            (SyncStatusType::NotSyncing, SyncStatusType::Syncing(_)) => {
-                println!("{}", "\nMismatch skipped since node A is not syncing.".green().bold());
-            },
-            _ => {
-                panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
             }
         }
-    }  
+    }
 }
 
 /// compare 2 SyncStatus, only fields corresponding to current and highest block are compared
