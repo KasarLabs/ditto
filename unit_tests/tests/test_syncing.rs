@@ -107,7 +107,7 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
                             println!("Mismatch skipped: {}", format!("Node {} is not syncing.", name1).green().bold());
                         },
                         _ => {
-                            panic!("Mismatch skipped: {}", "starknet_syncing mismatch detected".red().bold());
+                            panic!("Mismatch detected: {}", "starknet_syncing mismatch".red().bold());
                         }
                     }
                 }
