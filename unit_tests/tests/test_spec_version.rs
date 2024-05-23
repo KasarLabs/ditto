@@ -37,5 +37,5 @@ async fn test_spec_version_7_1(clients: HashMap<String, JsonRpcClient<HttpTransp
     assert_eq!(response_pathfinder, SPEC_0_7_0, "Pathfinder spec version mismatch");
     assert_eq!(response_juno, SPEC_0_7_1, "Juno spec version mismatch");
 
-    println!("{}", format!("All clients returned the same spec version: 0.7.1").green());
+    println!("Spec version matches for all clients: {}", format!("0.7.1").green().bold());
 }
