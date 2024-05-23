@@ -38,8 +38,8 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType) {
         println!("Deoxys: {}", format!("{:?}\n", a).cyan().bold());
         println!("Pathfinder: {}", format!("{:?}\n", b).magenta().bold());
 
-        if let SyncStatusType::Syncing(a_sync) = &a {
-            if let SyncStatusType::Syncing(b_sync) = &b {
+        match (&a, &b) {
+            (SyncStatusType::Syncing(a_sync), SyncStatusType::Syncing(b_sync)) => {
                 if a_sync.current_block_num != b_sync.current_block_num {
                     println!(
                         "{} {} != {}",
@@ -73,15 +73,22 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType) {
                     );
                 }
                 if a_sync.current_block_num != b_sync.current_block_num {
-                    println!("{}", "Mismatch skipped since both node does not have the same height".green().bold());
+                    println!("{}", "\nMismatch skipped since both nodes do not have the same height".green().bold());
                 } else if matches!(b, SyncStatusType::NotSyncing) {
                     panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
                 }
-            } else if let SyncStatusType::NotSyncing = &b {
+            },
+            (SyncStatusType::Syncing(_), SyncStatusType::NotSyncing) => {
                 println!("{}", "\nMismatch skipped since node B is not syncing.".green().bold());
+            },
+            (SyncStatusType::NotSyncing, SyncStatusType::Syncing(_)) => {
+                println!("{}", "\nMismatch skipped since node A is not syncing.".green().bold());
+            },
+            _ => {
+                panic!("{}", "\nstarknet_syncing mismatch detected".red().bold());
             }
         }
-    }
+    }  
 }
 
 /// compare 2 SyncStatus, only fields corresponding to current and highest block are compared
