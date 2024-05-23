@@ -32,7 +32,7 @@ async fn syncing(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let response_node_c = node_c
         .syncing()
         .await
-        .expect("Error while getting sync status from node C");
+        .expect("Error while getting sync status from juno node");
 
     assert_sync_status(response_deoxys, response_pathfinder, response_node_c);
 }
