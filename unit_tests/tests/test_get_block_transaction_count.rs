@@ -46,6 +46,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
+    let juno = &clients[JUNO];
 
     let block_tag = BlockId::Tag(BlockTag::Latest);
 
@@ -59,12 +60,20 @@ async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTrans
         .await
         .expect("Error waiting for response from Pathfinder node");
 
+    let response_juno = juno
+        .get_block_transaction_count(block_tag)
+        .await
+        .expect("Error waiting for response from Juno node");
+
+    assert_eq!(response_juno, response_deoxys);
     assert_eq!(response_deoxys, response_pathfinder);
+    assert_eq!(response_pathfinder, response_juno);
 }
 
 async fn work_with_block(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
+    juno: JsonRpcClient<HttpTransport>,
     block_number: u64,
 ) {
     let block_number = BlockId::Number(block_number);
@@ -79,7 +88,14 @@ async fn work_with_block(
         .await
         .expect("Error waiting for response from Pathfinder node");
 
+    let response_juno = juno
+        .get_block_transaction_count(block_number)
+        .await
+        .expect("Error waiting for response from Juno node");
+
+    assert_eq!(response_juno, response_deoxys);
     assert_eq!(response_deoxys, response_pathfinder);
+    assert_eq!(response_pathfinder, response_juno);
 }
 
 #[rstest]
@@ -87,8 +103,9 @@ async fn work_with_block(
 async fn work_with_block_1(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
+    juno: JsonRpcClient<HttpTransport>
 ) {
-    work_with_block(deoxys, pathfinder, 1).await;
+    work_with_block(deoxys, pathfinder, juno, 1).await;
 }
 
 #[rstest]
@@ -96,6 +113,7 @@ async fn work_with_block_1(
 async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
+    let juno = &clients[JUNO];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(
@@ -114,7 +132,14 @@ async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTrans
         .await
         .expect("Error waiting for response from Pathfinder node");
 
+    let response_juno = juno
+        .get_block_transaction_count(block_hash)
+        .await
+        .expect("Error waiting for response from Juno node");
+
+    assert_eq!(response_juno, response_deoxys);
     assert_eq!(response_deoxys, response_pathfinder);
+    assert_eq!(response_pathfinder, response_juno);
 }
 
 #[rstest]
@@ -122,8 +147,9 @@ async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTrans
 async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
+    juno: JsonRpcClient<HttpTransport>
 ) {
-    work_with_block(deoxys, pathfinder, 1).await;
+    work_with_block(deoxys, pathfinder, juno, 1).await;
 }
 
 #[rstest]
@@ -131,8 +157,9 @@ async fn work_with_block_5066(
 async fn work_with_block_100_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
+    juno: JsonRpcClient<HttpTransport>
 ) {
-    work_with_block(deoxys, pathfinder, 100_000).await;
+    work_with_block(deoxys, pathfinder, juno, 100_000).await;
 }
 
 #[rstest]
@@ -140,6 +167,7 @@ async fn work_with_block_100_000(
 async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
+    let juno = &clients[JUNO];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(
@@ -158,7 +186,14 @@ async fn work_with_block_100_000_hash(clients: HashMap<String, JsonRpcClient<Htt
         .await
         .expect("Error waiting for response from Pathfinder node");
 
+    let response_juno = juno
+        .get_block_transaction_count(block_hash)
+        .await
+        .expect("Error waiting for response from Juno node");
+
+    assert_eq!(response_juno, response_deoxys);
     assert_eq!(response_deoxys, response_pathfinder);
+    assert_eq!(response_pathfinder, response_juno);
 }
 
 #[rstest]

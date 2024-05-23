@@ -21,6 +21,8 @@ async fn chain_id(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
         .await
         .expect("Error while getting chain id from deoxys");
 
+    log::info!("response_deoxys: {:?}", response_deoxys);
+
     let response_pathfinder = pathfinder
         .chain_id()
         .await
