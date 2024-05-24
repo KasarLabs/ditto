@@ -3,11 +3,11 @@ use common::*;
 
 use std::collections::HashMap;
 
+use colored::*;
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
-};
-use colored::*; // Add this import for colored output
+}; // Add this import for colored output
 
 ///
 /// Unit test for `starknet_blockNumber`
@@ -41,11 +41,17 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 
     let mut mismatch = false;
 
-    if response_deoxys != response_pathfinder || response_pathfinder != response_juno || response_juno != response_deoxys {
+    if response_deoxys != response_pathfinder
+        || response_pathfinder != response_juno
+        || response_juno != response_deoxys
+    {
         mismatch = true;
         println!("{}", "Block number mismatch detected\n".red().bold());
         println!("Deoxys: {}", format!("{}", response_deoxys).cyan().bold());
-        println!("Pathfinder: {}", format!("{}", response_pathfinder).magenta().bold());
+        println!(
+            "Pathfinder: {}",
+            format!("{}", response_pathfinder).magenta().bold()
+        );
         println!("Juno: {}\n", format!("{}", response_juno).green().bold());
 
         if response_deoxys != response_pathfinder {
@@ -77,6 +83,11 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     }
 
     if mismatch {
-        println!("{}", "\nMismatch on Block numbers are skipped since it may not be an error.".green().bold());
+        println!(
+            "{}",
+            "\nMismatch on Block numbers are skipped since it may not be an error."
+                .green()
+                .bold()
+        );
     }
 }

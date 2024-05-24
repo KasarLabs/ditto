@@ -41,25 +41,55 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     assert!(pathfinder_responce.block_number > 0);
     assert!(juno_responce.block_number > 0);
 
-    if !check_block_number(deoxys_responce.clone(), pathfinder_responce.clone(), juno_responce.clone()) {
-        println!("{}", "\nMismatch on Block numbers are skipped since it may not be an error.".green().bold());
+    if !check_block_number(
+        deoxys_responce.clone(),
+        pathfinder_responce.clone(),
+        juno_responce.clone(),
+    ) {
+        println!(
+            "{}",
+            "\nMismatch on Block numbers are skipped since it may not be an error."
+                .green()
+                .bold()
+        );
     }
-    
+
     if !check_block_hashes(deoxys_responce, pathfinder_responce, juno_responce) {
-        println!("{}", "\nMismatch on Block hashes are skipped since it may not be an error.".green().bold());
+        println!(
+            "{}",
+            "\nMismatch on Block hashes are skipped since it may not be an error."
+                .green()
+                .bold()
+        );
     }
 }
 
-fn check_block_number(responce_deoxys: BlockHashAndNumber, responce_pathfinder: BlockHashAndNumber, responce_juno: BlockHashAndNumber) -> bool {
+fn check_block_number(
+    responce_deoxys: BlockHashAndNumber,
+    responce_pathfinder: BlockHashAndNumber,
+    responce_juno: BlockHashAndNumber,
+) -> bool {
     let deoxys_block_number = responce_deoxys.block_number;
     let pathfinder_block_number = responce_pathfinder.block_number;
     let juno_block_number = responce_juno.block_number;
 
-    if deoxys_block_number != pathfinder_block_number || pathfinder_block_number != juno_block_number || juno_block_number != deoxys_block_number {
+    if deoxys_block_number != pathfinder_block_number
+        || pathfinder_block_number != juno_block_number
+        || juno_block_number != deoxys_block_number
+    {
         println!("{}", "Block number mismatch detected\n".red().bold());
-        println!("Deoxys: {}", format!("{}", deoxys_block_number).cyan().bold());
-        println!("Pathfinder: {}", format!("{}", pathfinder_block_number).magenta().bold());
-        println!("Juno: {}\n", format!("{}", juno_block_number).green().bold());
+        println!(
+            "Deoxys: {}",
+            format!("{}", deoxys_block_number).cyan().bold()
+        );
+        println!(
+            "Pathfinder: {}",
+            format!("{}", pathfinder_block_number).magenta().bold()
+        );
+        println!(
+            "Juno: {}\n",
+            format!("{}", juno_block_number).green().bold()
+        );
 
         if deoxys_block_number != pathfinder_block_number {
             println!(
@@ -91,19 +121,34 @@ fn check_block_number(responce_deoxys: BlockHashAndNumber, responce_pathfinder: 
         println!("{}", "All nodes have matching block numbers".green().bold());
         return true;
     }
-
 }
 
-fn check_block_hashes(responce_deoxys: BlockHashAndNumber, responce_pathfinder: BlockHashAndNumber, responce_juno: BlockHashAndNumber) -> bool {
+fn check_block_hashes(
+    responce_deoxys: BlockHashAndNumber,
+    responce_pathfinder: BlockHashAndNumber,
+    responce_juno: BlockHashAndNumber,
+) -> bool {
     let deoxys_block_hash = responce_deoxys.block_hash;
     let pathfinder_block_hash = responce_pathfinder.block_hash;
     let juno_block_hash = responce_juno.block_hash;
 
-    if deoxys_block_hash != pathfinder_block_hash || pathfinder_block_hash != juno_block_hash || juno_block_hash != deoxys_block_hash {
+    if deoxys_block_hash != pathfinder_block_hash
+        || pathfinder_block_hash != juno_block_hash
+        || juno_block_hash != deoxys_block_hash
+    {
         println!("{}", "Block hash mismatch detected\n".red().bold());
-        println!("Deoxys: {}", format!("0x{:x}", deoxys_block_hash).cyan().bold());
-        println!("Pathfinder: {}", format!("0x{:x}", pathfinder_block_hash).magenta().bold());
-        println!("Juno: {}\n", format!("0x{:x}", juno_block_hash).green().bold());
+        println!(
+            "Deoxys: {}",
+            format!("0x{:x}", deoxys_block_hash).cyan().bold()
+        );
+        println!(
+            "Pathfinder: {}",
+            format!("0x{:x}", pathfinder_block_hash).magenta().bold()
+        );
+        println!(
+            "Juno: {}\n",
+            format!("0x{:x}", juno_block_hash).green().bold()
+        );
 
         if deoxys_block_hash != pathfinder_block_hash {
             println!(
@@ -135,5 +180,4 @@ fn check_block_hashes(responce_deoxys: BlockHashAndNumber, responce_pathfinder: 
         println!("{}", "All nodes have matching block hashes".green().bold());
         return true;
     }
-
 }
