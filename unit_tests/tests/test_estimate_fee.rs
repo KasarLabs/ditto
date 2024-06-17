@@ -18,7 +18,7 @@ use unit_tests::{BadTransactionFactory, OkTransactionFactory, TransactionFactory
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let ok_invoke_transaction = OkTransactionFactory::build(Some(FieldElement::ZERO));
     let simulation_flag = vec![SimulationFlagForEstimateFee::SkipValidate];
@@ -52,7 +52,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 async fn fail_if_one_txn_cannot_be_executed(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::PATHFINDER];
 
     let bad_invoke_transaction = BadTransactionFactory::build(None);
     let simulate_flag = vec![SimulationFlagForEstimateFee::SkipValidate];
@@ -82,8 +82,8 @@ async fn fail_if_one_txn_cannot_be_executed(
 #[tokio::test]
 #[ignore = "Fix failing unwrap due to empty constant"]
 async fn works_ok(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = get_block_setting();
 

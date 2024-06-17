@@ -18,7 +18,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys.get_transaction_status(FieldElement::ZERO).await;
 
@@ -47,8 +47,8 @@ async fn fail_invalid_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
 #[rstest]
 #[tokio::test]
 async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .get_transaction_status(
@@ -84,8 +84,8 @@ async fn work_transaction_accepted_on_l1(clients: HashMap<String, JsonRpcClient<
 #[tokio::test]
 #[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let transaction_count = deoxys
         .get_block_transaction_count(BlockId::Tag(BlockTag::Latest))
@@ -125,8 +125,8 @@ async fn work_transaction_accepted_on_l2(clients: HashMap<String, JsonRpcClient<
 #[rstest]
 #[tokio::test]
 async fn work_transaction_reverted(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     //This contract was created at Block 500670, so need to be synced to this minimum block
     let response_deoxys = deoxys

@@ -16,7 +16,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_transaction_by_block_id_and_index(BlockId::Hash(FieldElement::ZERO), 0)
@@ -46,7 +46,7 @@ async fn fail_non_existent_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_transaction_by_block_id_and_index(BlockId::Number(5000), 389)
@@ -77,8 +77,8 @@ async fn fail_non_existent_block_index(clients: HashMap<String, JsonRpcClient<Ht
 #[rstest]
 #[tokio::test]
 async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     // getting transaction through block number and index
     let response_deoxys = deoxys
@@ -116,8 +116,8 @@ async fn work_deploy_invoke(clients: HashMap<String, JsonRpcClient<HttpTransport
 #[rstest]
 #[tokio::test]
 async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     // getting transaction through block number and index
     let response_deoxys = deoxys
@@ -155,8 +155,8 @@ async fn work_deploy_l1_handler(clients: HashMap<String, JsonRpcClient<HttpTrans
 #[rstest]
 #[tokio::test]
 async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     // getting transaction through block number and index
     let response_deoxys = deoxys
@@ -194,8 +194,8 @@ async fn work_deploy_declare(clients: HashMap<String, JsonRpcClient<HttpTranspor
 #[rstest]
 #[tokio::test]
 async fn work_deploy_account(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     // getting transaction through block number and index
     let response_deoxys = deoxys

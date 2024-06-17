@@ -23,8 +23,8 @@ use starknet_providers::{
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -74,8 +74,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -128,7 +128,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 async fn fail_invalid_contract_entry_point_selector(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .call(
@@ -164,8 +164,8 @@ async fn fail_invalid_contract_entry_point_selector(
 #[rstest]
 #[tokio::test]
 async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -220,7 +220,7 @@ async fn fail_missing_contract_call_data(clients: HashMap<String, JsonRpcClient<
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .call(
@@ -249,7 +249,7 @@ async fn fail_invalid_contract_call_data(clients: HashMap<String, JsonRpcClient<
 #[rstest]
 #[tokio::test]
 async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .call(
@@ -292,8 +292,8 @@ async fn fail_too_many_call_data(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .call(
@@ -334,8 +334,8 @@ async fn work_correct_call(clients: HashMap<String, JsonRpcClient<HttpTransport>
 #[rstest]
 #[tokio::test]
 async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = get_block_setting();
 
@@ -378,8 +378,8 @@ async fn work_correct_call_with_args(clients: HashMap<String, JsonRpcClient<Http
 #[rstest]
 #[tokio::test]
 async fn work_with_multiple_args(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = get_block_setting();
 

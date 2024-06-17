@@ -93,7 +93,7 @@ fn compare_json_values(path: &str, value1: &Value, value2: &Value) -> bool {
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(BlockId::Hash(FieldElement::ZERO))
@@ -126,8 +126,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = BlockId::Number(100000);
 
@@ -192,8 +192,8 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
 async fn work_pending_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(BlockId::Tag(BlockTag::Pending))

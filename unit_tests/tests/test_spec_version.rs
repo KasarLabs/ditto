@@ -16,9 +16,9 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 #[rstest]
 #[tokio::test]
 async fn test_spec_version_7_1(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let response_deoxys = deoxys
         .spec_version()

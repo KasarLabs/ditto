@@ -32,7 +32,7 @@ use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_nonce(
@@ -65,7 +65,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_nonce(
@@ -101,7 +101,7 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 #[rstest]
 #[tokio::test]
 async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let block_number = get_block_setting();
 
@@ -125,7 +125,7 @@ async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTranspo
 #[rstest]
 #[tokio::test]
 async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     //This contract was created at Block 500192, so need to be synced to this minimum block
 
@@ -151,8 +151,8 @@ async fn work_erc20_contract(clients: HashMap<String, JsonRpcClient<HttpTranspor
 #[rstest]
 #[tokio::test]
 async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = BlockId::Number(55000);
 
@@ -185,8 +185,8 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
 #[rstest]
 #[tokio::test]
 async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = BlockId::Number(51244);
 

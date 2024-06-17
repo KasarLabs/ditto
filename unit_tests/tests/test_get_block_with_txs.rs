@@ -4,13 +4,13 @@ mod common;
 use colored::*;
 use common::*;
 use serde_json::Value;
-use std::sync::Arc;
-use std::collections::HashMap;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
 };
+use std::collections::HashMap;
+use std::sync::Arc;
 use unit_tests::constants::DEOXYS;
 
 // Define a recursive function to compare JSON values and print differences
@@ -84,7 +84,7 @@ fn compare_json_values(path: &str, value1: &Value, value2: &Value) -> bool {
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_block_with_txs(BlockId::Hash(FieldElement::ZERO))
@@ -111,8 +111,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[tokio::test]
 #[ignore = "fix with latest block"]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = get_block_setting();
     if block_number != BlockId::Tag(BlockTag::Latest) {
@@ -155,7 +155,6 @@ async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTrans
         }
     }
 }
-
 
 async fn work_with_block(
     deoxys: JsonRpcClient<HttpTransport>,
@@ -211,8 +210,8 @@ async fn work_with_block_1(
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(
@@ -270,12 +269,10 @@ async fn work_with_block_100_000(
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hundred_thousand_hash(
-    clients
-
-: HashMap<String, JsonRpcClient<HttpTransport>>,
+    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(

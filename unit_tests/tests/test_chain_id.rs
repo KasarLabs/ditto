@@ -13,8 +13,8 @@ use std::collections::HashMap;
 #[rstest]
 #[tokio::test]
 async fn chain_id(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
         .chain_id()

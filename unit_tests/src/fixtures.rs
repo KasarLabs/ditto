@@ -41,8 +41,8 @@ pub fn clients(
     juno: JsonRpcClient<HttpTransport>,
 ) -> HashMap<String, JsonRpcClient<HttpTransport>> {
     map! {
-        String::from(DEOXYS) => deoxys,
-        String::from(PATHFINDER) => pathfinder,
-        String::from(JUNO) => juno,
+        String::from(mainnet::network::DEOXYS) => deoxys,
+        String::from(mainnet::network::PATHFINDER) => pathfinder,
+        String::from(mainnet::network::JUNO) => juno,
     }
 }
