@@ -137,7 +137,7 @@ async fn work_loop_existing_block(clients: HashMap<String, JsonRpcClient<HttpTra
     let pathfinder = &clients[PATHFINDER];
     let juno = &clients[JUNO];
 
-    for i in 0..5q {
+    for i in 0..5 {
         let block_number = BlockId::Number(i * 10000);
         let response_deoxys = deoxys
             .get_state_update(block_number)
