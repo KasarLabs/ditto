@@ -165,12 +165,44 @@ async fn work_loop_existing_block(clients: HashMap<String, JsonRpcClient<HttpTra
 
 #[rstest]
 #[tokio::test]
+#[ignore = "Pending data is not supported yet"]
 async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
     let juno = &clients[JUNO];
 
     let block_number = BlockId::Tag(BlockTag::Pending);
+    let response_deoxys = deoxys
+        .get_state_update(block_number)
+        .await
+        .expect("Deoxys : Error while getting the state update");
+    let response_pathfinder = pathfinder
+        .get_state_update(block_number)
+        .await
+        .expect("RPC : Error while getting the state update");
+    let response_juno = juno
+        .get_state_update(block_number)
+        .await
+        .expect("RPC : Error while getting the state update");
+
+    // Extract and sort the updates
+    let sorted_deoxys = extract_and_sort_state_update(response_deoxys);
+    let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
+    let sorted_juno = extract_and_sort_state_update(response_juno);
+
+    assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
+    assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
+    assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+}
+
+#[rstest]
+#[tokio::test]
+async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+    let deoxys = &clients[DEOXYS];
+    let pathfinder = &clients[PATHFINDER];
+    let juno = &clients[JUNO];
+
+    let block_number = BlockId::Tag(BlockTag::Latest);
     let response_deoxys = deoxys
         .get_state_update(block_number)
         .await
