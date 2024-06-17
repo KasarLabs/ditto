@@ -85,21 +85,20 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 ///
 #[rstest]
 #[tokio::test]
-#[ignore = "slash this ignore when Deoxys node is fully synced"]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
     let class_hash_deoxys = deoxys
         .get_class_hash_at(
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(200000),
             FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap(),
         )
         .await
         .expect("Error waiting for response from Deoxys node");
     let class_hash_pathfinder = pathfinder
         .get_class_hash_at(
-            BlockId::Tag(BlockTag::Latest),
+            BlockId::Number(200000),
             FieldElement::from_hex_be(STARKGATE_ETH_CONTRACT_ADDR).unwrap(),
         )
         .await
