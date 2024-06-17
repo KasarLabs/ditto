@@ -3,9 +3,9 @@
 mod common;
 use std::collections::HashMap;
 
+use colored::*;
 use common::*;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
-use colored::*;
 
 ///
 /// Unit test for `starknet_specversion`
@@ -34,8 +34,14 @@ async fn test_spec_version_7_1(clients: HashMap<String, JsonRpcClient<HttpTransp
         .expect("Juno: Error while getting the block number");
 
     assert_eq!(response_deoxys, SPEC_0_7_1, "Deoxys spec version mismatch");
-    assert_eq!(response_pathfinder, SPEC_0_7_0, "Pathfinder spec version mismatch");
+    assert_eq!(
+        response_pathfinder, SPEC_0_7_0,
+        "Pathfinder spec version mismatch"
+    );
     assert_eq!(response_juno, SPEC_0_7_1, "Juno spec version mismatch");
 
-    println!("Spec version matches for all clients: {}", format!("0.7.1").green().bold());
+    println!(
+        "Spec version matches for all clients: {}",
+        format!("0.7.1").green().bold()
+    );
 }
