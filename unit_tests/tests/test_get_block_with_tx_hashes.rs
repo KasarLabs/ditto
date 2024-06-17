@@ -1,19 +1,19 @@
 #![feature(assert_matches)]
 
 mod common;
-use common::*;
 use colored::*;
+use common::*;
 use starknet_core::types::MaybePendingBlockWithTxHashes;
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use serde_json::Value;
 use starknet_core::types::{BlockId, BlockTag, FieldElement, StarknetError};
 use starknet_providers::{
     jsonrpc::{HttpTransport, JsonRpcClient},
     Provider,
 };
-use serde_json::Value;
 use unit_tests::constants::DEOXYS;
 
 // Define a recursive function to compare JSON values and print differences
@@ -22,7 +22,11 @@ fn compare_json_values(path: &str, value1: &Value, value2: &Value) -> bool {
 
     match (value1, value2) {
         (Value::Object(map1), Value::Object(map2)) => {
-            for key in map1.keys().chain(map2.keys()).collect::<std::collections::HashSet<_>>() {
+            for key in map1
+                .keys()
+                .chain(map2.keys())
+                .collect::<std::collections::HashSet<_>>()
+            {
                 let new_path = format!("{}/{}", path, key);
                 match (map1.get(key), map2.get(key)) {
                     (Some(v1), Some(v2)) => {
@@ -30,8 +34,12 @@ fn compare_json_values(path: &str, value1: &Value, value2: &Value) -> bool {
                             exception_found = true;
                         }
                     }
-                    (Some(v1), None) => println!("{}: present in first, absent in second", new_path),
-                    (None, Some(v2)) => println!("{}: absent in first, present in second", new_path),
+                    (Some(v1), None) => {
+                        println!("{}: present in first, absent in second", new_path)
+                    }
+                    (None, Some(v2)) => {
+                        println!("{}: absent in first, present in second", new_path)
+                    }
                     (None, None) => unreachable!(),
                 }
             }
@@ -57,11 +65,14 @@ fn compare_json_values(path: &str, value1: &Value, value2: &Value) -> bool {
             if value1 != value2 {
                 let exception_paths = [
                     "/l1_data_gas_price/price_in_fri",
-                    "/l1_data_gas_price/price_in_wei"
+                    "/l1_data_gas_price/price_in_wei",
                 ];
 
                 if exception_paths.contains(&path) {
-                    println!("{} - Bypassed as exception", format!("{}: {:?} != {:?}", path, value1, value2).yellow());
+                    println!(
+                        "{} - Bypassed as exception",
+                        format!("{}: {:?} != {:?}", path, value1, value2).yellow()
+                    );
                     exception_found = true;
                 } else {
                     println!("{}: {:?} != {:?}", path, value1, value2);
@@ -143,18 +154,28 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     };
 
     // Convert the blocks to JSON values
-    let block_deoxys_json: Value = serde_json::to_value(&block_deoxys).expect("Failed to convert deoxys block to JSON");
-    let block_pathfinder_json: Value = serde_json::to_value(&block_pathfinder).expect("Failed to convert pathfinder block to JSON");
+    let block_deoxys_json: Value =
+        serde_json::to_value(&block_deoxys).expect("Failed to convert deoxys block to JSON");
+    let block_pathfinder_json: Value = serde_json::to_value(&block_pathfinder)
+        .expect("Failed to convert pathfinder block to JSON");
 
     // Compare the JSON values and print differences if they don't match
     if block_deoxys_json != block_pathfinder_json {
-        println!("{}", format!("Block does not match differences found\n").red().bold());
+        println!(
+            "{}",
+            format!("Block does not match differences found\n")
+                .red()
+                .bold()
+        );
         let exception_found = compare_json_values("", &block_deoxys_json, &block_pathfinder_json);
-        
+
         if !exception_found {
             panic!("Blocks do not match");
         } else {
-            println!("\nMismatch skipped: {}", format!("field exception found").green().bold());
+            println!(
+                "\nMismatch skipped: {}",
+                format!("field exception found").green().bold()
+            );
         }
     }
 }
@@ -226,18 +247,28 @@ async fn work_with_block(
     };
 
     // Convert the blocks to JSON values
-    let block_deoxys_json: Value = serde_json::to_value(&block_deoxys).expect("Failed to convert deoxys block to JSON");
-    let block_pathfinder_json: Value = serde_json::to_value(&block_pathfinder).expect("Failed to convert pathfinder block to JSON");
+    let block_deoxys_json: Value =
+        serde_json::to_value(&block_deoxys).expect("Failed to convert deoxys block to JSON");
+    let block_pathfinder_json: Value = serde_json::to_value(&block_pathfinder)
+        .expect("Failed to convert pathfinder block to JSON");
 
     // Compare the JSON values and print differences if they don't match
     if block_deoxys_json != block_pathfinder_json {
-        println!("{}", format!("Block does not match differences found\n").red().bold());
+        println!(
+            "{}",
+            format!("Block does not match differences found\n")
+                .red()
+                .bold()
+        );
         let exception_found = compare_json_values("", &block_deoxys_json, &block_pathfinder_json);
-        
+
         if !exception_found {
             panic!("Blocks do not match");
         } else {
-            println!("\nMismatch skipped: {}", format!("field exception found").green().bold());
+            println!(
+                "\nMismatch skipped: {}",
+                format!("field exception found").green().bold()
+            );
         }
     }
 }
@@ -311,16 +342,14 @@ async fn work_loop(deoxys: JsonRpcClient<HttpTransport>, pathfinder: JsonRpcClie
                             // Convert the blocks to JSON values
                             let block_deoxys_json: Value = serde_json::to_value(&response_deoxys)
                                 .expect("Failed to convert deoxys block to JSON");
-                            let block_pathfinder_json: Value = serde_json::to_value(&response_pathfinder)
-                                .expect("Failed to convert pathfinder block to JSON");
+                            let block_pathfinder_json: Value =
+                                serde_json::to_value(&response_pathfinder)
+                                    .expect("Failed to convert pathfinder block to JSON");
 
                             // Compare the JSON values and print differences
                             println!("Blocks for block {} do not match. Differences:", block_id);
-                            let exception_found = compare_json_values(
-                                "",
-                                &block_deoxys_json,
-                                &block_pathfinder_json,
-                            );
+                            let exception_found =
+                                compare_json_values("", &block_deoxys_json, &block_pathfinder_json);
 
                             if !exception_found {
                                 Err(format!("block {}", block_id))

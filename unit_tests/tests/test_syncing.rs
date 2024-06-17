@@ -1,10 +1,10 @@
 mod common;
 use common::*;
 
+use colored::*;
 use starknet_core::types::SyncStatusType;
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
-use colored::*;
 
 ///
 /// Unit test for `starknet_syncing`
@@ -97,17 +97,29 @@ fn assert_sync_status(a: SyncStatusType, b: SyncStatusType, c: SyncStatusType) {
                                 );
                             }
                             if sync1.current_block_num != sync2.current_block_num {
-                                println!("Mismatch skipped: {}", "Nodes are not on the same height".green().bold());
+                                println!(
+                                    "Mismatch skipped: {}",
+                                    "Nodes are not on the same height".green().bold()
+                                );
                             }
-                        },
+                        }
                         (SyncStatusType::Syncing(_), SyncStatusType::NotSyncing) => {
-                            println!("Mismatch skipped: {}", format!("Node {} is not syncing.", name2).green().bold());
-                        },
+                            println!(
+                                "Mismatch skipped: {}",
+                                format!("Node {} is not syncing.", name2).green().bold()
+                            );
+                        }
                         (SyncStatusType::NotSyncing, SyncStatusType::Syncing(_)) => {
-                            println!("Mismatch skipped: {}", format!("Node {} is not syncing.", name1).green().bold());
-                        },
+                            println!(
+                                "Mismatch skipped: {}",
+                                format!("Node {} is not syncing.", name1).green().bold()
+                            );
+                        }
                         _ => {
-                            panic!("Mismatch detected: {}", "starknet_syncing mismatch".red().bold());
+                            panic!(
+                                "Mismatch detected: {}",
+                                "starknet_syncing mismatch".red().bold()
+                            );
                         }
                     }
                 }

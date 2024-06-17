@@ -103,7 +103,7 @@ async fn work_with_block(
 async fn work_with_block_1(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
-    juno: JsonRpcClient<HttpTransport>
+    juno: JsonRpcClient<HttpTransport>,
 ) {
     work_with_block(deoxys, pathfinder, juno, 1).await;
 }
@@ -147,7 +147,7 @@ async fn work_with_block_1_hash(clients: HashMap<String, JsonRpcClient<HttpTrans
 async fn work_with_block_5066(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
-    juno: JsonRpcClient<HttpTransport>
+    juno: JsonRpcClient<HttpTransport>,
 ) {
     work_with_block(deoxys, pathfinder, juno, 1).await;
 }
@@ -157,7 +157,7 @@ async fn work_with_block_5066(
 async fn work_with_block_100_000(
     deoxys: JsonRpcClient<HttpTransport>,
     pathfinder: JsonRpcClient<HttpTransport>,
-    juno: JsonRpcClient<HttpTransport>
+    juno: JsonRpcClient<HttpTransport>,
 ) {
     work_with_block(deoxys, pathfinder, juno, 100_000).await;
 }

@@ -11,11 +11,13 @@ use std::collections::HashMap;
 
 #[rstest]
 #[tokio::test]
-async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) -> Result<()> {
+async fn fail_non_existing_block(
+    clients: HashMap<String, JsonRpcClient<HttpTransport>>,
+) -> Result<()> {
     let deoxys = &clients[DEOXYS];
 
-    let test_contract_class_hash =
-        FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0).map_err(|e| anyhow!("Invalid Contract Class Hash: {}", e))?;
+    let test_contract_class_hash = FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0)
+        .map_err(|e| anyhow!("Invalid Contract Class Hash: {}", e))?;
     let block_id = BlockId::Number(800000);
 
     match deoxys.get_class(block_id, test_contract_class_hash).await {
@@ -26,7 +28,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
             } else {
                 panic!("Unexpected error: {:?}", e);
             }
-        },
+        }
         Ok(_) => panic!("Unexpected success: Class was found when it shouldn't be."),
     }
 }
@@ -69,8 +71,8 @@ async fn work_ok_retrieving_class_for_contract_version_0(
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
-    let test_contract_class_hash =
-        FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0).expect("Invalid Contract Class Hash");
+    let test_contract_class_hash = FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0)
+        .expect("Invalid Contract Class Hash");
 
     let deoxys_class = deoxys
         .get_class(BlockId::Number(50000), test_contract_class_hash)
@@ -82,13 +84,20 @@ async fn work_ok_retrieving_class_for_contract_version_0(
         .await
         .unwrap();
 
-    if let (ContractClass::Legacy(deoxys_legacy), ContractClass::Legacy(pathfinder_legacy)) = (deoxys_class, pathfinder_class) {
-        assert_eq!(deoxys_legacy.entry_points_by_type, pathfinder_legacy.entry_points_by_type);
+    if let (ContractClass::Legacy(deoxys_legacy), ContractClass::Legacy(pathfinder_legacy)) =
+        (deoxys_class, pathfinder_class)
+    {
+        assert_eq!(
+            deoxys_legacy.entry_points_by_type,
+            pathfinder_legacy.entry_points_by_type
+        );
         assert_eq!(deoxys_legacy.abi, pathfinder_legacy.abi);
-        
-        let deoxys_program = decode(&deoxys_legacy.program).expect("Failed to decode base64 program");
-        let pathfinder_program = decode(&pathfinder_legacy.program).expect("Failed to decode base64 program");
-        
+
+        let deoxys_program =
+            decode(&deoxys_legacy.program).expect("Failed to decode base64 program");
+        let pathfinder_program =
+            decode(&pathfinder_legacy.program).expect("Failed to decode base64 program");
+
         assert_eq!(deoxys_program, pathfinder_program);
     } else {
         panic!("Contract classes are not of the Legacy variant");

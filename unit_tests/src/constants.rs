@@ -142,8 +142,10 @@ pub const TRANSACTION_REVERTED: &str =
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
 pub const CAIRO_1_ACCOUNT_CONTRACT_CLASS_HASH: &str = "";
-pub const TEST_CONTRACT_CLASS_HASH_V0: &str = "0x036e5b6081df2174189fb83800d2a09132286dcd1004ad960a0c8d69364e6e9a";
-pub const TEST_CONTRACT_CLASS_HASH_V1: &str = "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
+pub const TEST_CONTRACT_CLASS_HASH_V0: &str =
+    "0x036e5b6081df2174189fb83800d2a09132286dcd1004ad960a0c8d69364e6e9a";
+pub const TEST_CONTRACT_CLASS_HASH_V1: &str =
+    "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
 
 ///
 /// Value to be used as a payload for a message in the `estimate_message_fee` test.
@@ -166,7 +168,7 @@ pub const SPEC_0_7_1: &str = "0.7.1";
 
 ///
 /// Starknet block number versions.
-/// 
+///
 pub const BLOCK_0: u64 = 0;
 pub const BLOCK_0_9_1: u64 = 3799;
 pub const BLOCK_0_10_0: u64 = 4883;
@@ -183,5 +185,3 @@ pub const BLOCK_0_12_2: u64 = 194410;
 pub const BLOCK_0_12_3: u64 = 472644;
 pub const BLOCK_0_13_0: u64 = 501514;
 pub const BLOCK_0_13_1: u64 = 607878;
-
-
