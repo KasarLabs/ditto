@@ -1,6 +1,5 @@
 #![feature(assert_matches)]
 
-use constants::*;
 use starknet_accounts::{Account, Call, ConnectedAccount, Execution, SingleOwnerAccount};
 use starknet_core::chain_id;
 use starknet_core::types::BroadcastedInvokeTransaction;
@@ -10,6 +9,7 @@ use starknet_core::{
 };
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient};
 use starknet_signers::{LocalWallet, SigningKey};
+use constants::mainnet;
 
 pub mod constants;
 pub mod fixtures;
@@ -28,10 +28,10 @@ impl TransactionFactory for OkTransactionFactory {
                 max_fee: FieldElement::ZERO,
                 signature: vec![],
                 nonce: nonce.unwrap_or(FieldElement::ZERO),
-                sender_address: FieldElement::from_hex_be(ACCOUNT_CONTRACT).unwrap(),
+                sender_address: FieldElement::from_hex_be(mainnet::contract::CONTRACT_ACCOUNT).unwrap(),
                 calldata: vec![
-                    FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
-                    get_selector_from_name("sqrt").unwrap(),
+                    FieldElement::from_hex_be(mainnet::contract::CONTRACT_ERC20).unwrap(),
+                    get_selector_from_name("transfer").unwrap(),
                     FieldElement::from_hex_be("1").unwrap(),
                     FieldElement::from(81u8),
                 ],
@@ -70,7 +70,7 @@ impl TransactionFactory for MaxFeeTransactionFactory {
             )
             .unwrap(),
             calldata: vec![
-                FieldElement::from_hex_be(TEST_CONTRACT_ADDRESS).unwrap(),
+                FieldElement::from_hex_be(mainnet::contract::CONTRACT_ERC20).unwrap(),
                 get_selector_from_name("sqrt").unwrap(),
                 FieldElement::from_hex_be("1").unwrap(),
                 FieldElement::from(81u8),

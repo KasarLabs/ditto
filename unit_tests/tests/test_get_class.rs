@@ -14,7 +14,7 @@ use std::collections::HashMap;
 async fn fail_non_existing_block(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) -> Result<()> {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let test_contract_class_hash = FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0)
         .map_err(|e| anyhow!("Invalid Contract Class Hash: {}", e))?;
@@ -36,7 +36,7 @@ async fn fail_non_existing_block(
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let unknown_contract_class_hash =
         FieldElement::from_hex_be("0x4269DEADBEEF").expect("Invalid Contract class hash");
@@ -68,8 +68,8 @@ async fn fail_non_existing_class_hash(clients: HashMap<String, JsonRpcClient<Htt
 async fn work_ok_retrieving_class_for_contract_version_0(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let test_contract_class_hash = FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V0)
         .expect("Invalid Contract Class Hash");
@@ -109,8 +109,8 @@ async fn work_ok_retrieving_class_for_contract_version_0(
 async fn work_ok_retrieving_class_for_contract_version_1(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let test_contract_class_hash = FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH_V1)
         .expect("Invalid Contract Class Hash");

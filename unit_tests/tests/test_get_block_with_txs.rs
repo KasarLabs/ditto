@@ -17,7 +17,7 @@ use unit_tests::constants::DEOXYS;
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_block_with_txs(BlockId::Hash(FieldElement::ZERO))
@@ -44,8 +44,8 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[tokio::test]
 #[ignore = "fix with latest block"]
 async fn work_with_latest_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_number = get_block_setting();
     if block_number != BlockId::Tag(BlockTag::Latest) {
@@ -95,8 +95,8 @@ async fn work_with_block_1(
 #[rstest]
 #[tokio::test]
 async fn work_with_block_one_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(
@@ -132,8 +132,8 @@ async fn work_with_block_100_000(
 async fn work_with_block_one_hundred_thousand_hash(
     clients: HashMap<String, JsonRpcClient<HttpTransport>>,
 ) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let block_hash = BlockId::Hash(
         FieldElement::from_hex_be(

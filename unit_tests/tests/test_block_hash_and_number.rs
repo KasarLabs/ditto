@@ -20,9 +20,9 @@ use colored::*;
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let deoxys_responce = deoxys
         .block_hash_and_number()

@@ -52,7 +52,7 @@ pub fn sort_state_update(state_update: StateUpdate) -> StateUpdate {
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys.get_state_update(BlockId::Number(0)).await;
 
@@ -74,9 +74,9 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn work_genesis_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let block_number = BlockId::Number(0);
 
@@ -114,9 +114,9 @@ async fn work_genesis_block(clients: HashMap<String, JsonRpcClient<HttpTransport
 #[rstest]
 #[tokio::test]
 async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let block_number = BlockId::Number(250000);
 
@@ -155,9 +155,9 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
 #[rstest]
 #[tokio::test]
 async fn work_loop_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     for i in 0..5 {
         let block_number = BlockId::Number(i * 10000);
@@ -198,9 +198,9 @@ async fn work_loop_existing_block(clients: HashMap<String, JsonRpcClient<HttpTra
 #[tokio::test]
 #[ignore = "Pending data is not supported yet"]
 async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let block_number = BlockId::Tag(BlockTag::Pending);
     let response_deoxys = deoxys
@@ -238,9 +238,9 @@ async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport
 #[rstest]
 #[tokio::test]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
-    let juno = &clients[JUNO];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
+    let juno = &clients[mainnet::network::JUNO];
 
     let block_number = BlockId::Tag(BlockTag::Latest);
     let response_deoxys = deoxys

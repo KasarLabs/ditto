@@ -15,7 +15,7 @@ use starknet_providers::{
 #[rstest]
 #[tokio::test]
 async fn fail_invalid_transaction_hash(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys.get_transaction_receipt(FieldElement::ZERO).await;
 

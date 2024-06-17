@@ -20,7 +20,7 @@ use starknet_providers::{
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_class_hash_at(
@@ -55,7 +55,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
 #[rstest]
 #[tokio::test]
 async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
+    let deoxys = &clients[mainnet::network::DEOXYS];
 
     let response_deoxys = deoxys
         .get_class_hash_at(
@@ -86,8 +86,8 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 #[rstest]
 #[tokio::test]
 async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let class_hash_deoxys = deoxys
         .get_class_hash_at(
@@ -117,8 +117,8 @@ async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>
 #[tokio::test]
 #[ignore = "Pending fails some times when called on the cusp of being accepted, need virtual sequencer"]
 async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
-    let deoxys = &clients[DEOXYS];
-    let pathfinder = &clients[PATHFINDER];
+    let deoxys = &clients[mainnet::network::DEOXYS];
+    let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let class_hash_deoxys = deoxys
         .get_class_hash_at(
