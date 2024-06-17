@@ -3,7 +3,9 @@
 mod common;
 use common::*;
 
-use starknet_core::types::{BlockId, BlockTag, MaybePendingStateUpdate, StarknetError, StateUpdate};
+use starknet_core::types::{
+    BlockId, BlockTag, MaybePendingStateUpdate, StarknetError, StateUpdate,
+};
 use starknet_providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::collections::HashMap;
 
@@ -27,7 +29,9 @@ pub fn sort_state_update(state_update: StateUpdate) -> StateUpdate {
     state_diff.deprecated_declared_classes.sort();
     state_diff.declared_classes.sort_by_key(|x| x.class_hash);
     state_diff.deployed_contracts.sort_by_key(|x| x.address);
-    state_diff.replaced_classes.sort_by_key(|x| x.contract_address);
+    state_diff
+        .replaced_classes
+        .sort_by_key(|x| x.contract_address);
     state_diff.nonces.sort_by_key(|x| x.contract_address);
 
     sorted_state_update
@@ -93,9 +97,18 @@ async fn work_genesis_block(clients: HashMap<String, JsonRpcClient<HttpTransport
     let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
     let sorted_juno = extract_and_sort_state_update(response_juno);
 
-    assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
-    assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
-    assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+    assert_eq!(
+        sorted_deoxys, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_deoxys, sorted_juno,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_juno, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
 }
 
 #[rstest]
@@ -125,9 +138,18 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
     let sorted_juno = extract_and_sort_state_update(response_juno);
 
-    assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
-    assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
-    assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+    assert_eq!(
+        sorted_deoxys, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_deoxys, sorted_juno,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_juno, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
 }
 
 #[rstest]
@@ -157,9 +179,18 @@ async fn work_loop_existing_block(clients: HashMap<String, JsonRpcClient<HttpTra
         let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
         let sorted_juno = extract_and_sort_state_update(response_juno);
 
-        assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
-        assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
-        assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+        assert_eq!(
+            sorted_deoxys, sorted_pathfinder,
+            "The sorted responses do not match"
+        );
+        assert_eq!(
+            sorted_deoxys, sorted_juno,
+            "The sorted responses do not match"
+        );
+        assert_eq!(
+            sorted_juno, sorted_pathfinder,
+            "The sorted responses do not match"
+        );
     }
 }
 
@@ -190,9 +221,18 @@ async fn work_block_pending(clients: HashMap<String, JsonRpcClient<HttpTransport
     let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
     let sorted_juno = extract_and_sort_state_update(response_juno);
 
-    assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
-    assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
-    assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+    assert_eq!(
+        sorted_deoxys, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_deoxys, sorted_juno,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_juno, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
 }
 
 #[rstest]
@@ -221,7 +261,16 @@ async fn work_block_latest(clients: HashMap<String, JsonRpcClient<HttpTransport>
     let sorted_pathfinder = extract_and_sort_state_update(response_pathfinder);
     let sorted_juno = extract_and_sort_state_update(response_juno);
 
-    assert_eq!(sorted_deoxys, sorted_pathfinder, "The sorted responses do not match");
-    assert_eq!(sorted_deoxys, sorted_juno, "The sorted responses do not match");
-    assert_eq!(sorted_juno, sorted_pathfinder, "The sorted responses do not match");
+    assert_eq!(
+        sorted_deoxys, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_deoxys, sorted_juno,
+        "The sorted responses do not match"
+    );
+    assert_eq!(
+        sorted_juno, sorted_pathfinder,
+        "The sorted responses do not match"
+    );
 }
