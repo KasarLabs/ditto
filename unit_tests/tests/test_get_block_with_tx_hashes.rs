@@ -129,7 +129,7 @@ async fn work_existing_block(clients: HashMap<String, JsonRpcClient<HttpTranspor
     let deoxys = &clients[mainnet::network::DEOXYS];
     let pathfinder = &clients[mainnet::network::PATHFINDER];
 
-    let block_number = BlockId::Number(193);
+    let block_number = BlockId::Number(100000);
 
     let response_deoxys = deoxys
         .get_block_with_tx_hashes(block_number)

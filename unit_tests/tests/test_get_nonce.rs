@@ -103,8 +103,6 @@ async fn fail_non_existing_contract(clients: HashMap<String, JsonRpcClient<HttpT
 async fn work_erc721_contract(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[mainnet::network::DEOXYS];
 
-    //This contract was created at Block 500198, so need to be synced to this minimum block
-
     let block_number = get_block_setting();
 
     let response_deoxys = deoxys
@@ -156,14 +154,12 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
     let deoxys = &clients[mainnet::network::DEOXYS];
     let pathfinder = &clients[mainnet::network::PATHFINDER];
 
-    //This contract was created at Block 500209, so need to be synced to this minimum block
-
-    let block_number = get_block_setting();
+    let block_number = BlockId::Number(55000);
 
     let response_deoxys = deoxys
         .get_nonce(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -171,7 +167,7 @@ async fn work_account_contract(clients: HashMap<String, JsonRpcClient<HttpTransp
     let response_pathfinder = pathfinder
         .get_nonce(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Pathfinder node");
@@ -192,14 +188,12 @@ async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<Http
     let deoxys = &clients[mainnet::network::DEOXYS];
     let pathfinder = &clients[mainnet::network::PATHFINDER];
 
-    //This contract was created at Block 500192, so need to be synced to this minimum block
-
-    let block_number = get_block_setting();
+    let block_number = BlockId::Number(51244);
 
     let response_deoxys = deoxys
         .get_nonce(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Deoxys node");
@@ -207,7 +201,7 @@ async fn work_account_proxy_contract(clients: HashMap<String, JsonRpcClient<Http
     let response_pathfinder = pathfinder
         .get_nonce(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_PROXY_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Pathfinder node");

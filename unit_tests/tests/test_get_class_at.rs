@@ -24,7 +24,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
     let response_deoxys = deoxys
         .get_class_at(
             BlockId::Hash(FieldElement::ZERO),
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_CAIRO_ZERO).unwrap(),
         )
         .await;
 
@@ -148,7 +148,7 @@ async fn work_contract_v1(
     let response_deoxys = deoxys
         .get_class_at(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Deoxys client");
@@ -156,7 +156,7 @@ async fn work_contract_v1(
     let response_pathfinder = pathfinder
         .get_class_at(
             block_number,
-            FieldElement::from_hex_be(CONTRACT_ACCOUNT).unwrap(),
+            FieldElement::from_hex_be(CONTRACT_ACCOUNT_CAIRO_ZERO).unwrap(),
         )
         .await
         .expect("Error waiting for response from Pathfinder client");
