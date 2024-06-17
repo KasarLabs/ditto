@@ -101,12 +101,16 @@ async fn work_declare_transaction(clients: HashMap<String, JsonRpcClient<HttpTra
     let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
-        .get_transaction_by_hash(FieldElement::from_hex_be(mainnet::transaction::DECLARE_TX_V0).unwrap())
+        .get_transaction_by_hash(
+            FieldElement::from_hex_be(mainnet::transaction::DECLARE_TX_V0).unwrap(),
+        )
         .await
         .expect("Error waiting for response from Deoxys node");
 
     let response_pathfinder = pathfinder
-        .get_transaction_by_hash(FieldElement::from_hex_be(mainnet::transaction::DECLARE_TX_V0).unwrap())
+        .get_transaction_by_hash(
+            FieldElement::from_hex_be(mainnet::transaction::DECLARE_TX_V0).unwrap(),
+        )
         .await
         .expect("Error waiting for response from Pathfinder node");
 
@@ -129,12 +133,16 @@ async fn work_transaction_deploy_account(clients: HashMap<String, JsonRpcClient<
     let pathfinder = &clients[mainnet::network::PATHFINDER];
 
     let response_deoxys = deoxys
-        .get_transaction_by_hash(FieldElement::from_hex_be(mainnet::transaction::DEPLOY_ACCOUNT_V0).unwrap())
+        .get_transaction_by_hash(
+            FieldElement::from_hex_be(mainnet::transaction::DEPLOY_ACCOUNT_V0).unwrap(),
+        )
         .await
         .expect("Error waiting for response from Deoxys node");
 
     let response_pathfinder = pathfinder
-        .get_transaction_by_hash(FieldElement::from_hex_be(mainnet::transaction::DEPLOY_ACCOUNT_V0).unwrap())
+        .get_transaction_by_hash(
+            FieldElement::from_hex_be(mainnet::transaction::DEPLOY_ACCOUNT_V0).unwrap(),
+        )
         .await
         .expect("Error waiting for response from Pathfinder node");
 
