@@ -56,7 +56,7 @@ pub const STARKGATE_ETHER: &str =
 /// Details concerning this contract can be found on [StarkScan](https://starkscan.co/contract/0x07fa9a8eacb89fb6cd0c7fe557e71c42a4b181ba328a9a04958136e6469c4e00)
 ///
 pub const CONTRACT_ERC721: &str =
-    "0x07fa9a8eacb89fb6cd0c7fe557e71c42a4b181ba328a9a04958136e6469c4e00";
+    "0x05dbdedc203e92749e2e746e2d40a768d966bd243df04a6b712e222bc040a9af";
 
 ///
 /// Random ERC20 Starknet contract address.
@@ -64,23 +64,23 @@ pub const CONTRACT_ERC721: &str =
 /// Details concerning this contract can be found on [StarkScan](https://starkscan.co/contract/0x04a5fdce70877b77f03aea8a29259176f88d5bea9d0ad8c0118f5316425e6ba0)
 ///
 pub const CONTRACT_ERC20: &str =
-    "0x04a5fdce70877b77f03aea8a29259176f88d5bea9d0ad8c0118f5316425e6ba0";
+    "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
 ///
 /// Random ACCOUNT Starknet contract address.
 ///
 /// Details concerning this contract can be found on [StarkScan](https://starkscan.co/contract/0x05e1eee30e79b4f592f444132526b2e2c7f505698e888c659e5f5def5a458c1a)
 ///
-pub const CONTRACT_ACCOUNT: &str =
-    "0x05e1eee30e79b4f592f444132526b2e2c7f505698e888c659e5f5def5a458c1a";
+pub const CONTRACT_ACCOUNT_CAIRO_ZERO: &str =
+    "0x0100104681e789e4211fba898262e1d6f6191bee797ce38a9e07fe8dec743574";
 
 ///
 /// Random PROXY ACCOUNT Starknet contract address.
 ///
 /// Details concerning this contract can be found on [StarkScan](https://starkscan.co/contract/0x05d7f4d55795b56ceb4dd93febe17954c7cfd5e15d7a79cb0cec067a713ac159)
 ///
-pub const CONTRACT_ACCOUNT_PROXY: &str =
-    "0x05d7f4d55795b56ceb4dd93febe17954c7cfd5e15d7a79cb0cec067a713ac159";
+pub const CONTRACT_ACCOUNT_PROXY_CAIRO_ZERO: &str =
+    "0x036Ef6410243034cE315eC19E7ABFEB41052f39095EE3D5AFcC20D672b1C725F";
 
 ///
 /// Random legacy account using Cairo v0
@@ -142,7 +142,7 @@ pub const TRANSACTION_REVERTED: &str =
 pub const ACCOUNT_CONTRACT: &str = "";
 pub const TEST_CONTRACT_ADDRESS: &str = "";
 pub const CAIRO_1_ACCOUNT_CONTRACT_CLASS_HASH: &str = "";
-pub const TEST_CONTRACT_CLASS_HASH: &str = "";
+pub const TEST_CONTRACT_CLASS_HASH: &str = "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
 
 ///
 /// Value to be used as a payload for a message in the `estimate_message_fee` test.

@@ -17,7 +17,7 @@ async fn fail_non_existing_block(clients: HashMap<String, JsonRpcClient<HttpTran
         FieldElement::from_hex_be(TEST_CONTRACT_CLASS_HASH).expect("Invalid Contract Address");
 
     let response_deoxys = deoxys
-        .get_class(BlockId::Number(100), test_contract_class_hash)
+        .get_class(BlockId::Number(1), test_contract_class_hash)
         .await;
 
     assert!(

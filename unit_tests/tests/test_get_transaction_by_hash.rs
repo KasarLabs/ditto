@@ -96,7 +96,7 @@ async fn work_transaction_l1_handler(clients: HashMap<String, JsonRpcClient<Http
 ///
 #[rstest]
 #[tokio::test]
-async fn work_transaction_declare(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
+async fn work_declare_transaction(clients: HashMap<String, JsonRpcClient<HttpTransport>>) {
     let deoxys = &clients[DEOXYS];
     let pathfinder = &clients[PATHFINDER];
 
