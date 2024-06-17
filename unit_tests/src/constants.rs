@@ -164,3 +164,4 @@ pub const ERR_PATHFINDER: &str = "Error waiting for response from Pathfinder cli
 pub const SPEC_0_5_1: &str = "0.5.1";
 pub const SPEC_0_6_0: &str = "0.6.0";
 pub const SPEC_0_7_0: &str = "0.7.0";
+pub const SPEC_0_7_1: &str = "0.7.1";
